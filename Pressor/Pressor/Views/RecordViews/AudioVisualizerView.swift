@@ -13,27 +13,29 @@ struct AudioVisualizerView: View {
     @ObservedObject var audioInputManager: AudioInputViewModel
     // 녹음 여부 나타내는 바인딩 변수
     @Binding var isRecording: Bool
+    // 일시정지 여부를 나타내는 바인딩 변수
+    @Binding var isPaused: Bool
     // 각 막대의 높이를 저장하는 배열
-    @State private var barHeights: [CGFloat] = Array(repeating: 0, count: 80)
-
+    @State private var barHeights: [CGFloat] = Array(repeating: 0, count: 40)
+    
     var body: some View {
         VStack {
             ZStack {
                 HStack {
-                    HStack(spacing: 2) {
+                    HStack(spacing: 3) {
                         // 각 막대를 생성, 높이와 애니메이션 적용.
-                        ForEach(0..<barHeights.count) { index in
-                            BarView(height: barHeights[index] * weight(for: index))
+                        ForEach(0..<barHeights.count, id: \.self) { index in
+                            BarView(height: barHeights[index] * weight(for: index), isRecording: isRecording)
                                 .animation(.easeInOut(duration: 0.15), value: barHeights[index])
                         }
                     }
                 }
             }
         }
-        .frame(height: 80)
+        .frame(width: 250, height: 80)
         .onAppear {
-            // 녹음 중일 경우, 오디오 입력 관리자를 시작
-            if isRecording {
+            // 뷰가 나타날 때 현재 녹음 중이고 일시정지 상태가 아니면, 오디오 입력 관리자 시작
+            if isRecording && !isPaused {
                 audioInputManager.startRecording { buffer in
                     DispatchQueue.main.async {
                         self.updateBarHeights(with: buffer)
@@ -42,8 +44,8 @@ struct AudioVisualizerView: View {
             }
         }
         .onChange(of: isRecording) { newIsRecording in
-            // 녹음 상태가 변경되면, 오디오 입력 관리자를 시작하거나 중지.
-            if newIsRecording {
+            // 녹음 상태가 변경되면, 새로운 녹음 상태에 따라 오디오 입력 관리자를 시작하거나 중지
+            if newIsRecording && !isPaused {
                 audioInputManager.startRecording { buffer in
                     DispatchQueue.main.async {
                         self.updateBarHeights(with: buffer)
@@ -51,7 +53,21 @@ struct AudioVisualizerView: View {
                 }
             } else {
                 audioInputManager.stopRecording()
-                barHeights = Array(repeating: 0, count: 80)
+                barHeights = Array(repeating: 0, count: 50)
+            }
+        }
+        .onChange(of: isPaused) { newIsPaused in
+            // 일시정지 상태가 변경되면, 현재 녹음 중인 경우 일시정지 상태에 따라 오디오 입력 관리자를 시작하거나 중지
+            if isRecording {
+                if newIsPaused {
+                    audioInputManager.stopRecording()
+                } else {
+                    audioInputManager.startRecording { buffer in
+                        DispatchQueue.main.async {
+                            self.updateBarHeights(with: buffer)
+                        }
+                    }
+                }
             }
         }
     }
@@ -63,7 +79,7 @@ extension AudioVisualizerView {
     private func weight(for index: Int) -> CGFloat {
         let halfCount = CGFloat(barHeights.count / 2)
         let relativeIndex = abs(CGFloat(index) - halfCount)
-        let weight = 1 - (2 * relativeIndex / halfCount)
+        let weight = 1 - (1 * relativeIndex / halfCount)
         return weight
     }
     
@@ -80,7 +96,7 @@ extension AudioVisualizerView {
             let slice = samples[start..<end]
 
             let rms = calculateRMS(for: Array(slice))
-            let normalizedHeight = CGFloat(min(max(0, rms), 1)) * maxHeight / 3
+            let normalizedHeight = CGFloat(min(max(0, rms), 1)) * maxHeight
             barHeights[i] = min(max(normalizedHeight, 0), maxHeight)
         }
     }
@@ -95,11 +111,12 @@ extension AudioVisualizerView {
 
 struct BarView: View {
     var height: CGFloat
-
+    var isRecording: Bool
+    
     var body: some View {
-        let safeHeight = max(min(height, CGFloat.greatestFiniteMagnitude), 0)
+        let safeHeight = max(min(height, CGFloat.greatestFiniteMagnitude), 2)
         RoundedRectangle(cornerRadius: 4)
-            .fill(Color.black)
+            .fill(isRecording ? Color.red : Color.black)
             .frame(height: safeHeight)
     }
 }
