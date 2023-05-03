@@ -7,38 +7,59 @@
 
 import SwiftUI
 import AVFoundation
-import Charts
 
 struct AudioVisualizerView: View {
-    @StateObject private var audioInputManager = AudioInputManager()
+    // 오디오 입력 관리자 관찰 객체
+    @ObservedObject var audioInputManager: AudioInputViewModel
+    // 녹음 여부 나타내는 바인딩 변수
+    @Binding var isRecording: Bool
+    // 각 막대의 높이를 저장하는 배열
     @State private var barHeights: [CGFloat] = Array(repeating: 0, count: 80)
 
     var body: some View {
         VStack {
             ZStack {
                 HStack {
-                    // 왼쪽 막대 그룹
                     HStack(spacing: 2) {
+                        // 각 막대를 생성, 높이와 애니메이션 적용.
                         ForEach(0..<barHeights.count) { index in
                             BarView(height: barHeights[index] * weight(for: index))
                                 .animation(.easeInOut(duration: 0.15), value: barHeights[index])
                         }
                     }
                 }
-            }}
+            }
+        }
         .frame(height: 80)
-        .background(.black)
         .onAppear {
-            // 뷰가 나타날 때 녹음 시작
-            audioInputManager.startRecording { buffer in
-                DispatchQueue.main.async {
-                    self.updateBarHeights(with: buffer)
+            // 녹음 중일 경우, 오디오 입력 관리자를 시작
+            if isRecording {
+                audioInputManager.startRecording { buffer in
+                    DispatchQueue.main.async {
+                        self.updateBarHeights(with: buffer)
+                    }
                 }
             }
         }
+        .onChange(of: isRecording) { newIsRecording in
+            // 녹음 상태가 변경되면, 오디오 입력 관리자를 시작하거나 중지.
+            if newIsRecording {
+                audioInputManager.startRecording { buffer in
+                    DispatchQueue.main.async {
+                        self.updateBarHeights(with: buffer)
+                    }
+                }
+            } else {
+                audioInputManager.stopRecording()
+                barHeights = Array(repeating: 0, count: 80)
+            }
+        }
     }
+}
 
-    // 인덱스에 따른 가중치 계산
+extension AudioVisualizerView {
+    
+    // 막대의 높이를 조절하기 위한 가중치 함수
     private func weight(for index: Int) -> CGFloat {
         let halfCount = CGFloat(barHeights.count / 2)
         let relativeIndex = abs(CGFloat(index) - halfCount)
@@ -46,82 +67,39 @@ struct AudioVisualizerView: View {
         return weight
     }
     
-    //    private func toggleRecording() {
-    //        if audioInputManager.audioEngine.isRunning {
-    //            audioInputManager.stopRecording()
-    //        } else {
-    //            audioInputManager.startRecording { buffer in
-    //                DispatchQueue.main.async {
-    //                    self.updateBarHeights(with: buffer)
-    //                }
-    //            }
-    //        }
-    //    }
-    
-    // 막대 높이 업데이트(에니메이션)
+    // 주어진 버퍼를 사용하여 막대 높이를 업데이트하는 함수
     private func updateBarHeights(with buffer: AVAudioPCMBuffer) {
         let samples = Array(UnsafeBufferPointer(start: buffer.floatChannelData?[0], count: Int(buffer.frameLength)))
         let sampleCount = samples.count
         let blockSize = sampleCount / barHeights.count
-        
+        let maxHeight = UIScreen.main.bounds.height
+
         for i in 0..<barHeights.count {
             let start = i * blockSize
             let end = start + blockSize
             let slice = samples[start..<end]
-            
+
             let rms = calculateRMS(for: Array(slice))
-            let normalizedHeight = CGFloat(min(max(0, rms), 1)) * UIScreen.main.bounds.height / 3
-            barHeights[i] = normalizedHeight
+            let normalizedHeight = CGFloat(min(max(0, rms), 1)) * maxHeight / 3
+            barHeights[i] = min(max(normalizedHeight, 0), maxHeight)
         }
     }
     
-    // RMS 계산
+    // 주어진 샘플 배열에 대한 RMS(루트 평균 제곱) 값 계산 함수
     private func calculateRMS(for samples: [Float]) -> Float {
         let sumOfSquares = samples.reduce(0) { $0 + $1 * $1 }
         let rms = sqrt(sumOfSquares / Float(samples.count))
         return rms
     }
-    
 }
-
 
 struct BarView: View {
     var height: CGFloat
-    
-    var body: some View {
-        RoundedRectangle(cornerRadius: 4)
-            .fill(Color.white)
-            .frame(height: height)
-    }
-}
 
-class AudioInputManager: ObservableObject {
-    var audioEngine: AVAudioEngine
-    private var audioBufferHandler: ((AVAudioPCMBuffer) -> Void)?
-    
-    init() {
-        audioEngine = AVAudioEngine()
-    }
-    
-    // 녹음 시작
-    func startRecording(_ audioBufferHandler: @escaping (AVAudioPCMBuffer) -> Void) {
-        self.audioBufferHandler = audioBufferHandler
-        let inputNode = audioEngine.inputNode
-        let format = inputNode.outputFormat(forBus: 0)
-        
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in
-            self.audioBufferHandler?(buffer)
-        }
-        
-        do {
-            try audioEngine.start()
-        } catch {
-            print("Error starting audio engine: \(error)")
-        }
-    }
-    
-    func stopRecording() {
-        audioEngine.inputNode.removeTap(onBus: 0)
-        audioEngine.stop()
+    var body: some View {
+        let safeHeight = max(min(height, CGFloat.greatestFiniteMagnitude), 0)
+        RoundedRectangle(cornerRadius: 4)
+            .fill(Color.black)
+            .frame(height: safeHeight)
     }
 }
