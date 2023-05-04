@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import CoreAudio
 import AVFoundation
 
-// 오디오 입력을 처리하기 위한 뷰 모델 클래스
+// 오디오 입력을 처리하기 위한 뷰 모델 클래스(AudioInputManager)
 class AudioInputViewModel: ObservableObject {
     // AVAudioEngine을 사용하여 오디오 데이터를 처리
     var audioEngine: AVAudioEngine
@@ -19,9 +20,30 @@ class AudioInputViewModel: ObservableObject {
     init() {
         audioEngine = AVAudioEngine()
     }
+    
+    func setPrefferredInputDevice(){
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+                // 사용 가능한 모든 입력 장치 가져오기
+                let availableInputs = audioSession.availableInputs
+                // 외부 마이크 찾기
+                let externalMic = availableInputs?.first(where: { $0.portType != .builtInMic })
 
+                if let extMic = externalMic {
+                    // 선호하는 입력 장치를 외부 마이크로 설정
+                    try audioSession.setPreferredInput(extMic)
+                    print("External microphone set as preferred input device.")
+                } else {
+                    print("No external microphone found.")
+                }
+            } catch {
+                print("Error setting preferred input device: \(error.localizedDescription)")
+            }
+    }
+    
     // 오디오 엔진을 준비하고 탭 설치
     func prepare() {
+        setPrefferredInputDevice()
         let inputNode = audioEngine.inputNode
         let format = inputNode.outputFormat(forBus: 0)
 
