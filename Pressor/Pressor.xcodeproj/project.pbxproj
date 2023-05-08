@@ -17,6 +17,7 @@
 		7EDEB0D72A011E0E00176D72 /* RecordBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0D62A011E0E00176D72 /* RecordBubble.swift */; };
 		7EDEB0D92A011E1500176D72 /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0D82A011E1500176D72 /* Record.swift */; };
 		7EDEB0DB2A011E2A00176D72 /* RecordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0DA2A011E2A00176D72 /* RecordViewModel.swift */; };
+		AC4F69E82A024ECD0035FC59 /* InterviewListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4F69E72A024ECD0035FC59 /* InterviewListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		7EDEB0D62A011E0E00176D72 /* RecordBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordBubble.swift; sourceTree = "<group>"; };
 		7EDEB0D82A011E1500176D72 /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		7EDEB0DA2A011E2A00176D72 /* RecordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewModel.swift; sourceTree = "<group>"; };
+		AC4F69E72A024ECD0035FC59 /* InterviewListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				7EDEB0D42A011DF600176D72 /* MainInterviewList.swift */,
+				AC4F69E72A024ECD0035FC59 /* InterviewListView.swift */,
 			);
 			path = InterviewViews;
 			sourceTree = "<group>";
@@ -206,6 +209,7 @@
 				7EDEB0BF2A011B4B00176D72 /* ContentView.swift in Sources */,
 				7EDEB0D12A011DD100176D72 /* MainRecordView.swift in Sources */,
 				7EDEB0D32A011DE800176D72 /* AddRecordScriptModalView.swift in Sources */,
+				AC4F69E82A024ECD0035FC59 /* InterviewListView.swift in Sources */,
 				7EDEB0DB2A011E2A00176D72 /* RecordViewModel.swift in Sources */,
 				7EDEB0BD2A011B4B00176D72 /* PressorApp.swift in Sources */,
 				7EDEB0D92A011E1500176D72 /* Record.swift in Sources */,
