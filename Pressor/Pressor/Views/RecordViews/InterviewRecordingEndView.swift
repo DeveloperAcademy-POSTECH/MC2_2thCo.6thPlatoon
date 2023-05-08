@@ -1,4 +1,4 @@
-//  InterviewRecordingEndModalView.swift
+//  InterviewRecordingEndView.swift
 //  Pressor
 //
 //  Created by Ha Jong Myeong on 2023/05/04.
@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-struct InterviewRecordingEndModalView: View {
+struct InterviewRecordingEndView: View {
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject var viewModel: InterviewRecordViewModel
     
@@ -43,8 +43,8 @@ struct InterviewRecordingEndModalView: View {
     }
 }
 
-struct InterviewRecordingEndModalView_Previews: PreviewProvider {
+struct InterviewRecordingEndView_Previews: PreviewProvider {
     static var previews: some View {
-        InterviewRecordingEndModalView(viewModel: InterviewRecordViewModel())
+        InterviewRecordingEndView(viewModel: InterviewRecordViewModel())
     }
 }
