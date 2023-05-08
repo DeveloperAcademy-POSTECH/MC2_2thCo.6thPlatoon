@@ -13,6 +13,7 @@ struct MainRecordView: View {
     @State var isSheetShowing: Bool = false
     @State var isShowingAlert = false
     @State var count = 3
+    @State var isShownFullScreenCover = false
     
     var body: some View {
         
@@ -24,9 +25,8 @@ struct MainRecordView: View {
                         .fontWeight(.semibold)
                         .padding(.bottom, 67)
                     VStack {
-                        NavigationLink {
-                            // TODO: - 녹음뷰 routing
-                            InterviewRecordingView()
+                        Button {
+                            self.isShownFullScreenCover.toggle()
                         } label: {
                             VStack {
                                 ZStack {
@@ -55,7 +55,9 @@ struct MainRecordView: View {
                                 .padding(.bottom, 67)
                             }
                         }
-                        
+                        .fullScreenCover(isPresented: $isShownFullScreenCover) {
+                            InterviewRecordingView()
+                        }
                     }
                     VStack {
                         Button(action: {
