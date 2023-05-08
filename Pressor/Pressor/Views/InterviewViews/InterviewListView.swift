@@ -42,9 +42,14 @@ struct InterviewListView: View {
     @State var navigationTitleString = ""
     @State var searchText = ""
 
-
-
-
+    var searchResults : [dummyDataa] {
+        if searchText.isEmpty {
+            return items
+        } else {
+            return items.filter { $0.title.contains(searchText) }
+        }
+    }
+    
     var body: some View {
 
 
@@ -149,14 +154,6 @@ struct InterviewListView: View {
         }
 
 
-
-        var searchResults : [dummyDataa] {
-            if searchText.isEmpty {
-                return items
-            } else {
-                return items.filter { $0.title.contains(searchText) }
-            }
-        }
 
     }
 
