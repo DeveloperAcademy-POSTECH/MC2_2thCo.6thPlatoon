@@ -59,183 +59,181 @@ struct InterviewRecordingView: View {
     }
     
     var body: some View {
-        ZStack { // 백그라운드 컬러
-            Color.black.ignoresSafeArea()
-            VStack { // 컨트롤 영역 + 화자전환 영역 + 오디오 비주얼라이저 영역
-                HStack { // 컨트롤 영역 (일시정지 및 재생 + 완료)
-                    
-                    // 일시정지 및 재생 버튼의 좌측 마진 Spacer
-                    Spacer()
-                        .frame(width: 131)
-                    
-                    // 일시정지 및 재생 버튼 로직
-                    Button(action: {
-                        isRecording.toggle()
-                            if isRecording {
-                                // 녹음 중일때 -> 녹음 시작 및 타이머 시작
-                                isPaused = false
-                                audioInputManager.startRecording { buffer in
-                                    DispatchQueue.main.async {
-                                        // UI 관련 로직
-                                    }
+        VStack { // 컨트롤 영역 + 화자전환 영역 + 오디오 비주얼라이저 영역
+            HStack { // 컨트롤 영역 (일시정지 및 재생 + 완료)
+                // 일시정지 및 재생 버튼의 좌측 마진 Spacer
+                // 일시정지 및 재생 버튼 로직
+                Button(action: {
+                    isRecording.toggle()
+                    if isRecording {
+                        // 녹음 중일때 -> 녹음 시작 및 타이머 시작
+                        isPaused = false
+                        audioInputManager.startRecording { buffer in
+                            DispatchQueue.main.async {
+                                // UI 관련 로직
+                            }
+                        }
+                        startTimer()
+                        // 녹음 중일때 or 일시정지일 떄 오디오 비주얼라이저 색상 변경
+                        if speakerSwitch == SpeakerSwitch.speakerOne {
+                            visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
+                        } else {
+                            visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
+                        }
+                    } else {
+                        // 일시정지일때 -> 타이머 정지 및 오디오 비주얼라이저 끔
+                        audioInputManager.stopRecording()
+                        isPaused = true
+                        stopTimer()
+                        // 오디오 비주얼라이저 회색으로 비활성화 표시
+                        visualColor = Color.gray
+                    }
+                }) {
+                    // 일시정지 및 재생 버튼 UI
+                    RoundedRectangle(cornerRadius: 35)
+                    // 버튼 겉 stroke
+                        .stroke(!isPaused ? Color.white : Color.red, lineWidth: 3)
+                        .frame(width: 131, height: 44)
+                        .padding(.top, 16)
+                    // 버튼 속 fill
+                        .overlay(RoundedRectangle(cornerRadius: 35)
+                            .frame(width: 119, height: 32)
+                            .padding(.top, 16)
+                                 // 녹음 중일때 -> 검정색, 녹음 일시정지일때 -> 빨간색
+                            .foregroundColor(!isPaused ? Color.black : Color(red: 1.0, green: 0.0, blue: 0.0, opacity: 30/100))
+                            .overlay(
+                                HStack {
+                                    // 녹음 중일때 -> 일시정지 심볼, 녹음 일시정지일때 -> 재생 심볼
+                                    Image(systemName: !isPaused ? "pause.fill" : "play.fill")
+                                        .resizable()
+                                        .frame(width: 18, height: 18)
+                                        .foregroundColor(Color.red)
+                                        .padding(.top, 16)
+                                    // 타이머 텍스트
+                                    Text(formattedDuration(duration))
+                                        .font(.title2)
+                                        .fontDesign(.rounded)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(!isPaused ? Color.white : Color.red)
+                                        .frame(minWidth: 50)
+                                        .padding(.top, 16)
                                 }
-                                startTimer()
-                                // 녹음 중일때 or 일시정지일 떄 오디오 비주얼라이저 색상 변경
-                                if speakerSwitch == SpeakerSwitch.speakerOne {
+                            )
+                        )
+                }
+                .position(
+                    x: UIScreen.main.bounds.width / 2,
+                    y: UIScreen.main.bounds.height * 0.01
+                )
+                
+                // 완료 버튼 로직
+                Button(action: {
+                    // 타이머 초기화
+                    resetDuration()
+                }) {
+                    // 완료 버튼 UI
+                    Text("완료")
+                        .font(.headline)
+                    // 녹음 중일때 -> 회색, 녹음 일시정지일때 -> 빨간색
+                        .foregroundColor(!isPaused ? Color(red: 117/255, green: 117/255, blue: 117/255) : Color.red)
+                        .padding(.top, 16)
+                }
+                // 녹음 중일 때 완료 버튼 비활성화
+                .disabled(isRecording)
+//                .padding(.trailing, 24)
+                .position(
+                    x: UIScreen.main.bounds.width / 3,
+                    y: UIScreen.main.bounds.height * 0.01
+                )
+                
+                // 완료 버튼 우측 마진 Spacer
+//                Spacer()
+//                    .frame(width: 28)
+            } // 컨트롤 영역 (일시정지 및 재생 + 완료) HStack 닫기
+            .padding(.top, 8)
+            
+            // 화자 전환 기능
+            RoundedRectangle(cornerRadius: 44)
+            // 화자전환 영역
+                .fill(Color(red: 28/255, green: 28/255, blue: 30/255))
+                .frame(
+                    width: UIScreen.main.bounds.width * 0.95,
+                    height: UIScreen.main.bounds.height * 0.7
+                )
+            // 화자전환 제스처
+                .gesture(
+                    DragGesture(minimumDistance: 100, coordinateSpace: .local)
+                        .onChanged { value in
+                            let isDraggingDownward = value.translation.height > 100
+                            withAnimation() {
+                                if isDraggingDownward {
+                                    // 오디오 비주얼라이저 색상
+                                    speakerSwitch = SpeakerSwitch.speakerOne
                                     visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
                                 } else {
+                                    // 오디오 비주얼라이저 색상
+                                    speakerSwitch = SpeakerSwitch.speakerTwo
                                     visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
                                 }
-                            } else {
-                                // 일시정지일때 -> 타이머 정지 및 오디오 비주얼라이저 끔
-                                audioInputManager.stopRecording()
-                                isPaused = true
-                                stopTimer()
-                                // 오디오 비주얼라이저 회색으로 비활성화 표시
-                                visualColor = Color.gray
                             }
-                    }) {
-                        // 일시정지 및 재생 버튼 UI
-                        RoundedRectangle(cornerRadius: 35)
-                            // 버튼 겉 stroke
-                            .stroke(!isPaused ? Color.white : Color.red, lineWidth: 3)
-                            .frame(width: 131, height: 44)
-                            .padding(.top, 16)
-                            // 버튼 속 fill
-                            .overlay(RoundedRectangle(cornerRadius: 35)
-                                .frame(width: 119, height: 32)
-                                .padding(.top, 16)
-                                // 녹음 중일때 -> 검정색, 녹음 일시정지일때 -> 빨간색
-                                .foregroundColor(!isPaused ? Color.black : Color(red: 1.0, green: 0.0, blue: 0.0, opacity: 30/100))
-                                .overlay(
-                                    HStack {
-                                        // 녹음 중일때 -> 일시정지 심볼, 녹음 일시정지일때 -> 재생 심볼
-                                        Image(systemName: !isPaused ? "pause.fill" : "play.fill")
-                                            .resizable()
-                                            .frame(width: 18, height: 18)
-                                            .foregroundColor(Color.red)
-                                            .padding(.top, 16)
-                                        // 타이머 텍스트
-                                        Text(formattedDuration(duration))
-                                            .font(.title2)
-                                            .fontDesign(.rounded)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(!isPaused ? Color.white : Color.red)
-                                            .frame(minWidth: 50)
-                                            .padding(.top, 16)
-                                    }
-                                )
-                            )
-                    }
-                    
-                    // 일시정지 및 재생 버튼과 완료 버튼 사이 마진 Spacer
-                    Spacer()
-                        .frame(width: 56)
-                    
-                    // 완료 버튼 로직
-                    Button(action: {
-                            // 타이머 초기화
-                            resetDuration()
-                        }) {
-                            // 완료 버튼 UI
-                            Text("완료")
-                                .font(.headline)
-                                // 녹음 중일때 -> 회색, 녹음 일시정지일때 -> 빨간색
-                                .foregroundColor(!isPaused ? Color(red: 117/255, green: 117/255, blue: 117/255) : Color.red)
-                                .padding(.top, 16)
                         }
-                    // 녹음 중일 때 완료 버튼 비활성화
-                    .disabled(isRecording)
-                    .padding(.trailing)
-                    
-                    // 완료 버튼 우측 마진 Spacer
-                    Spacer()
-                        .frame(width: 28)
-                } // 컨트롤 영역 (일시정지 및 재생 + 완료) HStack 닫기
-                    
-                //상단의 컨트롤영역과 중앙의 화자전환영역 사이 마진 Spacer
-                Spacer()
-                    .frame(height: 22)
-                                    
-                    // 화자 전환 기능
-                    RoundedRectangle(cornerRadius: 44)
-                        // 화자전환 영역
-                        .fill(Color(red: 28/255, green: 28/255, blue: 30/255))
-                        .frame(width: 391, height: 680)
-                        // 화자전환 제스처
-                        .gesture(
-                            DragGesture(minimumDistance: 100, coordinateSpace: .local)
-                                .onChanged { value in
-                                    let isDraggingDownward = value.translation.height > 100
-                                    withAnimation() {
-                                        if isDraggingDownward {
-                                            // 오디오 비주얼라이저 색상
-                                            speakerSwitch = SpeakerSwitch.speakerOne
-                                            visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
-                                        } else {
-                                            // 오디오 비주얼라이저 색상
-                                            speakerSwitch = SpeakerSwitch.speakerTwo
-                                            visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
-                                        }
-                                    }
-                                }
-                        )
-                        // 화자전환 가이드
-                        .overlay(
-                            Group {
-                                if speakerSwitch == SpeakerSwitch.speakerOne {
-                                    // 내가 화자일때
-                                    VStack {
-                                        Spacer()
-                                            .frame(height: 480)
-                                        Image(systemName: "chevron.compact.up")
-                                            .resizable()
-                                            .frame(width: 34, height: 10)
-                                            .foregroundColor(Color(red: 1.0, green: 166/255, blue: 0.0))
-                                            .padding(.bottom, 10)
-                                        Text("쓸어올려 상대로 전환")
-                                            .foregroundColor(Color(red: 1.0, green: 166/255, blue: 0.0))
-                                    }
-                                } else {
-                                    // 상대가 화자일때
-                                    VStack{
-                                        Spacer()
-                                            .frame(height: 480)
-                                        Image(systemName: "chevron.compact.down")
-                                            .resizable()
-                                            .frame(width: 34, height: 10)
-                                            .foregroundColor(Color(red: 0.0, green: 234/255, blue: 223/255))
-                                            .padding(.bottom, 10)
-                                        Text("쓸어내려 나로 전환")
-                                            .foregroundColor(Color(red: 0.0, green: 234/255, blue: 223/255))
-                                    }
-                                }
+                )
+            // 화자전환 가이드
+                .overlay(alignment: .bottom) {
+                    Group {
+                        if speakerSwitch == SpeakerSwitch.speakerOne {
+                            // 내가 화자일때
+                            VStack {
+                                Image(systemName: "chevron.compact.up")
+                                    .resizable()
+                                    .frame(width: 34, height: 10)
+                                    .foregroundColor(Color(red: 1.0, green: 166/255, blue: 0.0))
+                                    .padding(.bottom, 10)
+                                Text("쓸어올려 상대로 전환")
+                                    .foregroundColor(Color(red: 1.0, green: 166/255, blue: 0.0))
                             }
-                                .font(.headline)
-                                .fontWeight(.bold)
-                        )
-                    
-                // 화자전환 영역과 오디오 비주얼라이저 사이 마진 Spacer
-                Spacer()
-                
-                // 오디오 비쥬얼라이저 뷰
-                AudioVisualizerView(audioInputManager: audioInputManager, isRecording: $isRecording, isPaused: $isPaused, audioVisualizerColor: $visualColor)
-                    .padding()
-                    
-            } // 컨트롤영역 + 화자전환영역 + 오디오 비주얼라이저 VStack 닫기
-            .onAppear {
-                audioInputManager.prepare()
-            }
-            .onDisappear {
-                audioInputManager.stopRecording()
-            }
-        } // 배경영역 + 기능영역(컨트롤영역 + 화자전환영역 + 오디오 비주얼라이저) ZStack 닫기
+                        } else {
+                            // 상대가 화자일때
+                            VStack{
+                                Spacer()
+                                    .frame(height: 480)
+                                Image(systemName: "chevron.compact.down")
+                                    .resizable()
+                                    .frame(width: 34, height: 10)
+                                    .foregroundColor(Color(red: 0.0, green: 234/255, blue: 223/255))
+                                    .padding(.bottom, 10)
+                                Text("쓸어내려 나로 전환")
+                                    .foregroundColor(Color(red: 0.0, green: 234/255, blue: 223/255))
+                            }
+                        }
+                    }
+                    .padding(.bottom, 80)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                }
+            
+            // 오디오 비쥬얼라이저 뷰
+            AudioVisualizerView(audioInputManager: audioInputManager, isRecording: $isRecording, isPaused: $isPaused, audioVisualizerColor: $visualColor)
+        }
+        .frame(
+            maxWidth: .infinity,
+            maxHeight: .infinity
+        )// 컨트롤영역 + 화자전환영역 + 오디오 비주얼라이저 VStack 닫기
+        .background (
+            Color.black
+        )
+        .onAppear {
+            audioInputManager.prepare()
+        }
+        .onDisappear {
+            audioInputManager.stopRecording()
+        }
     } // body
 } // struct
 
 
 struct InterviewRecordingView_Previews: PreviewProvider {
     static var previews: some View {
-        InterviewRecordingView()
+            InterviewRecordingView()
     }
 }
