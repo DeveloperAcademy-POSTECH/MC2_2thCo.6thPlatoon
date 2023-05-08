@@ -9,7 +9,7 @@ import Foundation
 
 struct Interview {
     let id: String = UUID().uuidString
-    var details: [InterviewDetail]
+    var details: InterviewDetail
     var records: [Record]
-    var transcripts: [String]
+    var recordSTT: [String]
 }
