@@ -90,10 +90,6 @@
 			path = TestViews;
 			sourceTree = "<group>";
 		};
-		601CCC4B2A08D518005B02C7 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				601CCC4C2A08D53F005B02C7 /* Date+.swift */,
 		7E6E395B2A03A15C0073CDD0 /* InterviewModals */ = {
 			isa = PBXGroup;
 			children = (
@@ -108,6 +104,7 @@
 			children = (
 				7EC865E92A05044C0041B31A /* View+DismissKeyboard.swift */,
 				7EC865EB2A050A2C0041B31A /* Color+.swift */,
+				601CCC4C2A08D53F005B02C7 /* Date+.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
