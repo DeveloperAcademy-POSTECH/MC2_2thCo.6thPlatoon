@@ -15,6 +15,8 @@ struct AudioVisualizerView: View {
     @Binding var isRecording: Bool
     // 일시정지 여부를 나타내는 바인딩 변수
     @Binding var isPaused: Bool
+    // 색을 나타내는 바인딩 변수
+    @Binding var audioVisualizerColor: Color
     // 각 막대의 높이를 저장하는 배열
     @State private var barHeights: [CGFloat] = Array(repeating: 0, count: 40)
     
@@ -25,7 +27,11 @@ struct AudioVisualizerView: View {
                     HStack(spacing: 3) {
                         // 각 막대를 생성, 높이와 애니메이션 적용.
                         ForEach(0..<barHeights.count, id: \.self) { index in
-                            BarView(height: barHeights[index] * weight(for: index), isRecording: isRecording)
+                            BarView(
+                                height: barHeights[index] * weight(for: index),
+                                isRecording: isRecording,
+                                audioVisualColor: audioVisualizerColor
+                            )
                                 .animation(.easeInOut(duration: 0.15), value: barHeights[index])
                         }
                     }
@@ -88,7 +94,7 @@ extension AudioVisualizerView {
         let samples = Array(UnsafeBufferPointer(start: buffer.floatChannelData?[0], count: Int(buffer.frameLength)))
         let sampleCount = samples.count
         let blockSize = sampleCount / barHeights.count
-        let maxHeight = UIScreen.main.bounds.height
+        let maxHeight = UIScreen.main.bounds.height / 3
 
         for i in 0..<barHeights.count {
             let start = i * blockSize
@@ -112,11 +118,12 @@ extension AudioVisualizerView {
 struct BarView: View {
     var height: CGFloat
     var isRecording: Bool
+    var audioVisualColor: Color
     
     var body: some View {
-        let safeHeight = max(min(height, CGFloat.greatestFiniteMagnitude), 2)
+        let safeHeight = max(min(height, CGFloat.greatestFiniteMagnitude), 3)
         RoundedRectangle(cornerRadius: 4)
-            .fill(isRecording ? Color.red : Color.black)
-            .frame(height: safeHeight)
+            .fill(audioVisualColor)
+            .frame(maxHeight: safeHeight)
     }
 }

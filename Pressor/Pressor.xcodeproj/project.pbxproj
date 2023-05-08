@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7E6E395D2A03A16C0073CDD0 /* InterviewDetailEditModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E6E395C2A03A16C0073CDD0 /* InterviewDetailEditModalView.swift */; };
+		7E6E395F2A03A28D0073CDD0 /* InterviewDetailChatEditModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E6E395E2A03A28D0073CDD0 /* InterviewDetailChatEditModalView.swift */; };
+		7EC865E72A0501810041B31A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC865E62A0501810041B31A /* Constants.swift */; };
+		7EC865EA2A05044C0041B31A /* View+DismissKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC865E92A05044C0041B31A /* View+DismissKeyboard.swift */; };
+		7EC865EC2A050A2C0041B31A /* Color+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC865EB2A050A2C0041B31A /* Color+.swift */; };
 		7EDEB0BD2A011B4B00176D72 /* PressorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0BC2A011B4B00176D72 /* PressorApp.swift */; };
 		7EDEB0BF2A011B4B00176D72 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0BE2A011B4B00176D72 /* ContentView.swift */; };
 		7EDEB0C12A011B4C00176D72 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7EDEB0C02A011B4C00176D72 /* Assets.xcassets */; };
@@ -23,6 +28,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7E6E395C2A03A16C0073CDD0 /* InterviewDetailEditModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewDetailEditModalView.swift; sourceTree = "<group>"; };
+		7E6E395E2A03A28D0073CDD0 /* InterviewDetailChatEditModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewDetailChatEditModalView.swift; sourceTree = "<group>"; };
+		7EC865E62A0501810041B31A /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		7EC865E92A05044C0041B31A /* View+DismissKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+DismissKeyboard.swift"; sourceTree = "<group>"; };
+		7EC865EB2A050A2C0041B31A /* Color+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+.swift"; sourceTree = "<group>"; };
 		7EDEB0B92A011B4B00176D72 /* Pressor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pressor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EDEB0BC2A011B4B00176D72 /* PressorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressorApp.swift; sourceTree = "<group>"; };
 		7EDEB0BE2A011B4B00176D72 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -50,6 +60,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7E6E395B2A03A15C0073CDD0 /* InterviewModals */ = {
+			isa = PBXGroup;
+			children = (
+				7E6E395C2A03A16C0073CDD0 /* InterviewDetailEditModalView.swift */,
+				7E6E395E2A03A28D0073CDD0 /* InterviewDetailChatEditModalView.swift */,
+			);
+			path = InterviewModals;
+			sourceTree = "<group>";
+		};
+		7EC865E82A05043C0041B31A /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				7EC865E92A05044C0041B31A /* View+DismissKeyboard.swift */,
+				7EC865EB2A050A2C0041B31A /* Color+.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		7EDEB0B02A011B4B00176D72 = {
 			isa = PBXGroup;
 			children = (
@@ -118,7 +146,9 @@
 		7EDEB0CD2A011B5B00176D72 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				7EC865E82A05043C0041B31A /* Extensions */,
 				7EDEB0D62A011E0E00176D72 /* RecordBubble.swift */,
+				7EC865E62A0501810041B31A /* Constants.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -136,6 +166,7 @@
 		7EDEB0CF2A011DBC00176D72 /* InterviewViews */ = {
 			isa = PBXGroup;
 			children = (
+				7E6E395B2A03A15C0073CDD0 /* InterviewModals */,
 				7EDEB0D42A011DF600176D72 /* MainInterviewList.swift */,
 				C957BB9E2A027D05006649A8 /* InterviewRecordingView.swift */,
 			);
@@ -213,13 +244,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				C957BBA12A028DDC006649A8 /* AudioInputVIewModel.swift in Sources */,
+				7EC865EA2A05044C0041B31A /* View+DismissKeyboard.swift in Sources */,
 				7EDEB0BF2A011B4B00176D72 /* ContentView.swift in Sources */,
+				7EC865E72A0501810041B31A /* Constants.swift in Sources */,
 				7EDEB0D12A011DD100176D72 /* MainRecordView.swift in Sources */,
 				7EDEB0D32A011DE800176D72 /* AddRecordScriptModalView.swift in Sources */,
 				C9C7BC822A021F1F005E473B /* AudioVisualizerView.swift in Sources */,
 				7EDEB0DB2A011E2A00176D72 /* RecordViewModel.swift in Sources */,
+				7E6E395D2A03A16C0073CDD0 /* InterviewDetailEditModalView.swift in Sources */,
 				7EDEB0BD2A011B4B00176D72 /* PressorApp.swift in Sources */,
 				7EDEB0D92A011E1500176D72 /* Record.swift in Sources */,
+				7E6E395F2A03A28D0073CDD0 /* InterviewDetailChatEditModalView.swift in Sources */,
+				7EC865EC2A050A2C0041B31A /* Color+.swift in Sources */,
 				7EDEB0D72A011E0E00176D72 /* RecordBubble.swift in Sources */,
 				C957BB9F2A027D05006649A8 /* InterviewRecordingView.swift in Sources */,
 				7EDEB0D52A011DF600176D72 /* MainInterviewList.swift in Sources */,
@@ -351,14 +387,16 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Pressor/Preview Content\"";
-				DEVELOPMENT_TEAM = 67M6ZS7KS6;
+				DEVELOPMENT_TEAM = CV4G9J35Y5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -380,14 +418,16 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Pressor/Preview Content\"";
-				DEVELOPMENT_TEAM = 67M6ZS7KS6;
+				DEVELOPMENT_TEAM = CV4G9J35Y5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
