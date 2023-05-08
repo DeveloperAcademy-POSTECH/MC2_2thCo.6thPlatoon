@@ -12,9 +12,7 @@ struct PressorApp: App {
     @ObservedObject var vm: VoiceViewModel = VoiceViewModel()
     var body: some Scene {
         WindowGroup {
-//            ContentView()
-//            RecordTestView()
-            MainTestView(vm: vm)
+            MainRecordView()
         }
     }
 }
