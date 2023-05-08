@@ -26,7 +26,7 @@ struct MainRecordView: View {
                     VStack {
                         NavigationLink {
                             // TODO: - 녹음뷰 routing
-                            Text("녹음뷰로 이동시키기")
+                            InterviewRecordingView()
                         } label: {
                             VStack {
                                 ZStack {
@@ -122,9 +122,8 @@ struct MainRecordView: View {
                 Image(systemName: "mic.circle.fill")
                 Text("녹음")
             }
-            // ----
-            Text("InterviewListView")// Ssup이 전달해줄 InterviewList View위치
-            // ----
+            
+            InterviewListView()
                 .tabItem {
                     Image(systemName: "doc.plaintext")
                     Text("인터뷰")
