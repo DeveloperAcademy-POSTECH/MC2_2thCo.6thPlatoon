@@ -7,7 +7,6 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
-import AVFoundation
 
 /**
  인터뷰의 내용과 음성 컨트롤러를 담는 레코드 버블 입니다.
@@ -20,7 +19,7 @@ struct RecordBubble: View {
     @State var index: Int
     @State var isInterviewer: Bool
     @State private var text: String = ""
-    @State private var isEditing: Bool = false
+    @Binding var isEditing: Bool
 
     var body: some View {
         if isInterviewer {
@@ -54,7 +53,8 @@ struct RecordBubble: View {
                             .padding(.vertical, 11)
                             .padding(.horizontal, 19.5)
                     } else {
-                        Text("\(record.recordDescription)")
+//                        Text("\(record.recordDescription)")
+                        Text("temp")
                             .font(.system(size: 14))
                             .frame(
                                 maxWidth: 278 - 39,
@@ -74,7 +74,8 @@ struct RecordBubble: View {
                 )
                 .contextMenu {
                     Button {
-                        self.pasteToClipboard(with: record.recordDescription)
+//                        self.pasteToClipboard(with: record.recordDescription)
+                        self.pasteToClipboard(with: "temp")
                     } label: {
                         Label("복사", systemImage: "doc.on.doc")
                     }
@@ -90,6 +91,9 @@ struct RecordBubble: View {
             }
             .padding(.trailing, 16)
             .padding(.bottom, 8)
+            .sheet(isPresented: $isEditing) {
+                InterviewDetailChatEditModalView(isInterviewDetailChatEditModalViewDisplayed: $isEditing)
+            }
         } else {
             HStack(spacing: 10) {
                 VStack {
@@ -127,6 +131,9 @@ struct RecordBubble: View {
             }
             .padding(.leading, 16)
             .padding(.bottom, 8)
+            .sheet(isPresented: $isEditing) {
+                InterviewDetailChatEditModalView(isInterviewDetailChatEditModalViewDisplayed: $isEditing)
+            }
         }
     }
     
