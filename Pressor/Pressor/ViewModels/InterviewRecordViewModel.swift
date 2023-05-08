@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 class InterviewRecordViewModel: ObservableObject {
-    @Published var interviewTitle: String = ""
+    @Published var interviewTitle: String = "새로운 인터뷰"
     @Published var intervieweeName: String = ""
     @Published var email: String = ""
     @Published var phoneNum: String = ""

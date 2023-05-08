@@ -16,16 +16,18 @@ struct InterviewRecordingEndView: View {
                 // 인터뷰 제목 섹션
                 Section(header: Text("인터뷰 제목")) {
                     TextField("새로운 인터뷰", text: $viewModel.interviewTitle)
-                }
+                }.listRowBackground(Color(UIColor.systemGray6))
                 // 대상자 정보 섹션
                 Section(header: Text("대상자 정보")) {
-                    TextField("이름", text: $viewModel.intervieweeName)
+                    TextField("이름", text: $viewModel.intervieweeName, .)
                     
                     TextField("이메일", text: $viewModel.email)
                     
                     TextField("전화번호", text: $viewModel.phoneNum)
-                }
+                }.listRowBackground(Color(UIColor.systemGray6))
             }
+            .scrollContentBackground(.hidden)
+            .background(.white)
             .navigationBarTitle("정보", displayMode: .inline)
             .navigationBarItems(leading:
                                     // 취소 버튼
