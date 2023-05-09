@@ -30,10 +30,11 @@
 		7EDEB0D72A011E0E00176D72 /* RecordBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0D62A011E0E00176D72 /* RecordBubble.swift */; };
 		7EDEB0D92A011E1500176D72 /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0D82A011E1500176D72 /* Record.swift */; };
 		7EDEB0DB2A011E2A00176D72 /* RecordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0DA2A011E2A00176D72 /* RecordViewModel.swift */; };
+		AC4F69E82A024ECD0035FC59 /* InterviewListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4F69E72A024ECD0035FC59 /* InterviewListView.swift */; };
+		C918E6E02A09CC720074BAF0 /* AddScriptModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C918E6DF2A09CC720074BAF0 /* AddScriptModalView.swift */; };
 		C957BB9F2A027D05006649A8 /* InterviewRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C957BB9E2A027D05006649A8 /* InterviewRecordingView.swift */; };
 		C957BBA12A028DDC006649A8 /* AudioInputVIewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C957BBA02A028DDC006649A8 /* AudioInputVIewModel.swift */; };
 		C9C7BC822A021F1F005E473B /* AudioVisualizerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C7BC812A021F1F005E473B /* AudioVisualizerView.swift */; };
-		AC4F69E82A024ECD0035FC59 /* InterviewListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4F69E72A024ECD0035FC59 /* InterviewListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,10 +63,11 @@
 		7EDEB0D62A011E0E00176D72 /* RecordBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordBubble.swift; sourceTree = "<group>"; };
 		7EDEB0D82A011E1500176D72 /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		7EDEB0DA2A011E2A00176D72 /* RecordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewModel.swift; sourceTree = "<group>"; };
+		AC4F69E72A024ECD0035FC59 /* InterviewListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewListView.swift; sourceTree = "<group>"; };
+		C918E6DF2A09CC720074BAF0 /* AddScriptModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddScriptModalView.swift; sourceTree = "<group>"; };
 		C957BB9E2A027D05006649A8 /* InterviewRecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewRecordingView.swift; sourceTree = "<group>"; };
 		C957BBA02A028DDC006649A8 /* AudioInputVIewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioInputVIewModel.swift; sourceTree = "<group>"; };
 		C9C7BC812A021F1F005E473B /* AudioVisualizerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioVisualizerView.swift; sourceTree = "<group>"; };
-		AC4F69E72A024ECD0035FC59 /* InterviewListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +197,7 @@
 				7EDEB0D02A011DD100176D72 /* MainRecordView.swift */,
 				7EDEB0D22A011DE800176D72 /* AddRecordScriptModalView.swift */,
 				C9C7BC812A021F1F005E473B /* AudioVisualizerView.swift */,
+				C918E6DF2A09CC720074BAF0 /* AddScriptModalView.swift */,
 			);
 			path = RecordViews;
 			sourceTree = "<group>";
@@ -284,6 +287,7 @@
 				7EC865EA2A05044C0041B31A /* View+DismissKeyboard.swift in Sources */,
 				7EDEB0BF2A011B4B00176D72 /* ContentView.swift in Sources */,
 				608D9D7F2A022F5E001E8E3C /* MainTestView.swift in Sources */,
+				C918E6E02A09CC720074BAF0 /* AddScriptModalView.swift in Sources */,
 				608D9D6C2A013AF0001E8E3C /* InterviewRecordingTestView.swift in Sources */,
 				7EDEB0D12A011DD100176D72 /* MainRecordView.swift in Sources */,
 				7EDEB0D32A011DE800176D72 /* AddRecordScriptModalView.swift in Sources */,
@@ -438,14 +442,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Pressor/Preview Content\"";
-				DEVELOPMENT_TEAM = CV4G9J35Y5;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				DEVELOPMENT_TEAM = 3NP4Z3WZ94;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Pressor/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -475,14 +476,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Pressor/Preview Content\"";
-				DEVELOPMENT_TEAM = CV4G9J35Y5;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				DEVELOPMENT_TEAM = 3NP4Z3WZ94;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Pressor/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
