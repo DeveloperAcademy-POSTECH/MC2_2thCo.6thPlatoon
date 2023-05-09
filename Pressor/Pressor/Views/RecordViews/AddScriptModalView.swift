@@ -46,13 +46,14 @@ struct AddScriptModalView: View {
         ZStack(alignment: .topLeading) {
             TextEditor(text: $bodyText)
                 .frame(height: 270)
+                .padding(.leading, -4)
             
             if bodyText.isEmpty {
             // 본문이 비어있을 때만 "본문" 텍스트 표시
                 Text("본문")
                     .foregroundColor(.gray.opacity(0.5))
                     .padding(.top, 8)
-                    .padding(.leading, 4)
+                    .padding(.leading, -2)
             }
         }
     }
