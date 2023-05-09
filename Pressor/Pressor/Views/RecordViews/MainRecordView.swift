@@ -113,6 +113,7 @@ struct MainRecordView: View {
                                 .confirmationDialog("타이틀", isPresented: $isSheetShowing) {
                                     Button("대본 삭제", role: .destructive) {
                                         self.isShowingAlert = true
+                                        
                                     }
                                     .alert(isPresented: $isShowingAlert) {
                                         Alert(title: Text("Alert Title"), message: Text("Alert Message"), dismissButton: .default(Text("OK")))}
@@ -144,10 +145,10 @@ struct MainRecordView: View {
         }
         .accentColor(.red)
     }
-    
-    struct MainRecordView_Previews: PreviewProvider {
-        static var previews: some View {
-            MainRecordView()
-        }
+}
+
+struct MainRecordView_Previews: PreviewProvider {
+    static var previews: some View {
+        MainRecordView()
     }
 }
