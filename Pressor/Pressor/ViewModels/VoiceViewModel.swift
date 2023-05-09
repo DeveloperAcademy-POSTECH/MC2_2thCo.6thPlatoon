@@ -101,7 +101,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
     }
     
     
-    func stopRecording(index: Int){
+    func stopRecording(index: Int, recoder: Recorder){
         // 녹음 중지
         audioRecorder.stop()
         isRecording = false
@@ -110,10 +110,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
             Record(
                 fileURL: currentPath,
                 createdAt:getFileDate(for: currentPath),
-                type:
-                    recordings.count % 2 == 0
-                ? Recorder.interviewer.rawValue
-                : Recorder.interviewee.rawValue,
+                type: recoder.rawValue,
                 isPlaying: false,
                 transcriptIndex: index
             )

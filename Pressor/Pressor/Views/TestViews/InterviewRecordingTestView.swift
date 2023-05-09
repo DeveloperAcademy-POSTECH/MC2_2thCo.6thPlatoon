@@ -85,6 +85,7 @@ struct InterviewRecordingTestView: View {
                         } else {
                             visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
                         }
+                        vm.startRecording()
                     } else {
                         // 일시정지일때 -> 타이머 정지 및 오디오 비주얼라이저 끔
                         audioInputManager.stopRecording()
@@ -92,6 +93,13 @@ struct InterviewRecordingTestView: View {
                         stopTimer()
                         // 오디오 비주얼라이저 회색으로 비활성화 표시
                         visualColor = Color.gray
+                        
+                        // 일단 먼저 녹음중지하고 기록함
+                        vm.stopRecording(
+                            index: self.transcriptIndex,
+                            recoder: vm.recoderType
+                        )
+                        self.transcriptIndex += 1
                     }
                 }) {
                     // 일시정지 및 재생 버튼 UI
@@ -154,22 +162,16 @@ struct InterviewRecordingTestView: View {
                 // 완료 버튼 로직
                 Button(action: {
                     // 타이머 초기화
-                    resetDuration()
-                    if vm.isRecording == true {
-                        // 녹음 중지
-                        vm.stopRecording(index: transcriptIndex)
-                        // 여태까지 녹음한 오디오파일들 패치
-                        // TODO: 해당 인터뷰모델에
-                        // TODO: 녹음한 [Record] 배열 넣기
-                        
-                        showingList.toggle()
-                        
-                        // TODO: STT 어디서 하지?-?
-                        // TODO: 위 vm.recordings에서 재생시키지 않고 stt 시도하기
-                        
-                        // TODO: 인터뷰대상자 정보입력
-                        
-                    }
+                    stopTimer()
+                    
+                    // TODO: 해당 인터뷰모델에
+                    // TODO: 녹음한 [Record] 배열 넣기
+                    
+                    showingList.toggle()
+                    
+                    // TODO: 인터뷰대상자 정보입력
+                    // -> 뒤의 뷰에서 정보를 입력함 
+                    
                 }) {
                     // 완료 버튼 UI
                     Text("완료")
@@ -220,16 +222,29 @@ struct InterviewRecordingTestView: View {
                                         visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
                                     }
                                     
-                                    // 일단 먼저 녹음중지하고 기록함
-                                    vm.stopRecording(index: self.transcriptIndex)
-                                    self.transcriptIndex += 1
-                                    // 화자를 바꾸기
-                                    if vm.recoderType == Recorder.interviewer { // 인터뷰어일때
-                                        vm.recoderType = Recorder.interviewee // 화자 바꾸고
-                                    } else { // 인터뷰이일때
-                                        vm.recoderType = Recorder.interviewer
+                                    if vm.isRecording {
+                                        // 화자바꾸지 않고 기록함
+                                        vm.stopRecording(
+                                            index: self.transcriptIndex,
+                                            recoder: vm.recoderType
+                                        )
+                                        self.transcriptIndex += 1
+                                        // 화자를 바꾸기
+                                        if vm.recoderType == Recorder.interviewer { // 인터뷰어일때
+                                            vm.recoderType = Recorder.interviewee // 화자 바꾸고
+                                        } else { // 인터뷰이일때
+                                            vm.recoderType = Recorder.interviewer
+                                        }
+                                        vm.startRecording()
+                                    } else {
+                                        // 화자를 바꾸기
+                                        if vm.recoderType == Recorder.interviewer { // 인터뷰어일때
+                                            vm.recoderType = Recorder.interviewee // 화자 바꾸고
+                                        } else { // 인터뷰이일때
+                                            vm.recoderType = Recorder.interviewer
+                                        }
                                     }
-                                    vm.startRecording()
+                                    
                                     // 화자 바꾼 후 다른 화자로 녹음
                                 }
                             }
