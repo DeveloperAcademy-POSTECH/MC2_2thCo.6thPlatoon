@@ -13,7 +13,7 @@ struct MainRecordView: View {
     @State var isSheetShowing: Bool = false
     @State var isShowingAlert = false
     @State var count = 3
-    @State var isShownFullScreenCover = false
+    @State var isShownInterviewRecordingView = false
     
     init() {
       UITabBar.appearance().scrollEdgeAppearance = .init()
@@ -33,7 +33,7 @@ struct MainRecordView: View {
                         .padding(.bottom, 50)
                     VStack {
                         Button {
-                            self.isShownFullScreenCover.toggle()
+                            self.isShownInterviewRecordingView.toggle()
                         } label: {
                             Image("mic_button")
                                 .padding(.bottom, 40)
@@ -64,7 +64,7 @@ struct MainRecordView: View {
 //                                .padding(.bottom, 67)
 //                            }
                         }
-                        .fullScreenCover(isPresented: $isShownFullScreenCover) {
+                        .fullScreenCover(isPresented: $isShownInterviewRecordingView) {
                             InterviewRecordingView()
                         }
                     }
