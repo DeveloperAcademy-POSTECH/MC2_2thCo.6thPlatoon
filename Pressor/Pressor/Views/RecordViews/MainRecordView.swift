@@ -9,9 +9,10 @@ import SwiftUI
 
 struct MainRecordView: View {
     
-    @State var isTapped: Bool = false
     @State var isSheetShowing: Bool = false
     @State var isShowingAlert = false
+    @State var showModal = false
+    @State var scriptAdded: Bool = false
     @State var count = 3
     
     var body: some View {
@@ -55,86 +56,70 @@ struct MainRecordView: View {
                                 .padding(.bottom, 67)
                             }
                         }
-                        
                     }
                     VStack {
                         Button(action: {
-                            self.isTapped.toggle()
-                            self.isSheetShowing = true
-                        }) {
-                            if self.isTapped {
-                                VStack {
-                                    Image(systemName: "note.text")
-                                        .resizable()
-                                        .frame(width: 35, height: 33)
-                                        .foregroundColor(Color.accentColor)
-                                    Text("대본편집")
-                                        .foregroundColor(Color.accentColor)
-                                }
-                                .confirmationDialog("타이틀", isPresented: $isSheetShowing) {
-                                    Button("대본 삭제", role: .destructive) {
-                                        self.isShowingAlert = true
-                                    }
-                                    .alert(isPresented: $isShowingAlert) {
-                                        Alert(title: Text("대본 삭제"),
-                                              message: Text("대본을 정말 삭제하시겠습니까?"),
-                                              dismissButton: .default(Text("OK")))
-                                    }
-                                    Button("대본 수정", role: .destructive) {
-                                        
-                                    }
-                                    Button("취소", role: .cancel) {
-                                        
-                                    }
-                                }
+                            if scriptAdded {
+                                self.isSheetShowing = true
+                                scriptAdded = true
                             } else {
-                                VStack {
+                                showModal.toggle()
+                                scriptAdded = false
+                            }
+                        }) {
+                            VStack {
+                                if scriptAdded {
+                                    VStack{
+                                        Image(systemName: "note.text")
+                                            .resizable()
+                                            .frame(width: 35, height: 33)
+                                            .foregroundColor(Color.accentColor)
+                                        Text("대본편집")
+                                            .foregroundColor(Color.accentColor)
+                                    }.confirmationDialog("타이틀", isPresented: $isSheetShowing) {
+                                        Button("대본 삭제", role: .destructive) {
+                                            self.isShowingAlert = true
+                                        }
+                                        .alert(isPresented: $isShowingAlert) {
+                                            Alert(title: Text("Alert Title"), message: Text("Alert Message"), dismissButton: .default(Text("OK")))}
+                                        Button("대본 수정", role: .destructive) {
+                                            
+                                        }
+                                        Button("취소", role: .cancel) {
+                                            
+                                        }
+                                    }
+                                } else {
                                     Image(systemName: "note.text.badge.plus")
                                         .resizable()
                                         .frame(width: 35, height: 33)
                                         .foregroundColor(Color.accentColor)
-                                    Text("대본추가")
+                                    Text("대본 추가")
                                         .foregroundColor(Color.accentColor)
-                                }
-                                .confirmationDialog("타이틀", isPresented: $isSheetShowing) {
-                                    Button("대본 삭제", role: .destructive) {
-                                        self.isShowingAlert = true
-                                    }
-                                    .alert(isPresented: $isShowingAlert) {
-                                        Alert(title: Text("Alert Title"), message: Text("Alert Message"), dismissButton: .default(Text("OK")))}
-                                    Button("대본 수정", role: .destructive) {
-                                        
-                                    }
-                                    Button("취소", role: .cancel) {
-                                        
-                                    }
                                 }
                             }
                         }
                     }
+                    .navigationBarTitle("Pressor")
+                    .navigationBarItems(trailing: NavigationLink(destination: AddRecordScriptModalView()) {
+                        Image(systemName: "gearshape.fill")})
+                    .foregroundColor(Color(red: 209/255, green: 209/255, blue: 214/255))
                 }
-                .navigationBarTitle("Pressor")
-                .navigationBarItems(trailing: NavigationLink(destination: AddRecordScriptModalView()) {
-                    Image(systemName: "gearshape.fill")})
-                .foregroundColor(Color(red: 209/255, green: 209/255, blue: 214/255))
-            }
-            .tabItem {
-                Image(systemName: "mic.circle.fill")
-                Text("녹음")
-            }
-            
-            InterviewListView()
                 .tabItem {
-                    Image(systemName: "doc.plaintext")
-                    Text("인터뷰")
+                    Image(systemName: "mic.circle.fill")
+                    Text("녹음")
                 }
-        }
-        .accentColor(.red)
-    }
-    
-    struct MainRecordView_Previews: PreviewProvider {
-        static var previews: some View {
-            MainRecordView()
+                
+                InterviewListView()
+                    .tabItem {
+                        Image(systemName: "doc.plaintext")
+                        Text("인터뷰")
+                    }
+            }            .sheet(isPresented: $showModal, onDismiss: {
+            }) {
+                AddScriptModalView(scriptAdded: $scriptAdded)
+            }
+            .accentColor(.red)
         }
     }
 }
