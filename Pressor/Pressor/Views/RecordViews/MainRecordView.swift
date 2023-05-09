@@ -14,47 +14,59 @@ struct MainRecordView: View {
     @State var showModal = false
     @State var scriptAdded: Bool = false
     @State var count = 3
+    @State var isShownInterviewRecordingView = false
+    
+    init() {
+      UITabBar.appearance().scrollEdgeAppearance = .init()
+    }
     
     var body: some View {
         
         TabView {
             NavigationView {
                 VStack {
-                    Text("새로운 인터뷰를 시작하려면\n아래 녹음 버튼을 눌러주세요.")
-                        .foregroundColor(Color(red: 153/255, green: 153/255, blue: 153/255))
+                    Text("새로운 인터뷰 녹음을 시작하려면\n아래 녹음 버튼을 눌러주세요.")
+                        .font(.headline)
+                        .foregroundColor(Color(red: 193/255, green: 193/255, blue: 200/255))
                         .fontWeight(.semibold)
-                        .padding(.bottom, 67)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(4)
+                        .padding(.bottom, 50)
                     VStack {
-                        NavigationLink {
-                            // TODO: - 녹음뷰 routing
-                            InterviewRecordingView()
+                        Button {
+                            self.isShownInterviewRecordingView.toggle()
                         } label: {
-                            VStack {
-                                ZStack {
-                                    Rectangle()
-                                        .frame(width: 216, height: 216)
-                                        .cornerRadius(88)
-                                        .foregroundColor(Color(red: 248/255, green: 248/255, blue: 249/255, opacity: 1))
-                                    Rectangle()
-                                        .frame(width: 182, height: 182)
-                                        .cornerRadius(70)
-                                        .foregroundColor(Color(red: 255/255, green: 255/255, blue: 255/255, opacity: 1))
-                                        .shadow(color: Color.gray.opacity(0.4), radius: 30, x: 0, y: 0)
-                                    Rectangle()
-                                        .frame(width: 154, height: 154)
-                                        .cornerRadius(57)
-                                        .foregroundColor(Color.white)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 57)
-                                                .strokeBorder(Color.red, lineWidth: 3)
-                                        )
-                                    Image(systemName: "mic.fill")
-                                        .resizable()
-                                        .frame(width: 38, height: 60)
-                                        .foregroundColor(Color.red)
-                                }
-                                .padding(.bottom, 67)
-                            }
+                            Image("mic_button")
+                                .padding(.bottom, 40)
+//                            VStack {
+//                                ZStack {
+//                                    Rectangle()
+//                                        .frame(width: 216, height: 216)
+//                                        .cornerRadius(88)
+//                                        .foregroundColor(Color(red: 248/255, green: 248/255, blue: 249/255, opacity: 1))
+//                                    Rectangle()
+//                                        .frame(width: 182, height: 182)
+//                                        .cornerRadius(70)
+//                                        .foregroundColor(Color(red: 255/255, green: 255/255, blue: 255/255, opacity: 1))
+//                                        .shadow(color: Color.gray.opacity(0.4), radius: 30, x: 0, y: 0)
+//                                    Rectangle()
+//                                        .frame(width: 154, height: 154)
+//                                        .cornerRadius(57)
+//                                        .foregroundColor(Color.white)
+//                                        .overlay(
+//                                            RoundedRectangle(cornerRadius: 57)
+//                                                .strokeBorder(Color.red, lineWidth: 3)
+//                                        )
+//                                    Image(systemName: "mic.fill")
+//                                        .resizable()
+//                                        .frame(width: 38, height: 60)
+//                                        .foregroundColor(Color.red)
+//                                }
+//                                .padding(.bottom, 67)
+//                            }
+                        }
+                        .fullScreenCover(isPresented: $isShownInterviewRecordingView) {
+                            InterviewRecordingView()
                         }
                     }
                     VStack {
@@ -76,7 +88,8 @@ struct MainRecordView: View {
                                             .foregroundColor(Color.accentColor)
                                         Text("대본편집")
                                             .foregroundColor(Color.accentColor)
-                                    }.confirmationDialog("타이틀", isPresented: $isSheetShowing) {
+                                    }
+                                    .confirmationDialog("타이틀", isPresented: $isSheetShowing) {
                                         Button("대본 삭제", role: .destructive) {
                                             self.isShowingAlert = true
                                         }
@@ -92,34 +105,43 @@ struct MainRecordView: View {
                                 } else {
                                     Image(systemName: "note.text.badge.plus")
                                         .resizable()
-                                        .frame(width: 35, height: 33)
+                                        .frame(width: 42, height: 35)
                                         .foregroundColor(Color.accentColor)
+                                        .padding(.leading, 5)
+
                                     Text("대본 추가")
                                         .foregroundColor(Color.accentColor)
+                                        .fontWeight(.semibold)
                                 }
                             }
                         }
                     }
-                    .navigationBarTitle("Pressor")
-                    .navigationBarItems(trailing: NavigationLink(destination: AddRecordScriptModalView()) {
-                        Image(systemName: "gearshape.fill")})
-                    .foregroundColor(Color(red: 209/255, green: 209/255, blue: 214/255))
                 }
+                .navigationBarItems(trailing: NavigationLink(destination: AddRecordScriptModalView()) {
+                    Image(systemName: "gearshape.fill")})
+                .foregroundColor(Color(red: 209/255, green: 209/255, blue: 218/255))
+                .sheet(isPresented: $showModal) {
+                    AddScriptModalView(scriptAdded: $scriptAdded)
+                }
+            }
+            .tabItem {
+                Image(systemName: "mic.circle.fill")
+                Text("녹음")
+            }
+            
+            InterviewListView()
                 .tabItem {
                     Image(systemName: "mic.circle.fill")
                     Text("녹음")
                 }
-                
-                InterviewListView()
-                    .tabItem {
-                        Image(systemName: "doc.plaintext")
-                        Text("인터뷰")
-                    }
-            }            .sheet(isPresented: $showModal, onDismiss: {
-            }) {
-                AddScriptModalView(scriptAdded: $scriptAdded)
-            }
-            .accentColor(.red)
         }
+        
+        .accentColor(.red)
+    }
+}
+
+struct MainRecordView_Previews: PreviewProvider {
+    static var previews: some View {
+        MainRecordView()
     }
 }

@@ -15,10 +15,15 @@ struct InterviewRecordingEndTestView: View {
     @State var isValid: Bool = false
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             Form {
                 Section {
-                    TextField("새로운 인터뷰", text: $infoModel.interviewTitle)
+                    HStack {
+                        TextField("새로운 인터뷰", text: $infoModel.interviewTitle)
+                        Spacer()
+                        Image(systemName: "asterisk")
+                            .foregroundColor(.red)
+                    } //HStack
                 } header: {
                     Text("인터뷰 제목")
                 }
@@ -32,7 +37,7 @@ struct InterviewRecordingEndTestView: View {
                         Spacer()
                         Image(systemName: "asterisk")
                             .foregroundColor(.red)
-                    }
+                    } // HStack
                     
                     TextField("이메일", text: $infoModel.userEmail)
                     TextField("전화번호", text: $infoModel.userPhoneNumber)
@@ -48,29 +53,29 @@ struct InterviewRecordingEndTestView: View {
             }// Form
             .scrollContentBackground(.hidden)
             .background(.white) // Add your background color
-            .navigationTitle("정보")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("완료") {
-                        showingList.toggle()
-                        //infoModel 전달해주기
-                        infoModel.date = vm.date
-                        infoModel.playTime = vm.playTime
-                        print(infoModel)
-                        // Date -> String 예시
-                        print(infoModel.date.toString(dateFormat: "YYYY. M. d. a h:mm"))
-                    }
-                    // 모달에서 새화면으로 바꿔야함
-                    .sheet(isPresented: $showingList, content: {
-
-                        InterviewDetailTestView(vm: vm)
-                    })
-                    .foregroundColor(isValid ? .accentColor : .gray)
-                }
-            }// toolbar
+//            .navigationTitle("정보")
+//            .navigationBarTitleDisplayMode(.inline)
+//            .toolbar {
+//                ToolbarItem(placement: .navigationBarTrailing) {
+//                    Button("완료") {
+//                        showingList.toggle()
+//                        //infoModel 전달해주기
+//                        infoModel.date = vm.date
+//                        infoModel.playTime = vm.playTime
+//                        print(infoModel)
+//                        // Date -> String 예시
+//                        print(infoModel.date.toString(dateFormat: "YYYY. M. d. a h:mm"))
+//                    }
+//                    // 모달에서 새화면으로 바꿔야함
+//                    .sheet(isPresented: $showingList, content: {
+//
+//                        InterviewDetailTestView(vm: vm)
+//                    })
+//                    .foregroundColor(isValid ? .accentColor : .gray)
+//                }
+//            }// toolbar
             
-        }//NavigationView
+//        }//NavigationView
     }
 }
 
