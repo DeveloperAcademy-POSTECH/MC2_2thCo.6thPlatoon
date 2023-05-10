@@ -90,6 +90,6 @@ struct InterviewDetailTestView: View {
 
 struct recordingListView_Previews: PreviewProvider {
     static var previews: some View {
-        InterviewDetailTestView(vm: VoiceViewModel())
+        InterviewDetailTestView(vm: VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [])))
     }
 }
