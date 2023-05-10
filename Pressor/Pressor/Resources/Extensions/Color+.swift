@@ -33,6 +33,9 @@ extension Color {
     static var PressorRed: Self {
         .init(hex: "#FF3B30")
     }
+    static var PressorRed_Dark: Self {
+        .init(hex: "4D120F")
+    }
     static var PressorBlue_Light: Self {
         .init(hex: "B1F2F0")
     }
