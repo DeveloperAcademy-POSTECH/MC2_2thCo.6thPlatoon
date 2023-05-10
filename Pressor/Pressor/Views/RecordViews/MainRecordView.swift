@@ -50,35 +50,9 @@ struct MainRecordView: View {
                             } label: {
                                 Image("mic_button")
                                     .padding(.bottom, 40)
-                                //                            VStack {
-                                //                                ZStack {
-                                //                                    Rectangle()
-                                //                                        .frame(width: 216, height: 216)
-                                //                                        .cornerRadius(88)
-                                //                                        .foregroundColor(Color(red: 248/255, green: 248/255, blue: 249/255, opacity: 1))
-                                //                                    Rectangle()
-                                //                                        .frame(width: 182, height: 182)
-                                //                                        .cornerRadius(70)
-                                //                                        .foregroundColor(Color(red: 255/255, green: 255/255, blue: 255/255, opacity: 1))
-                                //                                        .shadow(color: Color.gray.opacity(0.4), radius: 30, x: 0, y: 0)
-                                //                                    Rectangle()
-                                //                                        .frame(width: 154, height: 154)
-                                //                                        .cornerRadius(57)
-                                //                                        .foregroundColor(Color.white)
-                                //                                        .overlay(
-                                //                                            RoundedRectangle(cornerRadius: 57)
-                                //                                                .strokeBorder(Color.red, lineWidth: 3)
-                                //                                        )
-                                //                                    Image(systemName: "mic.fill")
-                                //                                        .resizable()
-                                //                                        .frame(width: 38, height: 60)
-                                //                                        .foregroundColor(Color.red)
-                                //                                }
-                                //                                .padding(.bottom, 67)
-                                //                            }
                             }
                             .fullScreenCover(isPresented: $isShownInterviewRecordingView) {
-                                InterviewRecordingView()
+                                InterviewRecordingView(isShownInterviewRecordingView: $isShownInterviewRecordingView)
                             }
                         }
                         VStack {
@@ -138,10 +112,13 @@ struct MainRecordView: View {
                     if count != 0{
                         ZStack{
                             RoundedRectangle(cornerRadius: 10)
-                                       .fill(Color.white)
-                                       .frame(width: 100, height: 100)
-                            Text("\(count)").font(.system(size: 50, weight: .bold)).foregroundColor(.red)
-                            
+                                .fill(Color.white)
+                                .frame(width: 100, height: 100)
+                            Text("\(count)")
+                                .font(.system(size: 50, weight: .bold))
+                                .foregroundColor(.red)
+                                .fontDesign(.rounded)
+                                .padding(.bottom, 8)
                         }
                     }
                     }
@@ -153,8 +130,8 @@ struct MainRecordView: View {
             
             InterviewListView()
                 .tabItem {
-                    Image(systemName: "mic.circle.fill")
-                    Text("녹음")
+                    Image(systemName: "list.bullet.rectangle.portrait")
+                    Text("인터뷰")
                 }
         }
         
