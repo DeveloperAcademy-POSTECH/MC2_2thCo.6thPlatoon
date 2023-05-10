@@ -167,8 +167,6 @@ struct InterviewRecordingView: View {
                     // 완료 버튼 로직
                     NavigationLink(
                         destination: InterviewRecordingEndTestView(vm: vm)
-                            .navigationTitle("인터뷰 정보")
-                            .navigationBarTitleDisplayMode(.inline)
                             .onTapGesture {
                                 // 완료버튼 누를 때 interview 인스턴스를 업데이트
                                 vm.interview.recordSTT = vm.transcripts
@@ -187,6 +185,8 @@ struct InterviewRecordingView: View {
                                 )
                         } //label
                     ) // NavigationLink
+                    .navigationTitle("뒤로")
+                    .navigationBarHidden(true)
                     .disabled(isRecording)
                 } // HStack
                 
