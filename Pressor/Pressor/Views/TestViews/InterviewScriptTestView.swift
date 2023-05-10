@@ -10,6 +10,8 @@ struct InterviewScriptTestView: View {
     @StateObject var viewModel: InterviewViewModel
     @State private var newTitle = ""
     @State private var newContent = ""
+    @State private var showEditInterviewScriptView = false
+    @State private var editInterviewScriptIndex = 0
     
     var body: some View {
         NavigationView {
@@ -56,8 +58,7 @@ struct InterviewScriptTestView: View {
             }
         }
     }
-    @State private var showEditInterviewScriptView = false
-    @State private var editInterviewScriptIndex = 0
+    
     private func deleteInterviewScript(at offsets: IndexSet) {
         offsets.forEach { index in
             viewModel.deleteScript(atIndex: index)
