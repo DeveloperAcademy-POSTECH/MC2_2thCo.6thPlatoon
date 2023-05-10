@@ -10,8 +10,7 @@ import SwiftUI
 struct InterviewRecordingTestView: View {
     @ObservedObject var vm: VoiceViewModel
     
-    @State private var showingList = false
-    @State private var showingAlert = false
+    @State private var isShowingList = false
     @State var transcriptIndex: Int = 0
     @StateObject private var audioInputManager = AudioInputViewModel()
     @State private var isRecording = false
@@ -164,13 +163,11 @@ struct InterviewRecordingTestView: View {
                     // 타이머 초기화
                     stopTimer()
                     
-                    // TODO: 해당 인터뷰모델에
-                    // TODO: 녹음한 [Record] 배열 넣기
-                    
-                    showingList.toggle()
-                    
-                    // TODO: 인터뷰대상자 정보입력
-                    // -> 뒤의 뷰에서 정보를 입력함 
+                    // 완료버튼 누를 때 interview 인스턴스를 업데이트
+                    vm.interview.recordSTT = vm.transcripts
+                    vm.interview.records = vm.recordings
+                    vm.interview.details.playTime = formattedDuration(duration)
+                    isShowingList.toggle()
                     
                 }) {
                     // 완료 버튼 UI
@@ -182,18 +179,14 @@ struct InterviewRecordingTestView: View {
                 }
                 // 녹음 중일 때 완료 버튼 비활성화
                 .disabled(isRecording)
-//                .padding(.trailing, 24)
                 .position(
                     x: UIScreen.main.bounds.width / 3,
                     y: UIScreen.main.bounds.height * 0.01
                 )
-                .sheet(isPresented: $showingList, content: {
+                .sheet(isPresented: $isShowingList, content: {
                     InterviewRecordingEndTestView(vm: vm)
                 })
                 
-                // 완료 버튼 우측 마진 Spacer
-//                Spacer()
-//                    .frame(width: 28)
             } // 컨트롤 영역 (일시정지 및 재생 + 완료) HStack 닫기
             .padding(.top, 8)
             
@@ -308,6 +301,6 @@ struct InterviewRecordingTestView: View {
 
 struct InterviewRecordingTestView_Previews: PreviewProvider {
     static var previews: some View {
-        InterviewRecordingTestView(vm: VoiceViewModel())
+        InterviewRecordingTestView(vm: VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [])))
     }
 }
