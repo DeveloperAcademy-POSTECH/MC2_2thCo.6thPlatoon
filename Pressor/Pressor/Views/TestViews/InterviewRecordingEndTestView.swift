@@ -13,7 +13,7 @@ struct InterviewRecordingEndTestView: View {
     @State private var isValid: Bool = false
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
             Form {
                 Section {
                     TextField("새로운 인터뷰", text: $vm.interview.details.interviewTitle)
@@ -30,7 +30,7 @@ struct InterviewRecordingEndTestView: View {
                         Spacer()
                         Image(systemName: "asterisk")
                             .foregroundColor(.red)
-                    }
+                    } // HStack
                     
                     TextField("이메일", text: $vm.interview.details.userEmail)
                     TextField("전화번호", text: $vm.interview.details.userPhoneNumber)
@@ -63,8 +63,7 @@ struct InterviewRecordingEndTestView: View {
                     .foregroundColor(isValid ? .accentColor : .gray)
                 }
             }// toolbar
-            
-        }//NavigationView
+//        }//NavigationView
     }
 }
 

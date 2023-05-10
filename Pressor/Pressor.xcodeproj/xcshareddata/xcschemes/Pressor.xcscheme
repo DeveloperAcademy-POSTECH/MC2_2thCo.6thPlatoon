@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
+<!-- <<<<<<< origin/Feat/#25-Implement-interviewInstance-managing
    LastUpgradeVersion = "1430"
    version = "1.7">
+======= -->
+   LastUpgradeVersion = "1420"
+   version = "1.3">
+<!-- >>>>>>> dev -->
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -28,6 +33,8 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
+      <Testables>
+      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
