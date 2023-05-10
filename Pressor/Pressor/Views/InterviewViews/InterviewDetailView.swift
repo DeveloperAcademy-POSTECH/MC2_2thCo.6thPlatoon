@@ -41,11 +41,12 @@ struct InterviewDetailView: View {
                         Section {
                             ForEach(interview.records, id: \.id) { eachRecord in
                                 // TODO: DI ViewModel, Record
-//                                RecordBubble(
-//                                    index: index,
-//                                    isInterviewer: index % 2 == 0 ? true : false,
-//                                    isEditing: $isEditing
-//                                )
+                                RecordBubble(
+                                    voiceViewModel: voiceViewModel,
+                                    record: eachRecord,
+                                    interview: interview,
+                                    isEditing: $isEditing
+                                )
                             }
                         } header: {
                             InterviewInfoHeader()
