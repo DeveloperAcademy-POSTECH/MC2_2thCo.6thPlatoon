@@ -29,7 +29,7 @@ struct InterviewDetailEditModalView: View {
                         .overlay(alignment: .trailing) {
                             Image(systemName: "asterisk")
                                 .font(.caption)
-                                .foregroundColor(.PressorRed)
+                                .foregroundColor(.pressorRed)
                         }
                     TextField("이메일", text: $intervieweeEmail)
                     TextField("전화번호", text: $intervieweePhoneNumber)
@@ -56,7 +56,8 @@ struct InterviewDetailEditModalView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        // TODO: COREDATA CREATE METHOD HERE
+                        // TODO: COREDATA CREATE METHOD OR UPDATE HERE
+                        print("\(#file) L: \(#line) COREDATA CREATE or UPDATE")
                         dismiss()
                     } label: {
                         Text("완료")
