@@ -91,4 +91,8 @@ extension Color {
     static var DisabledGary: Self {
         .init(hex: "999999")
     }
+    
+    static var pressorSystemGray: Self {
+        .init(hex: "F2F2F7")
+    }
 }
