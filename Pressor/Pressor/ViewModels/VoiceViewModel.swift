@@ -62,6 +62,10 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         
         self.interview = interview
         self.interviewPath = directoryPath
+        
+        // vm의 recording과 STT배열 초기화
+        self.recordings.removeAll()
+        self.transcripts.removeAll()
     }
     
     public func setInterviewDetail(interviewDetail: InterviewDetail) {
