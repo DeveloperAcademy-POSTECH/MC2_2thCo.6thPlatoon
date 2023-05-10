@@ -15,128 +15,107 @@ import UniformTypeIdentifiers
  - Author: Celan
  */
 struct RecordBubble: View {
-//    @State var record: Record
-    @State var index: Int
-    @State var isInterviewer: Bool
+    @ObservedObject var voiceViewModel: VoiceViewModel
+    @State var record: Record
+    @State var interview: Interview
     @State private var text: String = ""
     @Binding var isEditing: Bool
 
     var body: some View {
-        if isInterviewer {
-            HStack(spacing: 10) {
-                // MARK: - Button
-                Rectangle()
-                    .fill(.clear)
-                    .frame(width: 44, height: 44)
-                    .overlay(alignment: .center) {
-                        Button {
-                            // TODO: - Play or Stop
-                        } label: {
-                            Image(systemName: "play.fill")
-                        }
-                        .frame(width: 34, height: 34)
-                        .background(Color.yellow)
-                        .clipShape(Circle())
-                    }
-                    .padding(.leading, 45)
+        HStack(spacing: 10) {
+            if record.type == Recorder.interviewer.rawValue {
+                playButtonBuilder()
                 
-                // MARK: - Bubble
-                VStack {
-                    if isEditing {
-                        TextField("", text: $text)
-                            .font(.system(size: 14))
-                            .frame(
-                                maxWidth: 278 - 39,
-                                minHeight: 44 - 22,
-                                alignment: .trailing
-                            )
-                            .padding(.vertical, 11)
-                            .padding(.horizontal, 19.5)
-                    } else {
-//                        Text("\(record.recordDescription)")
-                        Text("temp")
-                            .font(.system(size: 14))
-                            .frame(
-                                maxWidth: 278 - 39,
-                                minHeight: 44 - 22,
-                                alignment: .trailing
-                            )
-                            .padding(.vertical, 11)
-                            .padding(.horizontal, 19.5)
+                recordBubbleBuilder()
+                    .contextMenu {
+                        contextMenuButtonBuilder()
                     }
-                    
-                }
-                .background(Color.orange)
-                .clipShape(Bubble(isInterviewer: isInterviewer))
-                .frame(
-                    maxWidth: .infinity,
-                    alignment: .trailing
-                )
-                .contextMenu {
-                    Button {
-//                        self.pasteToClipboard(with: record.recordDescription)
-                        self.pasteToClipboard(with: "temp")
-                    } label: {
-                        Label("복사", systemImage: "doc.on.doc")
+            } else {
+                recordBubbleBuilder()
+                    .contextMenu {
+                        contextMenuButtonBuilder()
                     }
-                    
-                    Button {
-                        withAnimation {
-                            isEditing.toggle()
-                        }
-                    } label: {
-                        Label("편집", systemImage: "square.and.pencil")
-                    }
-                }
-            }
-            .padding(.trailing, 16)
-            .padding(.bottom, 8)
-            .sheet(isPresented: $isEditing) {
-                InterviewDetailChatEditModalView(isInterviewDetailChatEditModalViewDisplayed: $isEditing)
-            }
-        } else {
-            HStack(spacing: 10) {
-                VStack {
-                    Text("RecordDescription Here.")
-                        .font(.system(size: 14))
-                        .frame(
-                            maxWidth: 278 - 39,
-                            minHeight: 44 - 22,
-                            alignment: .leading
-                        )
-                        .padding(.vertical, 11)
-                        .padding(.horizontal, 19.5)
-                }
-                .background(Color.green)
-                .clipShape(Bubble(isInterviewer: isInterviewer))
-                .frame(
-                    maxWidth: .infinity,
-                    alignment: .trailing
-                )
                 
-                Rectangle()
-                    .fill(.clear)
-                    .frame(width: 44, height: 44)
-                    .overlay(alignment: .center) {
-                        Button {
-                            print("재생")
-                        } label: {
-                            Image(systemName: "play.fill")
-                        }
-                        .frame(width: 34, height: 34)
-                        .background(.yellow)
-                        .clipShape(Circle())
-                    }
-                    .padding(.trailing, 45)
+                playButtonBuilder()
             }
-            .padding(.leading, 16)
-            .padding(.bottom, 8)
-            .sheet(isPresented: $isEditing) {
-                InterviewDetailChatEditModalView(isInterviewDetailChatEditModalViewDisplayed: $isEditing)
-            }
+        }
+        .padding(.trailing, 16)
+        .padding(.bottom, 8)
+        .sheet(isPresented: $isEditing) {
+            InterviewDetailChatEditModalView(isInterviewDetailChatEditModalViewDisplayed: $isEditing)
         }
     }
     
+    // MARK: - Builders
+    private func playButtonBuilder() -> some View {
+        Rectangle()
+            .fill(.clear)
+            .frame(width: 44, height: 44)
+            .overlay(alignment: .center) {
+                Button {
+                    // TODO: - Play or Stop
+                } label: {
+                    Image(systemName: "play.fill")
+                }
+                .frame(width: 34, height: 34)
+                .background(Color.yellow)
+                .clipShape(Circle())
+            }
+            .padding(.leading, 45)
+    }
+    
+    private func recordBubbleBuilder() -> some View {
+        VStack {
+            if isEditing {
+                TextField("", text: $text)
+                    .font(.system(size: 14))
+                    .frame(
+                        maxWidth: 278 - 39,
+                        minHeight: 44 - 22,
+                        alignment: .trailing
+                    )
+                    .padding(.vertical, 11)
+                    .padding(.horizontal, 19.5)
+            } else {
+                Text("\(interview.recordSTT[record.transcriptIndex])")
+                Text("temp")
+                    .font(.system(size: 14))
+                    .frame(
+                        maxWidth: 278 - 39,
+                        minHeight: 44 - 22,
+                        alignment: .trailing
+                    )
+                    .padding(.vertical, 11)
+                    .padding(.horizontal, 19.5)
+            }
+            
+        }
+        .background(Color.orange)
+        .clipShape(Bubble(record: record))
+        .frame(
+            maxWidth: .infinity,
+            alignment: .trailing
+        )
+    }
+    
+    @ViewBuilder
+    private func contextMenuButtonBuilder() -> some View {
+        Button {
+            self.pasteToClipboard(with: interview.recordSTT[record.transcriptIndex])
+        } label: {
+            Label("복사", systemImage: "doc.on.doc")
+        }
+        
+        Button {
+            withAnimation {
+                isEditing.toggle()
+            }
+        } label: {
+            Label("편집", systemImage: "square.and.pencil")
+        }
+    }
+    
+    // MARK: - METHODS
     /**
      Clipboard로 복사하는 메소드입니다.
      완료되는 시점에 뷰에 복사 완료를 알리는 알람을 띄웁니다. <- Todo
@@ -150,13 +129,13 @@ struct RecordBubble: View {
 }
 
 struct Bubble: Shape {
-    var isInterviewer: Bool
+    var record: Record
     
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(
             roundedRect: rect,
             byRoundingCorners:
-                isInterviewer
+                record.type == Recorder.interviewer.rawValue
                 ? [.topLeft, .bottomLeft, .bottomRight]
                 : [.topRight, .bottomRight, .bottomLeft]
             ,
