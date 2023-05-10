@@ -9,10 +9,11 @@ import SwiftUI
 
 @main
 struct PressorApp: App {
-    @ObservedObject var vm: VoiceViewModel = VoiceViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            MainRecordView()
+            //MainRecordView()
+            MainTestView()
         }
     }
 }

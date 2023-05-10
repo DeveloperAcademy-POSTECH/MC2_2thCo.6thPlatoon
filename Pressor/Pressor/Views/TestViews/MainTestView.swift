@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct MainTestView: View {
-    @ObservedObject var vm: VoiceViewModel
+    
+    @ObservedObject var vm: VoiceViewModel = VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: []))
     @State var isTapped: Bool = false
     @State var isSheetShowing: Bool = false
     @State var isShowingAlert = false
@@ -58,37 +59,7 @@ struct MainTestView: View {
                             InterviewRecordingTestView(vm: vm)
                         }
                         .simultaneousGesture(TapGesture().onEnded{
-                            //메인뷰에서 마이크를 탭하는 시점에서 Interview 인스턴스를 생성하도록 변경
-                            let fileManager = FileManager.default
-                            let documentUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                            
-                            // TODO: > Flow?  directoryPath가 계속 새로 만들어져야함
-                            // 인터뷰를 끝내고 저장한다면 해당디렉토리에 파일을 저장하게 냅둠
-                            // 인터뷰를 끝내고 저장을 하지 않는다면 삭제함
-                            
-                            // TODO: 새로운 Interview 인스턴스 생성
-                            // TODO: 인터뷰 저장하지 않을 시 해당 경로의 모든 정보 삭제해야함
-                            let interview: Interview = Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [])
-                            let interviewId = interview.id
-                            let directoryPath = documentUrl.appendingPathComponent("\(interviewId)")
-                            
-                            do {
-                                try fileManager.removeItem(atPath: directoryPath.path)
-                            } catch {
-                                print("Can't delete")
-                            }
-                            
-                            do {
-                                if !fileManager.fileExists(atPath: directoryPath.path) {
-                                    try fileManager.createDirectory(atPath: directoryPath.path, withIntermediateDirectories: false, attributes: nil)
-                                }
-                            } catch {
-                                print("create folder error. do something")
-                            }
-                            
-                            vm.interviewPath = directoryPath
-                            print(vm.interviewPath)
-                            
+                            vm.initInterview()
                         })
                     }
                     
@@ -165,54 +136,11 @@ struct MainTestView: View {
                 }
         }
         .accentColor(.red)
-        
-        //        NavigationView {
-        //            VStack {
-        //                NavigationLink(destination: InterviewRecordingTestView(vm: vm)) {
-        //                    Text("녹음 ㄱㄱ")
-        //                        .bold()
-        //                        .font(.system(size: 30))
-        //                        .foregroundColor(Color.white)
-        //                        .frame(width: 150, height: 80)
-        //                        .background(RoundedRectangle(cornerRadius: 30)
-        //                        .fill(Color.red))
-        //                        .onAppear {
-        //                            // 메인뷰에서 마이크를 탭하는 시점에서 Interview 인스턴스를 생성하도록 변경
-        //                            let fileManager = FileManager.default
-        //                            let documentUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        //
-        //                            // TODO: > Flow?  directoryPath가 계속 새로 만들어져야함
-        //                            // 인터뷰를 끝내고 저장한다면 해당디렉토리에 파일을 저장하게 냅둠
-        //                            // 인터뷰를 끝내고 저장을 하지 않는다면 삭제함
-        //                            let directoryPath = documentUrl.appendingPathComponent("dir")
-        //
-        //                            do {
-        //                                try fileManager.removeItem(atPath: directoryPath.path)
-        //                            } catch {
-        //                                print("Can't delete")
-        //                            }
-        //
-        //                            do {
-        //                                if !fileManager.fileExists(atPath: directoryPath.path) {
-        //                                    try fileManager.createDirectory(atPath: directoryPath.path, withIntermediateDirectories: false, attributes: nil)
-        //                                }
-        //                            } catch {
-        //                                print("create folder error. do something")
-        //                            }
-        //
-        //                            vm.interviewPath = directoryPath
-        //                            print(vm.interviewPath)
-        //                        }
-        //                }
-        //            }
-        //        }
-        
-        
     }
 }
 
 struct MainTestView_Previews: PreviewProvider {
     static var previews: some View {
-        MainTestView(vm: VoiceViewModel())
+        MainTestView(vm: VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [])))
     }
 }
