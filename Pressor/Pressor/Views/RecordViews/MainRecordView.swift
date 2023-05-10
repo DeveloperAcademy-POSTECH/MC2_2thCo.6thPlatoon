@@ -13,9 +13,11 @@ struct MainRecordView: View {
     @State var isShowingAlert = false
     @State var showModal = false
     @State var scriptAdded: Bool = false
-    @State var count = 0
     @State var navigateToNextView = false
     @State var isShownInterviewRecordingView = false
+    @State var countSec: Int = 0
+    @State var timerCount : Timer?
+    @State var isTimerCounting: Bool = false
     
     init() {
         UITabBar.appearance().scrollEdgeAppearance = .init()
@@ -36,17 +38,33 @@ struct MainRecordView: View {
                             .padding(.bottom, 50)
                         VStack {
                             Button {
-                                count = 3
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    count = 2
+                                
+                                if !isTimerCounting {
+                                    countSec = 3
+                                    isTimerCounting.toggle()
+                                    timerCount = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (value) in
+                                        print(countSec)
+                                        self.countSec -= 1
+                                        if(countSec == 0){
+                                            timerCount?.invalidate()
+                                            self.isShownInterviewRecordingView.toggle()
+                                            isTimerCounting.toggle()
+                                        }
+                                    })
+                                    
                                 }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    count = 1
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                                    count = 0
-                                    self.isShownInterviewRecordingView.toggle()
-                                }
+                                
+//                                count = 3
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                                    count = 2
+//                                }
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//                                    count = 1
+//                                }
+                                //                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                //                                    count = 0
+                                //                                    self.isShownInterviewRecordingView.toggle()
+                                //                                }
                             } label: {
                                 Image("mic_button")
                                     .padding(.bottom, 40)
@@ -103,25 +121,40 @@ struct MainRecordView: View {
                             }
                         }
                     }
-                    .navigationBarItems(trailing: NavigationLink(destination: AddRecordScriptModalView()) {
-                        Image(systemName: "gearshape.fill")})
+                    .navigationBarItems(trailing: NavigationLink(
+                        destination: AddRecordScriptModalView()) {
+                            Image(systemName: "gearshape.fill")
+                        }
+                    )
+                    .disabled(isTimerCounting)
                     .foregroundColor(Color(red: 209/255, green: 209/255, blue: 218/255))
                     .sheet(isPresented: $showModal) {
                         AddScriptModalView(scriptAdded: $scriptAdded)
                     }
-                    if count != 0{
+                    
+                    if countSec != 0{
                         ZStack{
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(Color.white)
                                 .frame(width: 100, height: 100)
-                            Text("\(count)")
+                            Rectangle()
+                                .fill(Color.gray)
+                                .ignoresSafeArea()
+                                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                                .opacity(0.001)
+                                .onTapGesture {
+                                    isTimerCounting.toggle()
+                                    timerCount?.invalidate()
+                                    countSec = 0
+                                }
+                            Text("\(countSec)")
                                 .font(.system(size: 50, weight: .bold))
                                 .foregroundColor(.red)
                                 .fontDesign(.rounded)
                                 .padding(.bottom, 8)
                         }
                     }
-                    }
+                }
             }
             .tabItem {
                 Image(systemName: "mic.circle.fill")
