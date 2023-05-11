@@ -9,11 +9,11 @@ import SwiftUI
 
 @main
 struct PressorApp: App {
-    
+    @ObservedObject var routeManager: RoutingManager = .init()
     var body: some Scene {
         WindowGroup {
-            //MainRecordView()
-            MainTestView()
+            MainRecordView()
+                .environmentObject(routeManager)
         }
     }
 }

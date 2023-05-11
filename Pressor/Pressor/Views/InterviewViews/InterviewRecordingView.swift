@@ -166,7 +166,7 @@ struct InterviewRecordingView: View {
                     
                     // 완료 버튼 로직
                     NavigationLink(
-                        destination: InterviewRecordingEndTestView(vm: vm)
+                        destination: InterviewDetailEditModalView(vm: vm)
                             .onTapGesture {
                                 // 완료버튼 누를 때 interview 인스턴스를 업데이트
                                 vm.interview.recordSTT = vm.transcripts
@@ -300,6 +300,10 @@ struct InterviewRecordingView: View {
 
 struct InterviewRecordingView_Previews: PreviewProvider {
     static var previews: some View {
-        InterviewRecordingView(vm: VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [])),isShownInterviewRecordingView: .constant(false))
+        InterviewRecordingView(
+            vm: VoiceViewModel(
+                interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: Script(scriptTitle: "", scriptContent: "")))
+            , isShownInterviewRecordingView: .constant(false)
+        )
     }
 }

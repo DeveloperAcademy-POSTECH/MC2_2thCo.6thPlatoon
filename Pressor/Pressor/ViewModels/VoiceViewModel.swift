@@ -43,7 +43,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         let documentUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
         
         // TODO: 인터뷰 저장하지 않을 시 해당 경로의 모든 정보 삭제해야함
-        var interview: Interview = Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [])
+        var interview: Interview = Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(scriptTitle: "", scriptContent: ""))
         
         let directoryPath = documentUrl.appendingPathComponent("\(interview.id)")
         

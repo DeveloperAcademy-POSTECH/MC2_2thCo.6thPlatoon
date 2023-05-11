@@ -7,9 +7,10 @@
 
 import Foundation
 
-struct Interview {
+struct Interview: Identifiable {
     let id: String = UUID().uuidString
     var details: InterviewDetail
     var records: [Record]
     var recordSTT: [String]
+    var script: Script
 }

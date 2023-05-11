@@ -8,27 +8,29 @@
 import SwiftUI
 
 struct MainRecordView: View {
-    
-    @ObservedObject var vm: VoiceViewModel = VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: []))
+    @EnvironmentObject var routingManager: RoutingManager
+    @ObservedObject var vm: VoiceViewModel = VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(scriptTitle: "", scriptContent: "")))
     @State var isSheetShowing: Bool = false
     @State var isShowingAlert = false
     @State var showModal = false
     @State var scriptAdded: Bool = false
     @State var navigateToNextView = false
     @State var isShownInterviewRecordingView = false
+    @State var selectedScriptIndex: Int = 0
+    @StateObject var interviewViewModel = InterviewViewModel()
     @State var countSec: Int = 0
     @State var timerCount : Timer?
     @State var isTimerCounting: Bool = false
+    @State private var currentTab: String = Constants.RECORD_TAB_ID
     
     init() {
         UITabBar.appearance().scrollEdgeAppearance = .init()
     }
     
     var body: some View {
-        
-        TabView {
+        TabView(selection: $routingManager.currentTab) {
             NavigationView {
-                ZStack{
+                ZStack {
                     VStack {
                         Text("새로운 인터뷰 녹음을 시작하려면\n아래 녹음 버튼을 눌러주세요.")
                             .font(.headline)
@@ -37,7 +39,9 @@ struct MainRecordView: View {
                             .multilineTextAlignment(.center)
                             .lineSpacing(4)
                             .padding(.bottom, 50)
+                        
                         VStack {
+                            // MARK: - Mic Button
                             Button {
                                 
                                 if !isTimerCounting {
@@ -66,8 +70,9 @@ struct MainRecordView: View {
                                 print(vm.interview)
                             })
                         }
+                        
                         VStack {
-                            Button(action: {
+                            Button {
                                 if scriptAdded {
                                     self.isSheetShowing = true
                                     scriptAdded = true
@@ -75,31 +80,52 @@ struct MainRecordView: View {
                                     showModal.toggle()
                                     scriptAdded = false
                                 }
-                            }) {
-                                VStack {
-                                    if scriptAdded {
-                                        VStack{
-                                            Image(systemName: "note.text")
-                                                .resizable()
-                                                .frame(width: 35, height: 33)
-                                                .foregroundColor(Color.accentColor)
-                                            Text("대본편집")
-                                                .foregroundColor(Color.accentColor)
-                                        }
-                                        .confirmationDialog("타이틀", isPresented: $isSheetShowing) {
-                                            Button("대본 삭제", role: .destructive) {
-                                                self.isShowingAlert = true
-                                            }
-                                            .alert(isPresented: $isShowingAlert) {
-                                                Alert(title: Text("Alert Title"), message: Text("Alert Message"), dismissButton: .default(Text("OK")))}
-                                            Button("대본 수정", role: .destructive) {
-                                                
-                                            }
-                                            Button("취소", role: .cancel) {
-                                                
+                            } label: {
+                                if scriptAdded {
+                                    // 대본이 있을 경우
+                                    VStack {
+                                        Image(systemName: "note.text")
+                                            .resizable()
+                                            .frame(width: 35, height: 33)
+                                            .foregroundColor(Color.accentColor)
+                                        
+                                        Text("대본편집")
+                                            .foregroundColor(Color.accentColor)
+                                    }
+                                    .confirmationDialog("타이틀", isPresented: $isSheetShowing) {
+                                        Button("대본 삭제", role: .destructive) {
+                                            isSheetShowing = false
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                                isShowingAlert = true
                                             }
                                         }
-                                    } else {
+                                        
+                                        Button("대본 수정", role: .destructive) {
+                                            showModal = true
+                                            selectedScriptIndex = 0
+                                        }
+                                        .sheet(isPresented: $showModal) {
+                                            AddScriptModalView(mode: .edit, scriptAdded: $scriptAdded, interviewViewModel: interviewViewModel, scriptIndex: selectedScriptIndex)
+                                        }
+                                        
+                                        Button("취소", role: .cancel) {
+                                            
+                                        }
+                                    }
+                                    .alert(isPresented: $isShowingAlert) {
+                                        Alert(
+                                            title: Text("대본 삭제"),
+                                            message: Text("정말로 이 대본을 삭제하시겠습니까?"),
+                                            primaryButton: .destructive(Text("삭제")) {
+                                                interviewViewModel.deleteScript(atIndex: selectedScriptIndex)
+                                                scriptAdded = false
+                                            },
+                                            secondaryButton: .cancel(Text("취소"))
+                                        )
+                                    }
+                                } else {
+                                    // 대본이 없을 경우
+                                    VStack {
                                         Image(systemName: "note.text.badge.plus")
                                             .resizable()
                                             .frame(width: 42, height: 35)
@@ -114,18 +140,7 @@ struct MainRecordView: View {
                             }
                         }
                     }
-                    .navigationBarItems(trailing: NavigationLink(
-                        destination: AddRecordScriptModalView()) {
-                            Image(systemName: "gearshape.fill")
-                        }
-                    )
-                    .disabled(isTimerCounting)
-                    .foregroundColor(Color(red: 209/255, green: 209/255, blue: 218/255))
-                    .sheet(isPresented: $showModal) {
-                        AddScriptModalView(scriptAdded: $scriptAdded)
-                    }
-                    
-                    if countSec != 0{
+                    if countSec != 0 {
                         ZStack{
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(Color.white)
@@ -149,19 +164,30 @@ struct MainRecordView: View {
                         }
                     }
                 }
+                .navigationBarItems(trailing: NavigationLink(
+                    destination: Text("세팅뷰")) {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundColor(.DisabledGary)
+                    }
+                )
+                .disabled(isTimerCounting)
+                .sheet(isPresented: $showModal) {
+                    AddScriptModalView(mode: scriptAdded ? .edit : .add, scriptAdded: $scriptAdded, interviewViewModel: interviewViewModel, scriptIndex: selectedScriptIndex)
+                }
             }
+            .tag(Constants.RECORD_TAB_ID)
             .tabItem {
                 Image(systemName: "mic.circle.fill")
                 Text("녹음")
             }
             
             InterviewListView()
+                .tag(Constants.INTERVIEW_TAB_ID)
                 .tabItem {
                     Image(systemName: "list.bullet.rectangle.portrait")
                     Text("인터뷰")
                 }
         }
-        
         .accentColor(.red)
     }
 }
