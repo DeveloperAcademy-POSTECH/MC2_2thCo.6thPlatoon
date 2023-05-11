@@ -7,15 +7,47 @@
 
 import SwiftUI
 
+// 스크립트 추가 및 수정 모드 전환을 위한 열거형
+enum ScriptMode {
+    case add
+    case edit
+}
+
 struct AddScriptModalView: View {
     // 화면 전환을 관리하는 presentationMode를 사용하여 모달 창을 닫을 수 있도록 하는 변수
     @Environment(\.presentationMode) private var presentationMode
     
+    @ObservedObject var interviewViewModel : InterviewViewModel
+    
     // 외부에서 전달된 scriptAdded를 바인딩하여 완료 버튼을 눌렀을 때 업데이트
     @Binding var scriptAdded: Bool
     
-    @State private var title = ""
-    @State private var bodyText = ""
+    // 현재 인터뷰 스크립트의 index (수정 모드인 경우 필요)
+    var scriptIndex: Int?
+    
+    // 초기화 메서드
+    init(mode: ScriptMode, scriptAdded: Binding<Bool>, interviewViewModel: InterviewViewModel, scriptIndex: Int? = nil) {
+        self.mode = mode
+        self._scriptAdded = scriptAdded
+        self.interviewViewModel = interviewViewModel
+        self.scriptIndex = scriptIndex
+        
+        // 수정 모드인 경우, 현재 스크립트의 정보로 초기값 설정
+        if let scriptIndex = scriptIndex, mode == .edit {
+            let scripts = interviewViewModel.getScripts()
+            self._title = State(initialValue: scripts[scriptIndex].scriptTitle)
+            self._bodyText = State(initialValue: scripts[scriptIndex].scriptContent)
+        } else {
+            self._title = State(initialValue: "")
+            self._bodyText = State(initialValue: "")
+        }
+    }
+    
+    @State private var title: String
+    @State private var bodyText: String
+    
+    // 뷰의 모드를 결정하는 변수 추가
+    let mode: ScriptMode
     
     // 메인 뷰
     var body: some View {
@@ -23,7 +55,7 @@ struct AddScriptModalView: View {
             Form {
                 inputSection
             }
-            .navigationBarTitle("대본", displayMode: .inline)
+            .navigationBarTitle(mode == .add ? "대본 추가" : "대본 수정", displayMode: .inline)
             .navigationBarItems(leading: cancelButton, trailing: doneButton)
         }
     }
@@ -49,7 +81,7 @@ struct AddScriptModalView: View {
                 .padding(.leading, -4)
             
             if bodyText.isEmpty {
-            // 본문이 비어있을 때만 "본문" 텍스트 표시
+                // 본문이 비어있을 때만 "본문" 텍스트 표시
                 Text("본문")
                     .foregroundColor(.gray.opacity(0.5))
                     .padding(.top, 8)
@@ -68,8 +100,16 @@ struct AddScriptModalView: View {
     
     // 완료 버튼
     private var doneButton: some View {
-        Button("완료") {
+        Button(mode == .add ? "완료" : "수정") {
             if isInputValid() {
+                switch mode {
+                case .add:
+                    interviewViewModel.createScript(title: title, content: bodyText)
+                case .edit:
+                    if let index = scriptIndex {
+                        interviewViewModel.updateScript(title: title, content: bodyText, atIndex: index)
+                    }
+                }
                 // 제목과 본문을 입력한 경우, scriptAdded를 true로 설정하고 모달 창 종료
                 scriptAdded = true
                 presentationMode.wrappedValue.dismiss()
