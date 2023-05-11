@@ -9,29 +9,23 @@ import SwiftUI
 
 struct InterviewRecordingEndTestView: View {
     @ObservedObject var vm: VoiceViewModel
-    @State private var showingList = false
-    @State var infoModel: InterviewDetail = InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: "")
-
-    @State var isValid: Bool = false
+    @State private var isShowingList = false
+    @State private var isValid: Bool = false
     
     var body: some View {
-//        NavigationView {
             Form {
                 Section {
-                    HStack {
-                        TextField("새로운 인터뷰", text: $infoModel.interviewTitle)
-                        Spacer()
-                        Image(systemName: "asterisk")
-                            .foregroundColor(.red)
-                    } //HStack
+                    TextField("새로운 인터뷰", text: $vm.interview.details.interviewTitle)
+                        .foregroundColor(.black)
                 } header: {
                     Text("인터뷰 제목")
                 }
                 .listRowBackground(Color(uiColor: UIColor(red: 242/255, green: 242/255, blue: 247/255, alpha: 1)))
                 Section {
                     HStack(spacing: 0){
-                        TextField("이름", text: $infoModel.userName)
-                            .onChange(of: self.infoModel.userName) { text in
+                        TextField("이름", text: $vm.interview.details.userName)
+                            .foregroundColor(.black)
+                            .onChange(of: vm.interview.details.userName) { text in
                                 isValid = text.count != 0 ? true : false
                             }
                         Spacer()
@@ -39,8 +33,10 @@ struct InterviewRecordingEndTestView: View {
                             .foregroundColor(.red)
                     } // HStack
                     
-                    TextField("이메일", text: $infoModel.userEmail)
-                    TextField("전화번호", text: $infoModel.userPhoneNumber)
+                    TextField("이메일", text: $vm.interview.details.userEmail)
+                        .foregroundColor(.black)
+                    TextField("전화번호", text: $vm.interview.details.userPhoneNumber)
+                        .foregroundColor(.black)
                 } header: {
                     Text("대상자 정보")
                 } footer: {
@@ -53,34 +49,29 @@ struct InterviewRecordingEndTestView: View {
             }// Form
             .scrollContentBackground(.hidden)
             .background(.white) // Add your background color
-//            .navigationTitle("정보")
-//            .navigationBarTitleDisplayMode(.inline)
-//            .toolbar {
-//                ToolbarItem(placement: .navigationBarTrailing) {
-//                    Button("완료") {
-//                        showingList.toggle()
-//                        //infoModel 전달해주기
-//                        infoModel.date = vm.date
-//                        infoModel.playTime = vm.playTime
-//                        print(infoModel)
-//                        // Date -> String 예시
-//                        print(infoModel.date.toString(dateFormat: "YYYY. M. d. a h:mm"))
-//                    }
-//                    // 모달에서 새화면으로 바꿔야함
-//                    .sheet(isPresented: $showingList, content: {
-//
-//                        InterviewDetailTestView(vm: vm)
-//                    })
-//                    .foregroundColor(isValid ? .accentColor : .gray)
-//                }
-//            }// toolbar
-            
-//        }//NavigationView
+            .navigationTitle("정보")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("완료") {
+                        isShowingList.toggle()
+                        print(vm.interview)
+                    }
+                    .foregroundColor(isValid ? .accentColor : .gray)
+                    .disabled(!isValid)
+                    // 모달에서 새화면으로 바꿔야함
+                    .sheet(isPresented: $isShowingList, content: {
+                        InterviewDetailTestView(vm: vm)
+                    })
+                }
+            }// toolbar
     }
 }
 
 struct InterviewRecordingEndModalTestView_Previews: PreviewProvider {
     static var previews: some View {
-        InterviewRecordingEndTestView(vm: VoiceViewModel())
+        InterviewRecordingEndTestView(vm: VoiceViewModel(
+            interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(scriptTitle: "", scriptContent: "")))
+        )
     }
 }

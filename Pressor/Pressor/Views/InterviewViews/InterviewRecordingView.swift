@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct InterviewRecordingView: View {
+    @ObservedObject var vm: VoiceViewModel
+    
+    @State private var isShowingList = false
+    @State var transcriptIndex: Int = 0
     @StateObject private var audioInputManager = AudioInputViewModel()
     @State private var isRecording = false
     @State private var isPaused = true
@@ -15,6 +19,8 @@ struct InterviewRecordingView: View {
     @State private var speakerSwitch: Color = SpeakerSwitch.speakerOne
     @State private var timer: Timer? = nil
     @State private var visualColor: Color = Color(red: 1.0, green: 166/255, blue: 0.0)
+    
+    @Binding var isShownInterviewRecordingView: Bool
     
     // 타이머 시간 포맷
     func formattedDuration(_ duration: TimeInterval) -> String {
@@ -59,10 +65,21 @@ struct InterviewRecordingView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationView{
             VStack { // 컨트롤 영역 + 화자전환 영역 + 오디오 비주얼라이저 영역
                 HStack { // 컨트롤 영역 (일시정지 및 재생 + 완료)
-                    // 일시정지 및 재생 버튼의 좌측 마진 Spacer
+                    Button {
+                        self.isShownInterviewRecordingView.toggle()
+                    } label: {
+                        Text("취소")
+                            .foregroundColor(Color.red)
+                            .font(.headline)
+                    }
+                    .position(
+                        x: UIScreen.main.bounds.width / 6.5,
+                        y: UIScreen.main.bounds.height * 0.02
+                    )
+                    
                     // 일시정지 및 재생 버튼 로직
                     Button(action: {
                         isRecording.toggle()
@@ -70,9 +87,7 @@ struct InterviewRecordingView: View {
                             // 녹음 중일때 -> 녹음 시작 및 타이머 시작
                             isPaused = false
                             audioInputManager.startRecording { buffer in
-                                DispatchQueue.main.async {
-                                    // UI 관련 로직
-                                }
+                                DispatchQueue.main.async { }
                             }
                             startTimer()
                             // 녹음 중일때 or 일시정지일 떄 오디오 비주얼라이저 색상 변경
@@ -81,6 +96,7 @@ struct InterviewRecordingView: View {
                             } else {
                                 visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
                             }
+                            vm.startRecording()
                         } else {
                             // 일시정지일때 -> 타이머 정지 및 오디오 비주얼라이저 끔
                             audioInputManager.stopRecording()
@@ -88,6 +104,13 @@ struct InterviewRecordingView: View {
                             stopTimer()
                             // 오디오 비주얼라이저 회색으로 비활성화 표시
                             visualColor = Color.gray
+                            
+                            // 일단 먼저 녹음중지하고 기록함
+                            vm.stopRecording(
+                                index: self.transcriptIndex,
+                                recoder: vm.recoderType
+                            )
+                            self.transcriptIndex += 1
                         }
                     }) {
                         // 일시정지 및 재생 버튼 UI
@@ -95,11 +118,9 @@ struct InterviewRecordingView: View {
                         // 버튼 겉 stroke
                             .stroke(!isPaused ? Color.white : Color.red, lineWidth: 3)
                             .frame(width: 131, height: 44)
-                            .padding(.top, 16)
                         // 버튼 속 fill
                             .overlay(RoundedRectangle(cornerRadius: 35)
                                 .frame(width: 119, height: 32)
-                                .padding(.top, 16)
                                      // 녹음 중일때 -> 검정색, 녹음 일시정지일때 -> 빨간색
                                 .foregroundColor(!isPaused ? Color.black : Color(red: 1.0, green: 0.0, blue: 0.0, opacity: 30/100))
                                 .overlay(
@@ -109,7 +130,6 @@ struct InterviewRecordingView: View {
                                             .resizable()
                                             .frame(width: 18, height: 18)
                                             .foregroundColor(Color.red)
-                                            .padding(.top, 16)
                                         // 타이머 텍스트
                                         Text(formattedDuration(duration))
                                             .font(.title2)
@@ -117,46 +137,59 @@ struct InterviewRecordingView: View {
                                             .fontWeight(.bold)
                                             .foregroundColor(!isPaused ? Color.white : Color.red)
                                             .frame(minWidth: 50)
-                                            .padding(.top, 16)
                                     }
                                 )
                             )
                     }
                     .position(
-                        x: UIScreen.main.bounds.width / 2,
-                        y: UIScreen.main.bounds.height * 0.01
+                        x: UIScreen.main.bounds.width / 6.15,
+                        y: UIScreen.main.bounds.height * 0.02
                     )
+                    .onAppear {
+                        vm.recoderType = Recorder.interviewer
+                        vm.startRecording()
+                        
+                        isRecording = true
+                        // 녹음 중일때 -> 녹음 시작 및 타이머 시작
+                        isPaused = false
+                        audioInputManager.startRecording { buffer in
+                            DispatchQueue.main.async {}
+                        }
+                        startTimer()
+                        // 녹음 중일때 or 일시정지일 떄 오디오 비주얼라이저 색상 변경
+                        if speakerSwitch == SpeakerSwitch.speakerOne {
+                            visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
+                        } else {
+                            visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
+                        }
+                    }
                     
                     // 완료 버튼 로직
                     NavigationLink(
-                        destination: InterviewRecordingEndTestView(vm: VoiceViewModel())
-                            .navigationTitle("인터뷰 정보")
-                            .navigationBarTitleDisplayMode(.inline)
-                            .toolbar {
-                                ToolbarItem(placement: .navigationBarTrailing) {
-                                    Button(action: {
-                                    }, label: {
-                                        Text("완료")
-                                            .foregroundColor(Color.gray)
-                                    })
-                                }
-                            }, // toolbar
+                        destination: InterviewDetailEditModalView(vm: vm)
+                            .onTapGesture {
+                                // 완료버튼 누를 때 interview 인스턴스를 업데이트
+                                vm.interview.recordSTT = vm.transcripts
+                                vm.interview.records = vm.recordings
+                                vm.interview.details.playTime = formattedDuration(duration)
+                            },
                         label: {
                             Text("완료")
                                 .font(.headline)
                             // 녹음 중일때 -> 회색, 녹음 일시정지일때 -> 빨간색
                                 .foregroundColor(!isPaused ? Color(red: 117/255, green: 117/255, blue: 117/255) : Color.red)
-                                .padding(.top, 16)
                             // 녹음 중일 때 완료 버튼 비활성화
                                 .position(
-                                    x: UIScreen.main.bounds.width / 3,
-                                    y: UIScreen.main.bounds.height * 0.01
+                                    x: UIScreen.main.bounds.width / 6,
+                                    y: UIScreen.main.bounds.height * 0.02
                                 )
                         } //label
                     ) // NavigationLink
+                    .navigationTitle("뒤로")
+                    .navigationBarHidden(true)
                     .disabled(isRecording)
                 } // HStack
-
+                
                 // 화자 전환 기능
                 RoundedRectangle(cornerRadius: 44)
                 // 화자전환 영역
@@ -168,20 +201,47 @@ struct InterviewRecordingView: View {
                 // 화자전환 제스처
                     .gesture(
                         DragGesture(minimumDistance: 100, coordinateSpace: .local)
-                            .onChanged { value in
-                                let isDraggingDownward = value.translation.height > 100
+                            
+                            .onEnded { value in
+                                let isDraggingDownward = (value.translation.height > 100 && speakerSwitch == SpeakerSwitch.speakerTwo) || (value.translation.height < -100 && speakerSwitch == SpeakerSwitch.speakerOne)
                                 withAnimation() {
                                     if isDraggingDownward {
                                         // 오디오 비주얼라이저 색상
-                                        speakerSwitch = SpeakerSwitch.speakerOne
-                                        visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
-                                    } else {
-                                        // 오디오 비주얼라이저 색상
-                                        speakerSwitch = SpeakerSwitch.speakerTwo
-                                        visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
+                                        if speakerSwitch == SpeakerSwitch.speakerOne {
+                                            speakerSwitch = SpeakerSwitch.speakerTwo
+                                            visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
+                                        } else {
+                                            speakerSwitch = SpeakerSwitch.speakerOne
+                                            visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
+                                        }
+                                        
+                                        if vm.isRecording {
+                                            // 화자바꾸지 않고 기록함
+                                            vm.stopRecording(
+                                                index: self.transcriptIndex,
+                                                recoder: vm.recoderType
+                                            )
+                                            self.transcriptIndex += 1
+                                            // 화자를 바꾸기
+                                            if vm.recoderType == Recorder.interviewer { // 인터뷰어일때
+                                                vm.recoderType = Recorder.interviewee // 화자 바꾸고
+                                            } else { // 인터뷰이일때
+                                                vm.recoderType = Recorder.interviewer
+                                            }
+                                            vm.startRecording()
+                                        } else {
+                                            // 화자를 바꾸기
+                                            if vm.recoderType == Recorder.interviewer { // 인터뷰어일때
+                                                vm.recoderType = Recorder.interviewee // 화자 바꾸고
+                                            } else { // 인터뷰이일때
+                                                vm.recoderType = Recorder.interviewer
+                                            }
+                                        }
                                     }
                                 }
+                                
                             }
+                            
                     )
                 // 화자전환 가이드
                     .overlay(alignment: .bottom) {
@@ -238,9 +298,12 @@ struct InterviewRecordingView: View {
     } // body
 } // struct
 
-
 struct InterviewRecordingView_Previews: PreviewProvider {
     static var previews: some View {
-            InterviewRecordingView()
+        InterviewRecordingView(
+            vm: VoiceViewModel(
+                interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: Script(scriptTitle: "", scriptContent: "")))
+            , isShownInterviewRecordingView: .constant(false)
+        )
     }
 }

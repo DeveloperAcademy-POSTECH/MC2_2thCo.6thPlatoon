@@ -16,41 +16,65 @@ enum Recorder: String {
 
 class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
     
-    var audioRecorder : AVAudioRecorder!
-    var audioPlayer : AVAudioPlayer!
+    private var audioRecorder : AVAudioRecorder!
+    private var audioPlayer : AVAudioPlayer!
     
-    @Published var interviewPath: URL = URL(fileURLWithPath: "")
+    @Published var interview: Interview
+    public var interviewPath: URL = URL(fileURLWithPath: "")
     private var currentPath: URL = URL(fileURLWithPath: "")
+    public var recoderType: Recorder = Recorder.interviewer
+    public var recordings = [Record]()
+    public var transcripts: [String] = []
     @Published var isRecording : Bool = false
-    @Published var recoderType: Recorder = Recorder.interviewer
-    @Published var recordings = [Record]()
-    @Published var transcripts: [String] = []
-    @Published var recordsURL = [URL]()
-    var playTime: String = ""
-    var date: Date = Date()
-    
     @Published var countSec = 0
     @Published var timerCount : Timer?
     @Published var timer : String = "0:00"
-    @Published var toggleColor : Bool = false
+    public var playTime: String = ""
+    public var date: Date = Date()
+    private var playingURL : URL?
     
-    var playingURL : URL?
-    
-    override init(){
-        super.init()
-//        fetchAllRecording()
+    init(interview: Interview){
+        self.interview = interview
     }
     
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    public func initInterview() {
+        //메인뷰에서 마이크를 탭하는 시점에서 Interview 인스턴스를 생성하도록 변경
+        let fileManager = FileManager.default
+        let documentUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
         
-        for i in 0..<recordings.count {
-            if recordings[i].fileURL == playingURL {
-                recordings[i].isPlaying = false
-            }
+        // TODO: 인터뷰 저장하지 않을 시 해당 경로의 모든 정보 삭제해야함
+        var interview: Interview = Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(scriptTitle: "", scriptContent: ""))
+        
+        let directoryPath = documentUrl.appendingPathComponent("\(interview.id)")
+        
+        do {
+            try fileManager.removeItem(atPath: directoryPath.path)
+        } catch {
+            print("Can't delete")
         }
+        do {
+            if !fileManager.fileExists(atPath: directoryPath.path) {
+                try fileManager.createDirectory(atPath: directoryPath.path, withIntermediateDirectories: false, attributes: nil)
+            }
+        } catch {
+            print("create folder error. do something")
+        }
+        
+        self.interview = interview
+        self.interviewPath = directoryPath
+        
+        // vm의 recording과 STT배열 초기화
+        self.recordings.removeAll()
+        self.transcripts.removeAll()
     }
     
-    func startRecording() {
+    public func setInterviewDetail(interviewDetail: InterviewDetail) {
+        self.interview.details = interviewDetail
+        print(">>Set InterviewDatail")
+        print(self.interview.details)
+    }
+    
+    public func startRecording() {
         // > 녹음 권한 요청 (싱글톤 객체)
         let recordingSession = AVAudioSession.sharedInstance()
         do {
@@ -64,7 +88,6 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         // > AVAudioRecoder 사용하여 인스턴스를 만들어 사용
         
         // > FileManager 인스턴스 생성 -> GET -> Documents의 directory URL
-//        let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let path = interviewPath
         
         // > init FileName
@@ -101,7 +124,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
     }
     
     
-    func stopRecording(index: Int){
+    public func stopRecording(index: Int, recoder: Recorder){
         // 녹음 중지
         audioRecorder.stop()
         isRecording = false
@@ -110,10 +133,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
             Record(
                 fileURL: currentPath,
                 createdAt:getFileDate(for: currentPath),
-                type:
-                    recordings.count % 2 == 0
-                ? Recorder.interviewer.rawValue
-                : Recorder.interviewee.rawValue,
+                type: recoder.rawValue,
                 isPlaying: false,
                 transcriptIndex: index
             )
@@ -124,7 +144,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         transcribe(url: currentPath)
     }
     
-    func transcribe(url: URL) {
+    private func transcribe(url: URL) {
         // Initialize the speech recogniter with your preffered language
         guard let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ko_KR")) else {
             print("Speech recognizer is not available for this locale!")
@@ -165,7 +185,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
     }
     
     
-    func startPlaying(url : URL) {
+    public func startPlaying(url : URL) {
         
         playingURL = url
         
@@ -194,7 +214,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         }
     }
     
-    func stopPlaying(url : URL) {
+    public func stopPlaying(url : URL) {
         
         audioPlayer.stop()
         
@@ -205,9 +225,15 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         }
     }
     
+    public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        for i in 0..<recordings.count {
+            if recordings[i].fileURL == playingURL {
+                recordings[i].isPlaying = false
+            }
+        }
+    }
     
-    func deleteRecording(url : URL) {
-        
+    public func deleteRecording(url : URL) {
         do {
             try FileManager.default.removeItem(at: url)
         } catch {
@@ -227,8 +253,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         }
     }
     
-    
-    func getFileDate(for file: URL) -> Date {
+    private func getFileDate(for file: URL) -> Date {
         if let attributes = try? FileManager.default.attributesOfItem(atPath: file.path) as [FileAttributeKey: Any],
            let creationDate = attributes[FileAttributeKey.creationDate] as? Date {
             return creationDate
@@ -238,7 +263,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
     }
     
     // MARK: - [테스트 메인 함수 정의 실시]
-    func testMain(){
+    public func testMain(){
         /*
          ------------------------------------
          [요약 설명]
@@ -277,9 +302,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         print("")
     }
     
-}
-extension VoiceViewModel {
-    func covertSecToMinAndHour(seconds : Int) -> String{
+    private func covertSecToMinAndHour(seconds : Int) -> String{
         
         let (_,m,s) = (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
         let sec : String = s < 10 ? "0\(s)" : "\(s)"
@@ -287,5 +310,4 @@ extension VoiceViewModel {
         
     }
 }
-
 
