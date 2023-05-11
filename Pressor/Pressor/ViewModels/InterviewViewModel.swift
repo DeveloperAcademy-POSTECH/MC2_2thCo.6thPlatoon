@@ -12,30 +12,30 @@ class InterviewViewModel: ObservableObject {
     
     // Default initializer
     init() {
-        self.interviewScriptModel = InterviewScriptModel(interviewScript: [])
+        self.interviewScriptModel = InterviewScriptModel(interviewScripts: [])
     }
     
     // 대본 생성
     func createScript(title: String, content: String) {
         // 대본 추가
-        interviewScriptModel.interviewScript.append((title: title, content: content))
+        interviewScriptModel.interviewScripts.append(Script(scriptTitle: title, scriptContent: content))
     }
     
     // 대본 읽기
-    func getScripts() -> [(title: String, content: String)] {
+    func getScripts() -> [Script] {
         // 대본 목록 반환
-        return interviewScriptModel.interviewScript
+        return interviewScriptModel.interviewScripts
     }
     
     // 대본 수정
     func updateScript(title: String, content: String, atIndex index: Int) {
         // 대본 수정
-        interviewScriptModel.interviewScript[index] = (title: title, content: content)
+        interviewScriptModel.interviewScripts[index] = Script(scriptTitle: title, scriptContent: content)
     }
     
     // 대본 삭제
     func deleteScript(atIndex index: Int) {
         // 대본 삭제
-        interviewScriptModel.interviewScript.remove(at: index)
+        interviewScriptModel.interviewScripts.remove(at: index)
     }
 }

@@ -17,11 +17,11 @@ struct InterviewScriptTestView: View {
         NavigationView {
             VStack {
                 List {
-                    ForEach(viewModel.interviewScriptModel.interviewScript.indices, id: \.self) { index in
+                    ForEach(viewModel.interviewScriptModel.interviewScripts.indices, id: \.self) { index in
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(viewModel.interviewScriptModel.interviewScript[index].title)
+                            Text(viewModel.interviewScriptModel.interviewScripts[index].scriptTitle)
                                 .font(.headline)
-                            Text(viewModel.interviewScriptModel.interviewScript[index].content)
+                            Text(viewModel.interviewScriptModel.interviewScripts[index].scriptContent)
                         }
                         .onTapGesture {
                             editInterviewScriptIndex = index
@@ -54,7 +54,7 @@ struct InterviewScriptTestView: View {
             }
             .navigationTitle("Interview Scripts")
             .sheet(isPresented: $showEditInterviewScriptView) {
-                EditInterviewScriptTestView(viewModel: viewModel, index: editInterviewScriptIndex, updatedTitle: viewModel.interviewScriptModel.interviewScript[editInterviewScriptIndex].title, updatedContent: viewModel.interviewScriptModel.interviewScript[editInterviewScriptIndex].content)
+                EditInterviewScriptTestView(viewModel: viewModel, index: editInterviewScriptIndex, updatedTitle: viewModel.interviewScriptModel.interviewScripts[editInterviewScriptIndex].scriptTitle, updatedContent: viewModel.interviewScriptModel.interviewScripts[editInterviewScriptIndex].scriptContent)
             }
         }
     }
