@@ -7,6 +7,11 @@
 
 import Foundation
 
+struct Script {
+    var scriptTitle: String
+    var scriptContent: String
+}
+
 struct InterviewScriptModel {
-    var interviewScript: [(title: String, content: String)]
+    var interviewScripts: [Script]
 }
