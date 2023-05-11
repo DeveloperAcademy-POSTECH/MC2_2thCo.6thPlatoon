@@ -13,10 +13,10 @@ struct InterviewRecordingEndTestView: View {
     @State private var isValid: Bool = false
     
     var body: some View {
-//        NavigationView {
             Form {
                 Section {
                     TextField("새로운 인터뷰", text: $vm.interview.details.interviewTitle)
+                        .foregroundColor(.black)
                 } header: {
                     Text("인터뷰 제목")
                 }
@@ -24,6 +24,7 @@ struct InterviewRecordingEndTestView: View {
                 Section {
                     HStack(spacing: 0){
                         TextField("이름", text: $vm.interview.details.userName)
+                            .foregroundColor(.black)
                             .onChange(of: vm.interview.details.userName) { text in
                                 isValid = text.count != 0 ? true : false
                             }
@@ -33,7 +34,9 @@ struct InterviewRecordingEndTestView: View {
                     } // HStack
                     
                     TextField("이메일", text: $vm.interview.details.userEmail)
+                        .foregroundColor(.black)
                     TextField("전화번호", text: $vm.interview.details.userPhoneNumber)
+                        .foregroundColor(.black)
                 } header: {
                     Text("대상자 정보")
                 } footer: {
@@ -53,17 +56,15 @@ struct InterviewRecordingEndTestView: View {
                     Button("완료") {
                         isShowingList.toggle()
                         print(vm.interview)
-
                     }
+                    .foregroundColor(isValid ? .accentColor : .gray)
+                    .disabled(!isValid)
                     // 모달에서 새화면으로 바꿔야함
                     .sheet(isPresented: $isShowingList, content: {
-
                         InterviewDetailTestView(vm: vm)
                     })
-                    .foregroundColor(isValid ? .accentColor : .gray)
                 }
             }// toolbar
-//        }//NavigationView
     }
 }
 

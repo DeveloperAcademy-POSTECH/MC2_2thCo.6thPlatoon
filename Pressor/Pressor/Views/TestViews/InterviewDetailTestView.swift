@@ -15,7 +15,7 @@ struct InterviewDetailTestView: View {
         NavigationView {
             VStack {
                 ScrollView(showsIndicators: false){
-                    ForEach(vm.recordings, id: \.id) { recording in
+                    ForEach(vm.interview.records, id: \.id) { recording in
                         VStack{
                             HStack{
 

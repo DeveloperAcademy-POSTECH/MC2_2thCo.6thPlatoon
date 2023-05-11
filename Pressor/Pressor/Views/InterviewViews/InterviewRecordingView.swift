@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct InterviewRecordingView: View {
+    @ObservedObject var vm: VoiceViewModel
+    
+    @State private var isShowingList = false
+    @State var transcriptIndex: Int = 0
     @StateObject private var audioInputManager = AudioInputViewModel()
     @State private var isRecording = false
     @State private var isPaused = true
@@ -92,6 +96,7 @@ struct InterviewRecordingView: View {
                             } else {
                                 visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
                             }
+                            vm.startRecording()
                         } else {
                             // 일시정지일때 -> 타이머 정지 및 오디오 비주얼라이저 끔
                             audioInputManager.stopRecording()
@@ -99,6 +104,13 @@ struct InterviewRecordingView: View {
                             stopTimer()
                             // 오디오 비주얼라이저 회색으로 비활성화 표시
                             visualColor = Color.gray
+                            
+                            // 일단 먼저 녹음중지하고 기록함
+                            vm.stopRecording(
+                                index: self.transcriptIndex,
+                                recoder: vm.recoderType
+                            )
+                            self.transcriptIndex += 1
                         }
                     }) {
                         // 일시정지 및 재생 버튼 UI
@@ -133,21 +145,34 @@ struct InterviewRecordingView: View {
                         x: UIScreen.main.bounds.width / 6.15,
                         y: UIScreen.main.bounds.height * 0.02
                     )
+                    .onAppear {
+                        vm.recoderType = Recorder.interviewer
+                        vm.startRecording()
+                        
+                        isRecording = true
+                        // 녹음 중일때 -> 녹음 시작 및 타이머 시작
+                        isPaused = false
+                        audioInputManager.startRecording { buffer in
+                            DispatchQueue.main.async {}
+                        }
+                        startTimer()
+                        // 녹음 중일때 or 일시정지일 떄 오디오 비주얼라이저 색상 변경
+                        if speakerSwitch == SpeakerSwitch.speakerOne {
+                            visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
+                        } else {
+                            visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
+                        }
+                    }
                     
                     // 완료 버튼 로직
                     NavigationLink(
-                        destination: InterviewRecordingEndTestView(vm: VoiceViewModel())
-                            .navigationTitle("인터뷰 정보")
-                            .navigationBarTitleDisplayMode(.inline)
-                            .toolbar {
-                                ToolbarItem(placement: .navigationBarTrailing) {
-                                    Button(action: {
-                                    }, label: {
-                                        Text("완료")
-                                            .foregroundColor(Color.gray)
-                                    })
-                                }
-                            }, // toolbar
+                        destination: InterviewRecordingEndTestView(vm: vm)
+                            .onTapGesture {
+                                // 완료버튼 누를 때 interview 인스턴스를 업데이트
+                                vm.interview.recordSTT = vm.transcripts
+                                vm.interview.records = vm.recordings
+                                vm.interview.details.playTime = formattedDuration(duration)
+                            },
                         label: {
                             Text("완료")
                                 .font(.headline)
@@ -160,6 +185,8 @@ struct InterviewRecordingView: View {
                                 )
                         } //label
                     ) // NavigationLink
+                    .navigationTitle("뒤로")
+                    .navigationBarHidden(true)
                     .disabled(isRecording)
                 } // HStack
                 
@@ -174,20 +201,47 @@ struct InterviewRecordingView: View {
                 // 화자전환 제스처
                     .gesture(
                         DragGesture(minimumDistance: 100, coordinateSpace: .local)
-                            .onChanged { value in
-                                let isDraggingDownward = value.translation.height > 100
+                            
+                            .onEnded { value in
+                                let isDraggingDownward = (value.translation.height > 100 && speakerSwitch == SpeakerSwitch.speakerTwo) || (value.translation.height < -100 && speakerSwitch == SpeakerSwitch.speakerOne)
                                 withAnimation() {
                                     if isDraggingDownward {
                                         // 오디오 비주얼라이저 색상
-                                        speakerSwitch = SpeakerSwitch.speakerOne
-                                        visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
-                                    } else {
-                                        // 오디오 비주얼라이저 색상
-                                        speakerSwitch = SpeakerSwitch.speakerTwo
-                                        visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
+                                        if speakerSwitch == SpeakerSwitch.speakerOne {
+                                            speakerSwitch = SpeakerSwitch.speakerTwo
+                                            visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
+                                        } else {
+                                            speakerSwitch = SpeakerSwitch.speakerOne
+                                            visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
+                                        }
+                                        
+                                        if vm.isRecording {
+                                            // 화자바꾸지 않고 기록함
+                                            vm.stopRecording(
+                                                index: self.transcriptIndex,
+                                                recoder: vm.recoderType
+                                            )
+                                            self.transcriptIndex += 1
+                                            // 화자를 바꾸기
+                                            if vm.recoderType == Recorder.interviewer { // 인터뷰어일때
+                                                vm.recoderType = Recorder.interviewee // 화자 바꾸고
+                                            } else { // 인터뷰이일때
+                                                vm.recoderType = Recorder.interviewer
+                                            }
+                                            vm.startRecording()
+                                        } else {
+                                            // 화자를 바꾸기
+                                            if vm.recoderType == Recorder.interviewer { // 인터뷰어일때
+                                                vm.recoderType = Recorder.interviewee // 화자 바꾸고
+                                            } else { // 인터뷰이일때
+                                                vm.recoderType = Recorder.interviewer
+                                            }
+                                        }
                                     }
                                 }
+                                
                             }
+                            
                     )
                 // 화자전환 가이드
                     .overlay(alignment: .bottom) {
@@ -246,6 +300,6 @@ struct InterviewRecordingView: View {
 
 struct InterviewRecordingView_Previews: PreviewProvider {
     static var previews: some View {
-        InterviewRecordingView(isShownInterviewRecordingView: .constant(false))
+        InterviewRecordingView(vm: VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [])),isShownInterviewRecordingView: .constant(false))
     }
 }

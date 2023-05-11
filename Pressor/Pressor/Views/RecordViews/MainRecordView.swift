@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainRecordView: View {
     
+    @ObservedObject var vm: VoiceViewModel = VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: []))
     @State var isSheetShowing: Bool = false
     @State var isShowingAlert = false
     @State var showModal = false
@@ -53,25 +54,17 @@ struct MainRecordView: View {
                                     })
                                     
                                 }
-                                
-//                                count = 3
-//                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                                    count = 2
-//                                }
-//                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                                    count = 1
-//                                }
-                                //                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                                //                                    count = 0
-                                //                                    self.isShownInterviewRecordingView.toggle()
-                                //                                }
                             } label: {
                                 Image("mic_button")
                                     .padding(.bottom, 40)
                             }
                             .fullScreenCover(isPresented: $isShownInterviewRecordingView) {
-                                InterviewRecordingView(isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                InterviewRecordingView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
                             }
+                            .simultaneousGesture(TapGesture().onEnded{
+                                vm.initInterview()
+                                print(vm.interview)
+                            })
                         }
                         VStack {
                             Button(action: {
@@ -146,6 +139,7 @@ struct MainRecordView: View {
                                     isTimerCounting.toggle()
                                     timerCount?.invalidate()
                                     countSec = 0
+                                    // TODO: 녹음을 취소하므로 path에서 해당하는 디렉토리 지우기
                                 }
                             Text("\(countSec)")
                                 .font(.system(size: 50, weight: .bold))
