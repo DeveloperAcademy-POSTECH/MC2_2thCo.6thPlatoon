@@ -28,6 +28,8 @@ struct InterviewRecordingView: View {
     @State private var topImageOffsetY = CGFloat.zero
     @State private var isShowingTopImage = true
     @Binding var isShownInterviewRecordingView: Bool
+    @State var isShowingCancelAlert = false
+    
     
     // 타이머 시간 포맷
     func formattedDuration(_ duration: TimeInterval) -> String {
@@ -76,11 +78,21 @@ struct InterviewRecordingView: View {
                 VStack {
                     HStack { // 컨트롤 영역 (일시정지 및 재생 + 완료)
                         Button {
-                            self.isShownInterviewRecordingView.toggle()
+                            self.isShowingCancelAlert.toggle()
                         } label: {
                             Text("취소")
                                 .foregroundColor(Color.red)
                                 .font(.headline)
+                        }
+                        .alert(isPresented: $isShowingCancelAlert) {
+                            Alert(
+                                title: Text("녹음 취소"),
+                                message: Text("진행중인 녹음이 삭제됩니다."),
+                                primaryButton: .destructive(Text("녹음 취소")) {
+                                    self.isShownInterviewRecordingView.toggle()
+                                },
+                                secondaryButton: .cancel(Text("되돌아가기"))
+                            )
                         }
                         .position(
                             x: UIScreen.main.bounds.width / 6.5,
@@ -185,7 +197,7 @@ struct InterviewRecordingView: View {
                                 Text("완료")
                                     .font(.headline)
                                 // 녹음 중일때 -> 회색, 녹음 일시정지일때 -> 빨간색
-                                    .foregroundColor(!isPaused ? Color(red: 117/255, green: 117/255, blue: 117/255) : Color.red)
+                                    .foregroundColor(!isPaused ? Color.BackgroundGray_Dark : Color.red)
                                 // 녹음 중일 때 완료 버튼 비활성화
                                     .position(
                                         x: UIScreen.main.bounds.width / 6,
