@@ -15,9 +15,11 @@ struct MainRecordView: View {
     @State var scriptAdded: Bool = false
     @State var count = 3
     @State var isShownInterviewRecordingView = false
+    @State var selectedScriptIndex: Int = 0
+    @StateObject var interviewViewModel = InterviewViewModel()
     
     init() {
-      UITabBar.appearance().scrollEdgeAppearance = .init()
+        UITabBar.appearance().scrollEdgeAppearance = .init()
     }
     
     var body: some View {
@@ -73,10 +75,8 @@ struct MainRecordView: View {
                         Button(action: {
                             if scriptAdded {
                                 self.isSheetShowing = true
-                                scriptAdded = true
                             } else {
                                 showModal.toggle()
-                                scriptAdded = false
                             }
                         }) {
                             VStack {
@@ -91,16 +91,34 @@ struct MainRecordView: View {
                                     }
                                     .confirmationDialog("타이틀", isPresented: $isSheetShowing) {
                                         Button("대본 삭제", role: .destructive) {
-                                            self.isShowingAlert = true
+                                            isSheetShowing = false
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                                isShowingAlert = true
+                                            }
                                         }
-                                        .alert(isPresented: $isShowingAlert) {
-                                            Alert(title: Text("Alert Title"), message: Text("Alert Message"), dismissButton: .default(Text("OK")))}
+                                        
                                         Button("대본 수정", role: .destructive) {
-                                            
+                                            showModal = true
+                                            selectedScriptIndex = 0
                                         }
+                                        .sheet(isPresented: $showModal) {
+                                            AddScriptModalView(mode: .edit, scriptAdded: $scriptAdded, interviewViewModel: interviewViewModel, scriptIndex: selectedScriptIndex)
+                                        }
+                                        
                                         Button("취소", role: .cancel) {
                                             
                                         }
+                                    }
+                                    .alert(isPresented: $isShowingAlert) {
+                                        Alert(
+                                            title: Text("대본 삭제"),
+                                            message: Text("정말로 이 대본을 삭제하시겠습니까?"),
+                                            primaryButton: .destructive(Text("삭제")) {
+                                                interviewViewModel.deleteScript(atIndex: selectedScriptIndex)
+                                                scriptAdded = false
+                                            },
+                                            secondaryButton: .cancel(Text("취소"))
+                                        )
                                     }
                                 } else {
                                     Image(systemName: "note.text.badge.plus")
@@ -108,7 +126,7 @@ struct MainRecordView: View {
                                         .frame(width: 42, height: 35)
                                         .foregroundColor(Color.accentColor)
                                         .padding(.leading, 5)
-
+                                    
                                     Text("대본 추가")
                                         .foregroundColor(Color.accentColor)
                                         .fontWeight(.semibold)
@@ -121,7 +139,7 @@ struct MainRecordView: View {
                     Image(systemName: "gearshape.fill")})
                 .foregroundColor(Color(red: 209/255, green: 209/255, blue: 218/255))
                 .sheet(isPresented: $showModal) {
-                    AddScriptModalView(scriptAdded: $scriptAdded)
+                    AddScriptModalView(mode: scriptAdded ? .edit : .add, scriptAdded: $scriptAdded, interviewViewModel: interviewViewModel, scriptIndex: selectedScriptIndex)
                 }
             }
             .tabItem {
