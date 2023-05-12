@@ -15,31 +15,38 @@ import UniformTypeIdentifiers
  - Author: Celan
  */
 struct RecordBubble: View {
-    @ObservedObject var voiceViewModel: VoiceViewModel
+    @ObservedObject var bubbleManager: InterviewBubbleManager
     @State var record: Record
-    @State var interview: Interview
     @State private var text: String = ""
+    @State private var isReadyToPlay: Bool = false
     @Binding var isEditing: Bool
 
+    var isInterviewerSpeaking: Bool {
+        record.type == Recorder.interviewer.rawValue
+    }
+    
+    // MARK: - body
     var body: some View {
         HStack(spacing: 10) {
-            if record.type == Recorder.interviewer.rawValue {
-                playButtonBuilder()
-                
-                recordBubbleBuilder()
-                    .contextMenu {
-                        contextMenuButtonBuilder()
-                    }
-            } else {
-                recordBubbleBuilder()
-                    .contextMenu {
-                        contextMenuButtonBuilder()
-                    }
-                
-                playButtonBuilder()
+            if
+                let interview = bubbleManager.currentInterview {
+                if isInterviewerSpeaking {
+                    playButtonBuilder(with: interview)
+                    
+                    recordBubbleBuilder(with: interview)
+                } else {
+                    recordBubbleBuilder(with: interview)
+                       
+                    playButtonBuilder(with: interview)
+                }
             }
         }
-        .padding(.trailing, 16)
+        .padding(
+            isInterviewerSpeaking
+            ? .trailing
+            : .leading,
+            16
+        )
         .padding(.bottom, 8)
         .sheet(isPresented: $isEditing) {
             InterviewDetailChatEditModalView(isInterviewDetailChatEditModalViewDisplayed: $isEditing)
@@ -47,24 +54,40 @@ struct RecordBubble: View {
     }
     
     // MARK: - Builders
-    private func playButtonBuilder() -> some View {
+    private func playButtonBuilder(with interview: Interview) -> some View {
         Rectangle()
             .fill(.clear)
             .frame(width: 44, height: 44)
             .overlay(alignment: .center) {
                 Button {
                     // TODO: - Play or Stop
+                    isReadyToPlay
+                    ? bubbleManager.startPlayingRecordVoice(
+                        url: record.fileURL,
+                        isPlaying: $isReadyToPlay
+                    )
+                    : bubbleManager.stopPlayingRecordVoice(isPlaying: $isReadyToPlay)
                 } label: {
-                    Image(systemName: "play.fill")
+                    Image(systemName: !isReadyToPlay ? "stop.fill" : "play.fill")
+                        .foregroundColor(isInterviewerSpeaking ? .pressorButtonOrangePrimary : .pressorButtonBluePrimary)
                 }
                 .frame(width: 34, height: 34)
-                .background(Color.yellow)
+                .background(
+                    isInterviewerSpeaking
+                    ? Color.pressorButtonOrangeBackground
+                    : Color.pressorButtonBlueBackground
+                )
                 .clipShape(Circle())
             }
-            .padding(.leading, 45)
+            .padding(
+                isInterviewerSpeaking
+                ? .leading
+                : .trailing,
+                45
+            )
     }
     
-    private func recordBubbleBuilder() -> some View {
+    private func recordBubbleBuilder(with interview: Interview) -> some View {
         VStack {
             if isEditing {
                 TextField("", text: $text)
@@ -72,34 +95,43 @@ struct RecordBubble: View {
                     .frame(
                         maxWidth: 278 - 39,
                         minHeight: 44 - 22,
-                        alignment: .trailing
+                        alignment: isInterviewerSpeaking
+                            ? .trailing
+                            : .leading
                     )
                     .padding(.vertical, 11)
                     .padding(.horizontal, 19.5)
             } else {
-                Text("\(interview.recordSTT[record.transcriptIndex])")
-                Text("temp")
+                Text("\(interview.recordSTT[safe: record.transcriptIndex] ?? "")")
                     .font(.system(size: 14))
                     .frame(
                         maxWidth: 278 - 39,
                         minHeight: 44 - 22,
-                        alignment: .trailing
+                        alignment: isInterviewerSpeaking
+                            ? .trailing
+                            : .leading
                     )
                     .padding(.vertical, 11)
                     .padding(.horizontal, 19.5)
             }
-            
         }
-        .background(Color.orange)
-        .clipShape(Bubble(record: record))
+        .background(
+            isInterviewerSpeaking
+            ? Color.PressorOrange_Light
+            : Color.PressorBlue_Light
+        )
         .frame(
             maxWidth: .infinity,
-            alignment: .trailing
+            alignment: isInterviewerSpeaking ? .trailing : .leading
         )
+        .clipShape(Bubble(isInterviewerSpeaking: isInterviewerSpeaking))
+        .contextMenu {
+            contextMenuButtonBuilder(with: interview)
+        }
     }
     
     @ViewBuilder
-    private func contextMenuButtonBuilder() -> some View {
+    private func contextMenuButtonBuilder(with interview: Interview) -> some View {
         Button {
             self.pasteToClipboard(with: interview.recordSTT[record.transcriptIndex])
         } label: {
@@ -129,13 +161,13 @@ struct RecordBubble: View {
 }
 
 struct Bubble: Shape {
-    var record: Record
+    let isInterviewerSpeaking: Bool
     
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(
             roundedRect: rect,
             byRoundingCorners:
-                record.type == Recorder.interviewer.rawValue
+                isInterviewerSpeaking
                 ? [.topLeft, .bottomLeft, .bottomRight]
                 : [.topRight, .bottomRight, .bottomLeft]
             ,
@@ -146,16 +178,5 @@ struct Bubble: Shape {
         )
         
         return Path(path.cgPath)
-    }
-}
-
-struct RecordBubble_Previews: PreviewProvider {
-    static var previews: some View {
-        ScrollView {
-//            RecordBubble(record: .init(recordDescription: "하이하이"), index: 0, isInterviewer: true)
-//            RecordBubble(record: .init(recordDescription: "안녕안녕"), index: 1, isInterviewer: false)
-//            RecordBubble(record: .init(recordDescription: "바이바이"), index: 0, isInterviewer: true)
-//            RecordBubble(record: .init(recordDescription: "그래그래"), index: 2, isInterviewer: false)
-        }
     }
 }
