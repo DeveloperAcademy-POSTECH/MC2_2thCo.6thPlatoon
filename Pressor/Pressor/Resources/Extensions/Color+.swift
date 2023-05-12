@@ -30,7 +30,7 @@ extension Color {
 }
 
 extension Color {
-    static var PressorRed: Self {
+    static var pressorRed: Self {
         .init(hex: "#FF3B30")
     }
     static var PressorRed_Dark: Self {
@@ -59,5 +59,9 @@ extension Color {
     }
     static var DisabledGary: Self {
         .init(hex: "999999")
+    }
+    
+    static var pressorSystemGray: Self {
+        .init(hex: "F2F2F7")
     }
 }
