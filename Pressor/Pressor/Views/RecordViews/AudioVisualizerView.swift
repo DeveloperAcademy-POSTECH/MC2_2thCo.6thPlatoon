@@ -21,21 +21,15 @@ struct AudioVisualizerView: View {
     @State private var barHeights: [CGFloat] = Array(repeating: 0, count: 40)
     
     var body: some View {
-        VStack {
-            ZStack {
-                HStack {
-                    HStack(spacing: 3) {
-                        // 각 막대를 생성, 높이와 애니메이션 적용.
-                        ForEach(0..<barHeights.count, id: \.self) { index in
-                            BarView(
-                                height: barHeights[index] * weight(for: index),
-                                isRecording: isRecording,
-                                audioVisualColor: audioVisualizerColor
-                            )
-                                .animation(.easeInOut(duration: 0.15), value: barHeights[index])
-                        }
-                    }
-                }
+        HStack(spacing: 3) {
+            // 각 막대를 생성, 높이와 애니메이션 적용.
+            ForEach(0..<barHeights.count, id: \.self) { index in
+                BarView(
+                    height: barHeights[index] * weight(for: index),
+                    isRecording: isRecording,
+                    audioVisualColor: audioVisualizerColor
+                )
+                .animation(.easeInOut(duration: 0.15), value: barHeights[index])
             }
         }
         .frame(width: 250, height: 80)
@@ -95,12 +89,12 @@ extension AudioVisualizerView {
         let sampleCount = samples.count
         let blockSize = sampleCount / barHeights.count
         let maxHeight = UIScreen.main.bounds.height / 3
-
+        
         for i in 0..<barHeights.count {
             let start = i * blockSize
             let end = start + blockSize
             let slice = samples[start..<end]
-
+            
             let rms = calculateRMS(for: Array(slice))
             let normalizedHeight = CGFloat(min(max(0, rms), 1)) * maxHeight
             barHeights[i] = min(max(normalizedHeight, 0), maxHeight)
