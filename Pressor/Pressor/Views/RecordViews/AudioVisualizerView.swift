@@ -32,7 +32,7 @@ struct AudioVisualizerView: View {
                 .animation(.easeInOut(duration: 0.15), value: barHeights[index])
             }
         }
-        .frame(width: 250, height: 80)
+        .frame(width: 280, height: 50)
         .onAppear {
             // 뷰가 나타날 때 현재 녹음 중이고 일시정지 상태가 아니면, 오디오 입력 관리자 시작
             if isRecording && !isPaused {
@@ -88,8 +88,7 @@ extension AudioVisualizerView {
         let samples = Array(UnsafeBufferPointer(start: buffer.floatChannelData?[0], count: Int(buffer.frameLength)))
         let sampleCount = samples.count
         let blockSize = sampleCount / barHeights.count
-        let maxHeight = UIScreen.main.bounds.height / 3
-        
+        let maxHeight = UIScreen.main.bounds.height / 2
         for i in 0..<barHeights.count {
             let start = i * blockSize
             let end = start + blockSize
@@ -115,7 +114,7 @@ struct BarView: View {
     var audioVisualColor: Color
     
     var body: some View {
-        let safeHeight = max(min(height, CGFloat.greatestFiniteMagnitude), 3)
+        let safeHeight = max(min(height, CGFloat.greatestFiniteMagnitude), 4)
         RoundedRectangle(cornerRadius: 4)
             .fill(audioVisualColor)
             .frame(maxHeight: safeHeight)
