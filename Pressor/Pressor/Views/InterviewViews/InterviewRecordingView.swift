@@ -302,7 +302,7 @@ struct InterviewRecordingView_Previews: PreviewProvider {
     static var previews: some View {
         InterviewRecordingView(
             vm: VoiceViewModel(
-                interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: Script(scriptTitle: "", scriptContent: "")))
+                interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: Script(title: "", description: "")))
             , isShownInterviewRecordingView: .constant(false)
         )
     }
