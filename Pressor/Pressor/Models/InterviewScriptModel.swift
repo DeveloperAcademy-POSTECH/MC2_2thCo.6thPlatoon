@@ -8,10 +8,6 @@
 import Foundation
 
 struct Script {
-    var scriptTitle: String
-    var scriptContent: String
-}
-
-struct InterviewScriptModel {
-    var interviewScripts: [Script]
+    var title: String
+    var description: String
 }

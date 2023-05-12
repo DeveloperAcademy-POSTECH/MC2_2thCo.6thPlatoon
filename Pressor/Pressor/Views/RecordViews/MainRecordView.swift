@@ -8,20 +8,24 @@
 import SwiftUI
 
 struct MainRecordView: View {
+    @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject var routingManager: RoutingManager
-    @ObservedObject var vm: VoiceViewModel = VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(scriptTitle: "", scriptContent: "")))
+    @ObservedObject var vm: VoiceViewModel = VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(title: "", description: "")))
+    @State private var interviewViewModel: InterviewViewModel? = nil
     @State var isSheetShowing: Bool = false
-    @State var isShowingAlert = false
+    @State var isShowingScriptDeleteAlert = false
     @State var showModal = false
     @State var scriptAdded: Bool = false
     @State var navigateToNextView = false
     @State var isShownInterviewRecordingView = false
-    @State var selectedScriptIndex: Int = 0
-    @StateObject var interviewViewModel = InterviewViewModel()
     @State var countSec: Int = 0
     @State var timerCount : Timer?
     @State var isTimerCounting: Bool = false
     @State private var currentTab: String = Constants.RECORD_TAB_ID
+    @State private var scriptTitle: String = ""
+    @State private var scriptDescription: String = ""
+    @State private var scriptMode: ScriptMode = .add
+
     
     init() {
         UITabBar.appearance().scrollEdgeAppearance = .init()
@@ -96,28 +100,29 @@ struct MainRecordView: View {
                                         Button("대본 삭제", role: .destructive) {
                                             isSheetShowing = false
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                                isShowingAlert = true
+                                                isShowingScriptDeleteAlert = true
                                             }
                                         }
                                         
                                         Button("대본 수정", role: .destructive) {
                                             showModal = true
-                                            selectedScriptIndex = 0
+                                            scriptTitle = interviewViewModel?.getScript().title ?? ""
+                                            scriptDescription = interviewViewModel?.getScript().description ?? ""
                                         }
                                         .sheet(isPresented: $showModal) {
-                                            AddScriptModalView(mode: .edit, scriptAdded: $scriptAdded, interviewViewModel: interviewViewModel, scriptIndex: selectedScriptIndex)
+                                                                                        
                                         }
                                         
                                         Button("취소", role: .cancel) {
                                             
                                         }
                                     }
-                                    .alert(isPresented: $isShowingAlert) {
+                                    .alert(isPresented: $isShowingScriptDeleteAlert) {
                                         Alert(
                                             title: Text("대본 삭제"),
                                             message: Text("정말로 이 대본을 삭제하시겠습니까?"),
                                             primaryButton: .destructive(Text("삭제")) {
-                                                interviewViewModel.deleteScript(atIndex: selectedScriptIndex)
+                                                interviewViewModel?.setScript(title: "", description: "")
                                                 scriptAdded = false
                                             },
                                             secondaryButton: .cancel(Text("취소"))
@@ -172,13 +177,17 @@ struct MainRecordView: View {
                 )
                 .disabled(isTimerCounting)
                 .sheet(isPresented: $showModal) {
-                    AddScriptModalView(mode: scriptAdded ? .edit : .add, scriptAdded: $scriptAdded, interviewViewModel: interviewViewModel, scriptIndex: selectedScriptIndex)
+                    AddScriptModalView(interviewViewModel: interviewViewModel ?? InterviewViewModel(voiceViewModel: vm), voiceViewModel: vm, scriptAdded: $scriptAdded, title: scriptTitle, description: scriptDescription, mode: scriptAdded ? .edit : .add)
                 }
             }
             .tag(Constants.RECORD_TAB_ID)
             .tabItem {
                 Image(systemName: "mic.circle.fill")
                 Text("녹음")
+            }
+            .onAppear {
+                vm.initInterview()
+                interviewViewModel = InterviewViewModel(voiceViewModel: vm)
             }
             
             InterviewListView()

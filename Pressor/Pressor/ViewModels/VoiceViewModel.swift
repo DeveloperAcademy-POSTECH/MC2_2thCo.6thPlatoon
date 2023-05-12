@@ -33,17 +33,22 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
     public var date: Date = Date()
     private var playingURL : URL?
     
+    
+    // TODO: Script create
+    public var script: Script = Script(title: "", description: "")
+    
     init(interview: Interview){
         self.interview = interview
     }
     
     public func initInterview() {
         //메인뷰에서 마이크를 탭하는 시점에서 Interview 인스턴스를 생성하도록 변경
+        // MARK: 메인뷰 onAppear 시점에 initInterview를 실행하고, interviewViewModel에 의존성 부여하도록 설정
         let fileManager = FileManager.default
         let documentUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
         
         // TODO: 인터뷰 저장하지 않을 시 해당 경로의 모든 정보 삭제해야함
-        var interview: Interview = Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(scriptTitle: "", scriptContent: ""))
+        var interview: Interview = Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(title: "", description: ""))
         
         let directoryPath = documentUrl.appendingPathComponent("\(interview.id)")
         
@@ -61,6 +66,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         }
         
         self.interview = interview
+        self.interview.script = self.script
         self.interviewPath = directoryPath
         
         // vm의 recording과 STT배열 초기화

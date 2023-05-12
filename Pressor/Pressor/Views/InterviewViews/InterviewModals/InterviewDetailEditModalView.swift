@@ -77,6 +77,6 @@ struct InterviewDetailEditModalView: View {
 struct PreviewT: PreviewProvider {
     static var previews: some View {
         InterviewDetailEditModalView(vm: VoiceViewModel(
-            interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(scriptTitle: "", scriptContent: ""))))
+            interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(title: "", description: ""))))
     }
 }

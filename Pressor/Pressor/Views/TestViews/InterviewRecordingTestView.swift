@@ -301,6 +301,6 @@ struct InterviewRecordingTestView: View {
 
 struct InterviewRecordingTestView_Previews: PreviewProvider {
     static var previews: some View {
-        InterviewRecordingTestView(vm: VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(scriptTitle: "", scriptContent: ""))))
+        InterviewRecordingTestView(vm: VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(title: "", description: ""))))
     }
 }
