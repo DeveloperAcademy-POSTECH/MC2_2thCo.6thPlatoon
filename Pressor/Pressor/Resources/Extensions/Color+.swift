@@ -64,35 +64,18 @@ extension Color {
     static var pressorSystemGray: Self {
         .init(hex: "F2F2F7")
     }
-    static var PressorRed_Dark: Self {
-        .init(hex: "4D120F")
-    }
-    static var PressorBlue_Light: Self {
-        .init(hex: "B1F2F0")
-    }
-    static var PressorBlue: Self {
-        .init(hex: "00EADF")
-    }
-    static var PressorOrange_Light: Self {
-        .init(hex: "FFDB99")
-    }
-    static var PressorOrange: Self {
-        .init(hex: "FFA600")
-    }
-    static var BackgroundGray_Dark: Self {
-        .init(hex: "2C2C2E")
-    }
-    static var BackgroundGray_Light: Self {
-        .init(hex: "F2F2F7")
-    }
-    static var SymbolGray: Self {
-        .init(hex: "D1D1D6")
-    }
-    static var DisabledGary: Self {
-        .init(hex: "999999")
-    }
     
-    static var pressorSystemGray: Self {
-        .init(hex: "F2F2F7")
+    static var pressorButtonBluePrimary: Self {
+        .init(hex: "00C7BE")
     }
+    static var pressorButtonBlueBackground: Self {
+        .init(hex: "CCF4F2")
+    }
+    static var pressorButtonOrangePrimary: Self {
+        .init(hex: "FF9500")
+    }
+    static var pressorButtonOrangeBackground: Self {
+        .init(hex:"FFECCE")
+    }
+
 }
