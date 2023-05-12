@@ -13,6 +13,7 @@ struct InterviewRecordingEndTestView: View {
     @State private var isValid: Bool = false
     
     var body: some View {
+//        NavigationView {
             Form {
                 Section {
                     TextField("새로운 인터뷰", text: $vm.interview.details.interviewTitle)
@@ -65,6 +66,8 @@ struct InterviewRecordingEndTestView: View {
                     })
                 }
             }// toolbar
+            
+//        }//NavigationView
     }
 }
 
