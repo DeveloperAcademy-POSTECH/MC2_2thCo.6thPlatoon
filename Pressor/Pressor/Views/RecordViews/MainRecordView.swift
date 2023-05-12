@@ -47,7 +47,7 @@ struct MainRecordView: View {
                         VStack {
                             // MARK: - Mic Button
                             Button {
-                                
+                                print(vm.interview.script.description)
                                 if !isTimerCounting {
                                     countSec = 3
                                     isTimerCounting.toggle()
@@ -67,12 +67,13 @@ struct MainRecordView: View {
                                     .padding(.bottom, 40)
                             }
                             .fullScreenCover(isPresented: $isShownInterviewRecordingView) {
-                                InterviewRecordingView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                if scriptAdded {
+                                    InterviewRecordingScriptView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                } else {
+                                    InterviewRecordingView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                }
+                                
                             }
-                            .simultaneousGesture(TapGesture().onEnded{
-                                vm.initInterview()
-                                print(vm.interview)
-                            })
                         }
                         
                         VStack {
