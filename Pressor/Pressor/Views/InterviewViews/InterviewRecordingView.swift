@@ -18,14 +18,10 @@ struct InterviewRecordingView: View {
     @State private var duration: TimeInterval = 0.0
     @State private var speakerSwitch: Color = SpeakerSwitch.speakerOne
     @State private var timer: Timer? = nil
-    @State private var visualColor: Color = Color(red: 1.0, green: 166/255, blue: 0.0)
+    @State private var visualColor: Color = Color.PressorOrange
     @State private var isChevronAnimating = false
-    @State private var isBottomImage = true
-    @State private var bottomImageOffsetY = CGFloat.zero
     @State private var isShowingBottomImage = true
     @State private var initChevronOffsetYValue = CGFloat.zero
-    @State private var isTopImage = true
-    @State private var topImageOffsetY = CGFloat.zero
     @State private var isShowingTopImage = true
     @Binding var isShownInterviewRecordingView: Bool
     @State var isShowingCancelAlert = false
@@ -42,8 +38,8 @@ struct InterviewRecordingView: View {
     
     // 화자 구분 색상
     private struct SpeakerSwitch {
-        static let speakerOne = Color(red: 0.0, green: 234/255, blue: 223/255)
-        static let speakerTwo = Color(red: 1.0, green: 166/255, blue: 0.0)
+        static let speakerOne = Color.PressorOrange
+        static let speakerTwo = Color.PressorBlue
     }
     
     // 타이머 시작 함수
@@ -96,7 +92,7 @@ struct InterviewRecordingView: View {
                         }
                         .position(
                             x: UIScreen.main.bounds.width / 6.5,
-                            y: UIScreen.main.bounds.height * 0.02
+                            y: UIScreen.main.bounds.height * 0.03
                         )
                         
                         // 일시정지 및 재생 버튼 로직
@@ -111,9 +107,9 @@ struct InterviewRecordingView: View {
                                 startTimer()
                                 // 녹음 중일때 or 일시정지일 떄 오디오 비주얼라이저 색상 변경
                                 if speakerSwitch == SpeakerSwitch.speakerOne {
-                                    visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
+                                    visualColor = Color.PressorOrange
                                 } else {
-                                    visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
+                                    visualColor = Color.PressorBlue
                                 }
                                 vm.startRecording()
                             } else {
@@ -141,7 +137,7 @@ struct InterviewRecordingView: View {
                                 .overlay(RoundedRectangle(cornerRadius: 35)
                                     .frame(width: 119, height: 32)
                                          // 녹음 중일때 -> 검정색, 녹음 일시정지일때 -> 빨간색
-                                    .foregroundColor(!isPaused ? Color.black : Color(red: 1.0, green: 0.0, blue: 0.0, opacity: 30/100))
+                                    .foregroundColor(!isPaused ? Color.black : Color.PressorRed_Dark)
                                     .overlay(
                                         HStack {
                                             // 녹음 중일때 -> 일시정지 심볼, 녹음 일시정지일때 -> 재생 심볼
@@ -163,7 +159,7 @@ struct InterviewRecordingView: View {
                         }
                         .position(
                             x: UIScreen.main.bounds.width / 6.15,
-                            y: UIScreen.main.bounds.height * 0.02
+                            y: UIScreen.main.bounds.height * 0.03
                         )
                         .onAppear {
                             vm.recoderType = Recorder.interviewer
@@ -178,9 +174,9 @@ struct InterviewRecordingView: View {
                             startTimer()
                             // 녹음 중일때 or 일시정지일 떄 오디오 비주얼라이저 색상 변경
                             if speakerSwitch == SpeakerSwitch.speakerOne {
-                                visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
+                                visualColor = Color.PressorOrange
                             } else {
-                                visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
+                                visualColor = Color.PressorBlue
                             }
                         }
                         
@@ -201,7 +197,7 @@ struct InterviewRecordingView: View {
                                 // 녹음 중일 때 완료 버튼 비활성화
                                     .position(
                                         x: UIScreen.main.bounds.width / 6,
-                                        y: UIScreen.main.bounds.height * 0.02
+                                        y: UIScreen.main.bounds.height * 0.03
                                     )
                             } //label
                         ) // NavigationLink
@@ -212,30 +208,14 @@ struct InterviewRecordingView: View {
                     // 화자 전환 기능
                     RoundedRectangle(cornerRadius: 44)
                         // 화자전환 영역
-                        .fill(Color(red: 28/255, green: 28/255, blue: 30/255))
+                        .fill(Color.BackgroundGray_Dark)
                         .frame(
-                            width: UIScreen.main.bounds.width * 0.95,
+                            width: UIScreen.main.bounds.width * 0.93,
                             height: UIScreen.main.bounds.height * 0.74
                         )
                         // 화자전환 제스처
                         .gesture(
                             DragGesture()
-                                .onChanged { value in
-                                    if isBottomImage {
-                                        if bottomImageOffsetY > -100 {
-                                            bottomImageOffsetY = min(0, value.translation.height)
-                                        }
- 
-                                    } else {
-                                        
-                                        if topImageOffsetY < 100 {
-                                            topImageOffsetY = max(0, value.translation.height)
-                                        }
-
-
-                                    }
-                                    
-                                }
                                 .onEnded { value in
                                     let isDraggingDownward = (value.translation.height > 100 && speakerSwitch == SpeakerSwitch.speakerTwo) || (value.translation.height < -100 && speakerSwitch == SpeakerSwitch.speakerOne)
                                     withAnimation(.spring()) {
@@ -243,24 +223,12 @@ struct InterviewRecordingView: View {
                                             // 오디오 비주얼라이저 색상
                                             if speakerSwitch == SpeakerSwitch.speakerOne {
                                                 speakerSwitch = SpeakerSwitch.speakerTwo
-                                                visualColor = Color(red: 0.0, green: 234/255, blue: 223/255)
-                                                
-                                                //isShowingBottomImage = bottomImageOffsetY > -100
+                                                visualColor = Color.PressorBlue
                                                 self.isChevronAnimating = true
-                                                
-                                                bottomImageOffsetY = 0
-                                                isShowingBottomImage = true
-                                                isBottomImage = false
-                                                isTopImage = true
                                             } else {
                                                 speakerSwitch = SpeakerSwitch.speakerOne
-                                                visualColor = Color(red: 1.0, green: 166/255, blue: 0.0)
+                                                visualColor = Color.PressorOrange
                                                 self.isChevronAnimating = false
-                                                
-                                                topImageOffsetY = 0
-                                                isShowingTopImage = true
-                                                isBottomImage = true
-                                                isTopImage = false
                                             }
                                             
                                             if vm.isRecording {
@@ -286,11 +254,6 @@ struct InterviewRecordingView: View {
                                                 }
                                             }
                                         }
-                                        else {
-                                            bottomImageOffsetY = 0
-                                            topImageOffsetY = 0
-                                            initChevronOffsetYValue = 0
-                                        }
                                     }
                                 }
                         )
@@ -304,21 +267,17 @@ struct InterviewRecordingView: View {
                                             Image(systemName: "chevron.compact.up")
                                                 .resizable()
                                                 .frame(width: 34, height: 10)
-                                                .foregroundColor(Color(red: 1.0, green: 166/255, blue: 0.0))
-                                                .offset(x: 0, y: isChevronAnimating ? initChevronOffsetYValue - 30 : initChevronOffsetYValue)
-                                                .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: false), value: isChevronAnimating)
-                                                .opacity(isChevronAnimating ? 1 : 0)
-                                                .animation(.easeOut(duration: 0.7).repeatForever(autoreverses: true), value: isChevronAnimating)
+                                                .foregroundColor(Color.PressorOrange)
+                                                .offset(x: 0, y: isChevronAnimating ? initChevronOffsetYValue - 15 : initChevronOffsetYValue)
+                                                .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isChevronAnimating)
                                                 .onAppear {
                                                     self.isChevronAnimating = true
                                                 }
                                             Text("쓸어올려 상대로 전환")
-                                                .foregroundColor(Color(red: 1.0, green: 166/255, blue: 0.0))
+                                                .foregroundColor(Color.PressorOrange)
                                         }
-                                        .offset(y: bottomImageOffsetY)
                                         .padding(.top, UIScreen.main.bounds.height / 2)
                                         .onAppear {
-                                            
                                         }
                                     }
                                 } else {
@@ -326,23 +285,19 @@ struct InterviewRecordingView: View {
                                     if isShowingBottomImage {
                                         VStack(spacing: 20) {
                                             Text("쓸어내려 나로 전환")
-                                                .foregroundColor(Color(red: 0.0, green: 234/255, blue: 223/255))
+                                                .foregroundColor(Color.PressorBlue)
                                             Image(systemName: "chevron.compact.down")
                                                 .resizable()
                                                 .frame(width: 34, height: 10)
-                                                .foregroundColor(Color(red: 0.0, green: 234/255, blue: 223/255))
-                                                .offset(x: 0, y: !isChevronAnimating ? 30 + initChevronOffsetYValue : initChevronOffsetYValue)
-                                                .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: false), value: !isChevronAnimating)
-                                                .opacity(isChevronAnimating ? 0 : 1)
-                                                .animation(.easeOut(duration: 0.7).repeatForever(autoreverses: true), value: !isChevronAnimating)
+                                                .foregroundColor(Color.PressorBlue)
+                                                .offset(x: 0, y: !isChevronAnimating ? 15 + initChevronOffsetYValue : initChevronOffsetYValue)
+                                                .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: !isChevronAnimating)
                                                 .onAppear {
                                                     self.isChevronAnimating = false
                                                 }
                                         }
-                                        .offset(y: topImageOffsetY)
                                         .padding(.bottom, UIScreen.main.bounds.height / 2)
                                         .onAppear {
-                                            
                                         }
                                     }
                                 }
@@ -357,7 +312,7 @@ struct InterviewRecordingView: View {
                 } // VStack
                 // 오디오 비쥬얼라이저 뷰
                 AudioVisualizerView(audioInputManager: audioInputManager, isRecording: $isRecording, isPaused: $isPaused, audioVisualizerColor: $visualColor)
-                    .position(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height * 0.87)
+                    .position(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height * 0.875)
             } // ZStack
             .frame(
                 maxWidth: .infinity,
