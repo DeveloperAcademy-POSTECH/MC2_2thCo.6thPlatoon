@@ -208,7 +208,7 @@ struct InterviewRecordingScriptView: View {
                     ZStack {
                         ScrollView(.vertical, showsIndicators: false) {
                             VStack(alignment: .leading, spacing: 0) {
-                                Text("\n\(vm.interview.script.description)")
+                                Text("\n\n\(vm.interview.script.description)\n\n")
                                     .font(.system(size: 22))
                                     .foregroundColor(.white)
                             }
