@@ -175,6 +175,7 @@ struct MainRecordView: View {
                     AddScriptModalView(mode: scriptAdded ? .edit : .add, scriptAdded: $scriptAdded, interviewViewModel: interviewViewModel, scriptIndex: selectedScriptIndex)
                 }
             }
+            .navigationViewStyle(.stack)
             .tag(Constants.RECORD_TAB_ID)
             .tabItem {
                 Image(systemName: "mic.circle.fill")
