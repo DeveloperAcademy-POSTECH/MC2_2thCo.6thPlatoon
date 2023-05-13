@@ -132,7 +132,7 @@ struct InterviewDetailView: View {
                                 isDetailChanging: $isInterviewInfoEditing
                             )
                             .onAppear {
-                                isInterviewInfoEditing.toggle()
+                                isInterviewInfoEditing = true
                             }
                         } label: {
                             Image(systemName: "square.and.pencil")
