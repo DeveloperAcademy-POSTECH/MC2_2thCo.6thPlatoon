@@ -144,11 +144,24 @@ struct MainRecordView: View {
                                             .foregroundColor(Color.accentColor)
                                             .fontWeight(.semibold)
                                     }
+                                    .disabled(isTimerCounting)
                                 }
                             }
                         }
                     }
-                    if countSec != 0 {
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            NavigationLink {
+                                Text("세팅뷰")
+                            } label: {
+                                Image(systemName: "gearshape.fill")
+                                    .foregroundColor(.DisabledGary)
+                            }
+                        }
+                    }
+                    .disabled(isTimerCounting)
+                    
+                    if isTimerCounting {
                         ZStack{
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(Color.white)
@@ -172,13 +185,6 @@ struct MainRecordView: View {
                         }
                     }
                 }
-                .navigationBarItems(trailing: NavigationLink(
-                    destination: Text("세팅뷰")) {
-                        Image(systemName: "gearshape.fill")
-                            .foregroundColor(.DisabledGary)
-                    }
-                )
-                .disabled(isTimerCounting)
                 .sheet(isPresented: $showModal) {
                     AddScriptModalView(interviewViewModel: interviewViewModel, scriptAdded: $scriptAdded, title: scriptTitle, description: scriptDescription, mode: scriptAdded ? .edit : .add)
                 }
