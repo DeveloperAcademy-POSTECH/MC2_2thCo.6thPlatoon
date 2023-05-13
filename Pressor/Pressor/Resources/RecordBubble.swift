@@ -49,7 +49,11 @@ struct RecordBubble: View {
         )
         .padding(.bottom, 8)
         .sheet(isPresented: $isEditing) {
-            InterviewDetailChatEditModalView(isInterviewDetailChatEditModalViewDisplayed: $isEditing)
+            InterviewDetailChatEditModalView(
+                interviewBubbleManager: bubbleManager,
+                record: record,
+                isInterviewDetailChatEditModalViewDisplayed: $isEditing
+            )
         }
     }
     
@@ -61,15 +65,21 @@ struct RecordBubble: View {
             .overlay(alignment: .center) {
                 Button {
                     // TODO: - Play or Stop
-                    isReadyToPlay
-                    ? bubbleManager.startPlayingRecordVoice(
-                        url: record.fileURL,
-                        isPlaying: $isReadyToPlay
-                    )
-                    : bubbleManager.stopPlayingRecordVoice(isPlaying: $isReadyToPlay)
+                    if isReadyToPlay {
+                        bubbleManager.startPlayingRecordVoice(
+                            url: record.fileURL,
+                            isPlaying: $isReadyToPlay
+                        )
+                    } else {
+                        bubbleManager.stopPlayingRecordVoice(isPlaying: $isReadyToPlay)
+                    }
                 } label: {
-                    Image(systemName: !isReadyToPlay ? "stop.fill" : "play.fill")
-                        .foregroundColor(isInterviewerSpeaking ? .pressorButtonOrangePrimary : .pressorButtonBluePrimary)
+                    Image(systemName: isReadyToPlay ? "stop.fill" : "play.fill")
+                        .foregroundColor(
+                            isInterviewerSpeaking
+                            ? .pressorButtonOrangePrimary
+                            : .pressorButtonBluePrimary
+                        )
                 }
                 .frame(width: 34, height: 34)
                 .background(
