@@ -33,10 +33,6 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
     public var date: Date = Date()
     private var playingURL : URL?
     
-    
-    // TODO: Script create
-    public var script: Script = Script(title: "", description: "")
-    
     init(interview: Interview){
         self.interview = interview
     }
@@ -66,7 +62,6 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         }
         
         self.interview = interview
-        self.interview.script = self.script
         self.interviewPath = directoryPath
         
         // vm의 recording과 STT배열 초기화

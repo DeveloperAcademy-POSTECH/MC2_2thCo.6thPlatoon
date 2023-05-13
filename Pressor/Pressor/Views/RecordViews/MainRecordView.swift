@@ -11,7 +11,7 @@ struct MainRecordView: View {
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject var routingManager: RoutingManager
     @ObservedObject var vm: VoiceViewModel = VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(title: "", description: "")))
-    @State private var interviewViewModel: InterviewViewModel? = nil
+    @State private var interviewViewModel: InterviewViewModel = InterviewViewModel()
     @State var isSheetShowing: Bool = false
     @State var isShowingScriptDeleteAlert = false
     @State var showModal = false
@@ -47,7 +47,7 @@ struct MainRecordView: View {
                         VStack {
                             // MARK: - Mic Button
                             Button {
-                                
+                                print(vm.interview.script.description)
                                 if !isTimerCounting {
                                     countSec = 3
                                     isTimerCounting.toggle()
@@ -56,6 +56,8 @@ struct MainRecordView: View {
                                         self.countSec -= 1
                                         if(countSec == 0){
                                             timerCount?.invalidate()
+                                            // MARK: 대본이 있다면 추가시키는 로직
+                                            vm.interview.script = interviewViewModel.getScript()
                                             self.isShownInterviewRecordingView.toggle()
                                             isTimerCounting.toggle()
                                         }
@@ -67,12 +69,13 @@ struct MainRecordView: View {
                                     .padding(.bottom, 40)
                             }
                             .fullScreenCover(isPresented: $isShownInterviewRecordingView) {
-                                InterviewRecordingView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                if scriptAdded {
+                                    InterviewRecordingScriptView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                } else {
+                                    InterviewRecordingView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                }
+                                
                             }
-                            .simultaneousGesture(TapGesture().onEnded{
-                                vm.initInterview()
-                                print(vm.interview)
-                            })
                         }
                         
                         VStack {
@@ -106,8 +109,8 @@ struct MainRecordView: View {
                                         
                                         Button("대본 수정", role: .destructive) {
                                             showModal = true
-                                            scriptTitle = interviewViewModel?.getScript().title ?? ""
-                                            scriptDescription = interviewViewModel?.getScript().description ?? ""
+                                            scriptTitle = interviewViewModel.getScript().title
+                                            scriptDescription = interviewViewModel.getScript().description
                                         }
                                         .sheet(isPresented: $showModal) {
                                                                                         
@@ -122,7 +125,7 @@ struct MainRecordView: View {
                                             title: Text("대본 삭제"),
                                             message: Text("정말로 이 대본을 삭제하시겠습니까?"),
                                             primaryButton: .destructive(Text("삭제")) {
-                                                interviewViewModel?.setScript(title: "", description: "")
+                                                interviewViewModel.setScript(title: "", description: "")
                                                 scriptAdded = false
                                             },
                                             secondaryButton: .cancel(Text("취소"))
@@ -177,7 +180,7 @@ struct MainRecordView: View {
                 )
                 .disabled(isTimerCounting)
                 .sheet(isPresented: $showModal) {
-                    AddScriptModalView(interviewViewModel: interviewViewModel ?? InterviewViewModel(voiceViewModel: vm), voiceViewModel: vm, scriptAdded: $scriptAdded, title: scriptTitle, description: scriptDescription, mode: scriptAdded ? .edit : .add)
+                    AddScriptModalView(interviewViewModel: interviewViewModel, scriptAdded: $scriptAdded, title: scriptTitle, description: scriptDescription, mode: scriptAdded ? .edit : .add)
                 }
             }
             .tag(Constants.RECORD_TAB_ID)
@@ -186,8 +189,8 @@ struct MainRecordView: View {
                 Text("녹음")
             }
             .onAppear {
+                // MARK: VoiceViewModel과 interviewViewModel을 init합니다.
                 vm.initInterview()
-                interviewViewModel = InterviewViewModel(voiceViewModel: vm)
             }
             
             InterviewListView()

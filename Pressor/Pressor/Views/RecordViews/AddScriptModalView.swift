@@ -18,7 +18,6 @@ struct AddScriptModalView: View {
     @Environment(\.presentationMode) private var presentationMode
     
     @ObservedObject var interviewViewModel: InterviewViewModel
-    @ObservedObject var voiceViewModel: VoiceViewModel
     // 외부에서 전달된 scriptAdded를 바인딩하여 완료 버튼을 눌렀을 때 업데이트
     @Binding var scriptAdded: Bool
     
@@ -29,9 +28,8 @@ struct AddScriptModalView: View {
     let mode: ScriptMode
     
     // 초기화 메서드
-    init(interviewViewModel: InterviewViewModel, voiceViewModel: VoiceViewModel, scriptAdded: Binding<Bool>, title: String, description: String, mode: ScriptMode) {
+    init(interviewViewModel: InterviewViewModel, scriptAdded: Binding<Bool>, title: String, description: String, mode: ScriptMode) {
         self.interviewViewModel = interviewViewModel
-        self.voiceViewModel = voiceViewModel
         _scriptAdded = scriptAdded
         _title = State(initialValue: title)
         _description = State(initialValue: description)
@@ -96,7 +94,6 @@ struct AddScriptModalView: View {
                     interviewViewModel.setScript(title: title, description: description)
                 case .edit:
                     interviewViewModel.setScript(title: title, description: description)
-                    voiceViewModel.script = interviewViewModel.getScript()
                 }
                 // 제목과 본문을 입력한 경우, scriptAdded를 true로 설정하고 모달 창 종료
                 scriptAdded = true
