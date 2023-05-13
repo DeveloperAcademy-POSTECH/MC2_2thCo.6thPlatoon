@@ -27,7 +27,8 @@ struct EditScriptView: View {
             VStack {
                 Form {
                     inputSection
-                }
+                }.scrollContentBackground(.hidden)
+                    .background(Color.white)
             }
             .navigationTitle(Text("대본 편집"))
             .navigationBarTitleDisplayMode(.inline)
@@ -48,7 +49,7 @@ struct EditScriptView: View {
         Section {
             titleTextField
             bodyTextEditor
-        }
+        }.listRowBackground(Color(UIColor.systemGroupedBackground))
     }
 
     // 제목 입력 필드

@@ -32,7 +32,8 @@ struct CheckScriptView: View {
                 Form{
                     titleText
                     bodyText
-                }
+                }.scrollContentBackground(.hidden)
+                    .background(Color.white)
             }
             .navigationTitle(Text("대본"))
             .navigationBarTitleDisplayMode(.inline)
@@ -51,6 +52,7 @@ struct CheckScriptView: View {
     // 제목 필드
     private var titleText: some View {
         Text(title)
+            .font(.title)
     }
     
     // 본문 필드

@@ -29,7 +29,8 @@ struct AddScriptView: View {
             VStack{
                 Form{
                     inputSection
-                }
+                }.scrollContentBackground(.hidden)
+                    .background(Color.white)
             }
             .navigationTitle(Text("대본 추가"))
             .navigationBarTitleDisplayMode(.inline)
@@ -49,28 +50,32 @@ struct AddScriptView: View {
         Section {
             titleTextField
             bodyTextEditor
-        }
+        }.listRowBackground(Color(UIColor.systemGroupedBackground))
     }
     
     // 제목 입력 필드
     private var titleTextField: some View {
-        TextField("제목", text: $title).foregroundColor(.white)
+        ZStack(alignment: .leading) {
+            if title.isEmpty {
+                Text("제목")
+                    .foregroundColor(.gray)
+            }
+            TextField("", text: $title)
+        }
     }
     
     // 본문 입력 에디터
     private var bodyTextEditor: some View {
         ZStack(alignment: .topLeading) {
-            TextEditor(text: $description)
-                .frame(height: 270)
-                .padding(.leading, -4)
-            
             if description.isEmpty {
-                // 본문이 비어있을 때만 "본문" 텍스트 표시
                 Text("본문")
-                    .foregroundColor(.gray.opacity(0.5))
+                    .foregroundColor(.gray)
                     .padding(.top, 8)
                     .padding(.leading, -2)
             }
+            TextEditor(text: $description)
+                .frame(height: 270)
+                .padding(.leading, -4)
         }
     }
     
