@@ -1,13 +1,13 @@
 //
-//  InterviewRecordingView.swift
+//  InterviewRecordingScriptView.swift
 //  Pressor
 //
-//  Created by Ha Jong Myeong on 2023/05/03.
+//  Created by 홍승완 on 2023/05/12.
 //
 
 import SwiftUI
 
-struct InterviewRecordingView: View {
+struct InterviewRecordingScriptView: View {
     @ObservedObject var vm: VoiceViewModel
     
     @State private var isShowingList = false
@@ -205,13 +205,40 @@ struct InterviewRecordingView: View {
                         .navigationBarHidden(true)
                         .disabled(isRecording)
                     } // HStack
+                    ZStack {
+                        ScrollView(.vertical, showsIndicators: false) {
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text("\n\n\(vm.interview.script.description)\n\n")
+                                    .font(.system(size: 22))
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .frame(height: UIScreen.main.bounds.height * 0.31)
+                        .padding()
+                        VStack {
+                            Rectangle()
+                                .frame(height: 5)
+                                .background(.black)
+                                .shadow(color: .black, radius: 3, x: 0, y: 3)
+                                .shadow(color: .black, radius: 5, x: 0, y: 3)
+                                .shadow(color: .black, radius: 7, x: 0, y: 3)
+                            Spacer()
+                            Rectangle()
+                                .frame(height: 5)
+                                .background(.black)
+                            .shadow(color: .black, radius: 3, x: 0, y: -3)
+                            .shadow(color: .black, radius: 5, x: 0, y: -3)
+                            .shadow(color: .black, radius: 7, x: 0, y: -3)
+                        }
+                        .frame(height: UIScreen.main.bounds.height * 0.31)
+                    }
                     // 화자 전환 기능
                     RoundedRectangle(cornerRadius: 44)
                         // 화자전환 영역
                         .fill(Color.BackgroundGray_Dark)
                         .frame(
                             width: UIScreen.main.bounds.width * 0.93,
-                            height: UIScreen.main.bounds.height * 0.74
+                            height: UIScreen.main.bounds.height * 0.42
                         )
                         // 화자전환 제스처
                         .gesture(
@@ -276,7 +303,7 @@ struct InterviewRecordingView: View {
                                             Text("쓸어올려 상대로 전환")
                                                 .foregroundColor(Color.PressorOrange)
                                         }
-                                        .padding(.top, UIScreen.main.bounds.height / 2)
+                                        .padding(.top, UIScreen.main.bounds.height / 4)
                                         .onAppear {
                                         }
                                     }
@@ -296,7 +323,7 @@ struct InterviewRecordingView: View {
                                                     self.isChevronAnimating = false
                                                 }
                                         }
-                                        .padding(.bottom, UIScreen.main.bounds.height / 2)
+                                        .padding(.bottom, UIScreen.main.bounds.height / 4)
                                         .onAppear {
                                         }
                                     }
@@ -305,10 +332,7 @@ struct InterviewRecordingView: View {
                             .font(.headline)
                             .fontWeight(.bold)
                         }
-                        .position(
-                            x: UIScreen.main.bounds.width / 2,
-                            y: UIScreen.main.bounds.height * 0.006
-                        )
+                        .padding(.bottom, UIScreen.main.bounds.height * 0.065)
                 } // VStack
                 // 오디오 비쥬얼라이저 뷰
                 AudioVisualizerView(audioInputManager: audioInputManager, isRecording: $isRecording, isPaused: $isPaused, audioVisualizerColor: $visualColor)
@@ -332,9 +356,9 @@ struct InterviewRecordingView: View {
     } // body
 } // struct
 
-struct InterviewRecordingView_Previews: PreviewProvider {
+struct InterviewRecordingScriptView_Previews: PreviewProvider {
     static var previews: some View {
-        InterviewRecordingView(
+        InterviewRecordingScriptView(
             vm: VoiceViewModel(
                 interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: Script(title: "", description: "")))
             , isShownInterviewRecordingView: .constant(false)

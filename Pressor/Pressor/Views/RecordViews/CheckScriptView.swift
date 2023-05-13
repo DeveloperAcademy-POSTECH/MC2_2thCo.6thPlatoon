@@ -10,20 +10,16 @@ import SwiftUI
 struct CheckScriptView: View {
     @Environment(\.presentationMode) private var presentationMode
     @ObservedObject var interviewViewModel: InterviewViewModel
-    @ObservedObject var voiceViewModel: VoiceViewModel
     @State private var showingEditView = false
     @State private var navigateToEditScriptView = false
     @State private var showingDeleteConfirmationAlert = false
     @Binding var scriptAdded: Bool
-    let title: String
-    let description: String
+    @State var title: String = ""
+    @State var description: String = ""
     
     // 초기화 메서드
-    init(interviewViewModel: InterviewViewModel, voiceViewModel: VoiceViewModel, title: String, description: String, scriptAdded: Binding<Bool>) {
+    init(interviewViewModel: InterviewViewModel, scriptAdded: Binding<Bool>) {
         self.interviewViewModel = interviewViewModel
-        self.voiceViewModel = voiceViewModel
-        self.title = interviewViewModel.script.title
-        self.description = interviewViewModel.script.description
         self._scriptAdded = scriptAdded
     }
     
@@ -54,11 +50,17 @@ struct CheckScriptView: View {
     private var titleText: some View {
         Text(title)
             .font(.title)
+            .onAppear {
+                title = interviewViewModel.script.title
+            }
     }
     
     // 본문 필드
     private var bodyText: some View {
         Text(description)
+            .onAppear {
+                description = interviewViewModel.script.description
+            }
     }
     
     // 취소 버튼

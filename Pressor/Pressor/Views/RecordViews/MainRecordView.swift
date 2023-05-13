@@ -11,7 +11,7 @@ struct MainRecordView: View {
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject var routingManager: RoutingManager
     @ObservedObject var vm: VoiceViewModel = VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(title: "", description: "")))
-    @State private var interviewViewModel: InterviewViewModel? = nil
+    @State private var interviewViewModel: InterviewViewModel = InterviewViewModel()
     @State var isSheetShowing: Bool = false
     @State var isShowingScriptDeleteAlert = false
     @State var showModal = false
@@ -47,7 +47,6 @@ struct MainRecordView: View {
                         VStack {
                             // MARK: - Mic Button
                             Button {
-                                
                                 if !isTimerCounting {
                                     countSec = 3
                                     isTimerCounting.toggle()
@@ -56,6 +55,8 @@ struct MainRecordView: View {
                                         self.countSec -= 1
                                         if(countSec == 0){
                                             timerCount?.invalidate()
+                                            // MARK: 대본이 있다면 추가시키는 로직
+                                            vm.interview.script = interviewViewModel.getScript()
                                             self.isShownInterviewRecordingView.toggle()
                                             isTimerCounting.toggle()
                                         }
@@ -67,12 +68,13 @@ struct MainRecordView: View {
                                     .padding(.bottom, 40)
                             }
                             .fullScreenCover(isPresented: $isShownInterviewRecordingView) {
-                                InterviewRecordingView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                if scriptAdded {
+                                    InterviewRecordingScriptView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                } else {
+                                    InterviewRecordingView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                }
+                                
                             }
-                            .simultaneousGesture(TapGesture().onEnded{
-                                vm.initInterview()
-                                print(vm.interview)
-                            })
                         }
                         
                         VStack {
@@ -85,7 +87,7 @@ struct MainRecordView: View {
                                 } label: {
                                     if scriptAdded {
                                         // 대본이 있을 경우
-                                        NavigationLink(destination: CheckScriptView(interviewViewModel: interviewViewModel ?? InterviewViewModel(voiceViewModel: vm), voiceViewModel: vm, title: scriptTitle, description: scriptDescription, scriptAdded: $scriptAdded)) {
+                                        NavigationLink(destination: CheckScriptView(interviewViewModel: interviewViewModel,  scriptAdded: $scriptAdded)) {
                                             VStack {
                                                 Image(systemName: "note.text")
                                                     .resizable()
@@ -111,7 +113,19 @@ struct MainRecordView: View {
                                 }
                         }
                     }
-                    if countSec != 0 {
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            NavigationLink {
+                                Text("세팅뷰")
+                            } label: {
+                                Image(systemName: "gearshape.fill")
+                                    .foregroundColor(.DisabledGary)
+                            }
+                        }
+                    }
+                    .disabled(isTimerCounting)
+                    
+                    if isTimerCounting {
                         ZStack{
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(Color.white)
@@ -135,15 +149,8 @@ struct MainRecordView: View {
                         }
                     }
                 }
-                .navigationBarItems(trailing: NavigationLink(
-                    destination: Text("세팅뷰")) {
-                        Image(systemName: "gearshape.fill")
-                            .foregroundColor(.DisabledGary)
-                    }
-                )
-                .disabled(isTimerCounting)
                 .fullScreenCover(isPresented: $showModal) {
-                    AddScriptView(interviewViewModel: interviewViewModel ?? InterviewViewModel(voiceViewModel: vm), voiceViewModel: vm, scriptAdded: $scriptAdded, title: scriptTitle, description: scriptDescription)
+                    AddScriptView(interviewViewModel: interviewViewModel, scriptAdded: $scriptAdded)
                 }
             }
             .tag(Constants.RECORD_TAB_ID)
@@ -152,8 +159,8 @@ struct MainRecordView: View {
                 Text("녹음")
             }
             .onAppear {
+                // MARK: VoiceViewModel과 interviewViewModel을 init합니다.
                 vm.initInterview()
-                interviewViewModel = InterviewViewModel(voiceViewModel: vm)
             }
             
             InterviewListView()

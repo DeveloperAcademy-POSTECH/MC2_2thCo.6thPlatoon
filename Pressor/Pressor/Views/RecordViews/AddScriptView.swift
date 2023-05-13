@@ -10,18 +10,14 @@ import SwiftUI
 struct AddScriptView: View {
     @Environment(\.presentationMode) private var presentationMode
     @ObservedObject var interviewViewModel: InterviewViewModel
-    @ObservedObject var voiceViewModel: VoiceViewModel
     @Binding var scriptAdded: Bool
     @State var title: String = ""
     @State var description: String = ""
     
     // 초기화 메서드
-    init(interviewViewModel: InterviewViewModel, voiceViewModel: VoiceViewModel, scriptAdded: Binding<Bool>, title: String, description: String) {
+    init(interviewViewModel: InterviewViewModel, scriptAdded: Binding<Bool>) {
         self.interviewViewModel = interviewViewModel
-        self.voiceViewModel = voiceViewModel
         _scriptAdded = scriptAdded
-        self.title = title
-        self.description = description
     }
     
     var body: some View {
