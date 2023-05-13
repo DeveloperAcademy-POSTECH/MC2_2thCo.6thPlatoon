@@ -6,23 +6,27 @@
 //
 
 import SwiftUI
+import CoreTransferable
+import AVFoundation
 
 struct InterviewDetailView: View {
-    @ObservedObject var voiceViewModel: VoiceViewModel
-    
-    @State private var interview: Interview?
+    @ObservedObject var interviewBubbleManager: InterviewBubbleManager
     
     @State private var isEditing: Bool = false
     @State private var isInterviewInfoEditing: Bool = false
     @State private var isWholeRecordPlaying: Bool = false
     @State private var isRemovingInterview: Bool = false
-
     @State private var transferableScripts: String = ""
-    @State private var sliderRange: CGFloat = 0
+    
+    @State private var wholeRecordPlayTime: CGFloat = 0
+    @State private var currentTime: CGFloat = 0
+    @State private var currentRecordIndex: Int = 0
     
     // MARK: - LIFECYCLE
-    init(voiceViewModel: VoiceViewModel) {
-        self.voiceViewModel = voiceViewModel
+    init(
+        interviewBubbleManager: InterviewBubbleManager
+    ) {
+        self.interviewBubbleManager = interviewBubbleManager
         
         // MARK: SET SLIDER THUMB IMAGE
         UISlider.appearance().setThumbImage(
@@ -35,59 +39,60 @@ struct InterviewDetailView: View {
     var body: some View {
         ZStack {
             ScrollView {
-                LazyVStack {
-                    if
-                        let interview {
+                if
+                    let interview = interviewBubbleManager.currentInterview {
+                    LazyVStack {
                         Section {
                             ForEach(interview.records, id: \.id) { eachRecord in
                                 // TODO: DI ViewModel, Record
                                 RecordBubble(
-                                    voiceViewModel: voiceViewModel,
+                                    bubbleManager: interviewBubbleManager,
                                     record: eachRecord,
-                                    interview: interview,
                                     isEditing: $isEditing
                                 )
                             }
                         } header: {
-                            InterviewInfoHeader()
+                            InterviewInfoHeader(with: interview)
                                 .padding(.bottom, 16)
                         }
-                    } else {
-                        ProgressView()
                     }
+                    .padding(.bottom, UIScreen.main.bounds.height * 0.2)
                 }
-                .padding(.bottom, UIScreen.main.bounds.height * 0.2)
             }
-            
-            VStack {
-                // MARK: - AUDIO PLAYER
-                AudioPlayerBuilder()
-            }
-            .frame(
-                maxHeight: .infinity,
-                alignment: .bottom
-            )
+        }
+        .overlay(alignment: .bottom) {
+            // TODO: Not Completed
+//                AudioPlayerBuilder(with: interview)
         }
         .ignoresSafeArea(.container, edges: .bottom)
         .onAppear {
             // TODO: GET Record List Here
             makeTransferableScripts()
         }
-        .navigationTitle("INTERVIEW_NAME")
+        .navigationTitle("\(interviewBubbleManager.currentInterview.details.interviewTitle )")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
-                    // TODO: get All Interview Sound Asset to share all data
-                    // TODO: DEEPLINK
-                    ShareLink(item: transferableScripts) {
-                        Label("공유", systemImage: "square.and.arrow.up")
-                    }
-                    
-                    Button(role: .destructive) {
-                        isRemovingInterview.toggle()
-                    } label: {
-                        Label("삭제", systemImage: "trash")
+                    // TODO: CRASH ERROR, ASK TO MENTOR
+                    if
+                        let interview = interviewBubbleManager.currentInterview {
+                        ShareLink(
+                            item: transferableScripts,
+                            subject: Text("\(interview.details.interviewTitle) 인터뷰 스크립트 보내기"),
+                            message: Text("'\(interview.details.interviewTitle)' 인터뷰의 스크립트")
+                        ) {
+                            Label(
+                                "공유하기",
+                                systemImage: "square.and.arrow.up"
+                            )
+                        }
+                        
+                        Button(role: .destructive) {
+                            isRemovingInterview.toggle()
+                        } label: {
+                            Label("삭제하기", systemImage: "trash")
+                        }
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -96,7 +101,7 @@ struct InterviewDetailView: View {
         }
         .alert(isPresented: $isRemovingInterview) {
             Alert(
-                title: Text("INTERVIEWNAME을 삭제하시겠습니까?"),
+                title: Text("\(interviewBubbleManager.currentInterview.details.interviewTitle)을 삭제하시겠습니까?"),
                 message: Text("이 동작은 취소되지 않습니다."),
                 primaryButton: .default(
                     Text("취소하기")
@@ -109,93 +114,110 @@ struct InterviewDetailView: View {
                 }
             )
         }
-        .sheet(isPresented: $isInterviewInfoEditing) {
-            InterviewDetailEditModalView(
-                isInterviewDetailEditModalViewDisplayed: $isInterviewInfoEditing
-            )
-        }
     }
     
+    
     // MARK: METHODS
-    private func InterviewInfoHeader() -> some View {
+    private func InterviewInfoHeader(with interview: Interview) -> some View {
         VStack {
-            VStack(spacing: 12) {
-                HStack {
-                    Text("INTERVEIW_NAME")
-                        .bold()
-                    Spacer()
-                    Button {
-                        isInterviewInfoEditing.toggle()
-                    } label: {
-                        Image(systemName: "square.and.pencil")
-                    }
-                    .tint(Color.pressorRed)
-                }
-                
-                HStack {
-                    Text("INTERVIEW_DATE")
-                    Spacer()
-                    Text("INTERVIEW_TOTAL_LENGTH")
-                }
-                .bold()
-                .font(.footnote)
-                .foregroundColor(Color(.systemGray2))
-            }
-            
-            Divider()
-                .padding(.vertical, 7.5)
-            
-            HStack(spacing: 28) {
-                VStack(
-                    alignment: .leading,
-                    spacing: 5
-                ) {
+            VStack {
+                VStack(spacing: 12) {
                     HStack {
-                        Text("Name")
-                    }
-                    
-                    HStack {
-                        Text("Email")
-                    }
-                    
-                    HStack {
-                        Text("Phone")
-                    }
-                }
-                .bold()
-                .foregroundColor(Color(.systemGray2))
-                
-                VStack(
-                    alignment: .leading,
-                    spacing: 5
-                ) {
-                    HStack {
-                        Text("INTERVIEWEE_NAME")
+                        Text(interview.details.interviewTitle)
                             .bold()
+                        Spacer()
+                        NavigationLink {
+                            InterviewDetailEditModalView(
+                                interviewBubbleManager: interviewBubbleManager,
+                                isDetailChanging: $isInterviewInfoEditing
+                            )
+                            .onAppear {
+                                isInterviewInfoEditing.toggle()
+                            }
+                        } label: {
+                            Image(systemName: "square.and.pencil")
+                        }
+                        .tint(Color.pressorRed)
                     }
                     
                     HStack {
-                        Text("INTERVIEWEE_EMAIL")
+                        Text(interview.details.date.toString(dateFormat: "yyyy-MM-dd HH:MM"))
+                        Spacer()
+                        Text(interview.details.playTime.description)
+                    }
+                    .bold()
+                    .font(.footnote)
+                    .foregroundColor(Color(.systemGray2))
+                }
+                
+                Divider()
+                    .padding(.vertical, 7.5)
+                
+                // MARK: Interview Infos
+                HStack(spacing: 28) {
+                    VStack(
+                        alignment: .leading,
+                        spacing: 5
+                    ) {
+                        HStack {
+                            Text("Name")
+                        }
+                        
+                        if
+                            let interview = interviewBubbleManager.currentInterview {
+                            if !interview.details.userEmail.isEmpty {
+                                HStack {
+                                    Text("Email")
+                                }
+                            }
                             
+                            if !interview.details.userPhoneNumber.isEmpty {
+                                HStack {
+                                    Text("Phone")
+                                }
+                            }
+                        }
                     }
+                    .bold()
+                    .foregroundColor(Color(.systemGray2))
                     
-                    HStack {
-                        Text("INTERVIEWEE_PHONE")
+                    VStack(
+                        alignment: .leading,
+                        spacing: 5
+                    ) {
+                        HStack {
+                            Text(interview.details.userName)
+                                .bold()
+                        }
+                        
+                        if
+                            let interview = interviewBubbleManager.currentInterview {
+                            if !interview.details.userEmail.isEmpty {
+                                HStack {
+                                    Text(interview.details.userEmail)
+                                }
+                            }
+                            
+                            if !interview.details.userPhoneNumber.isEmpty {
+                                HStack {
+                                    Text(interview.details.userPhoneNumber)
+                                }
+                            }
+                        }
                     }
                 }
+                .font(.callout)
+                .frame(
+                    maxWidth: .infinity,
+                    alignment: .leading
+                )
             }
-            .font(.callout)
-            .frame(
-                maxWidth: .infinity,
-                alignment: .leading
-            )
         }
         .padding()
         // MARK: Sketch는 한 줄 이상을 받아오는 시나리오가 없기에 각 정보는 한 줄로 보여지도록 제한합니다.
         .lineLimit(1)
         .frame(
-            width: UIScreen.main.bounds.width * 0.925,
-            height: UIScreen.main.bounds.height * 0.225
+            width: UIScreen.main.bounds.width * 0.925
         )
         .background {
             RoundedRectangle(cornerRadius: 24)
@@ -204,21 +226,19 @@ struct InterviewDetailView: View {
     }
     
     private func makeTransferableScripts() {
-        if
-            let interview {
-            for idx in 0..<interview.recordSTT.count {
-                if idx % 2 == 0 {
-                    // 먼저 질문하는 사람이 인터뷰어가 된다.
-                    self.transferableScripts += ("인터뷰어: " + interview.recordSTT[idx])
-                } else {
-                    self.transferableScripts += ("INTERVIEWEE_NAME: " + interview.recordSTT[idx])
-                }
+        for idx in 0 ..< interviewBubbleManager.currentInterview.recordSTT.count {
+            let num = idx + 1
+            if idx % 2 == 0 {
+                // 먼저 질문하는 사람이 인터뷰어가 된다.
+                self.transferableScripts += (num.description + "." + "인터뷰어: " + interviewBubbleManager.currentInterview.recordSTT[idx] + "\n")
+            } else {
+                self.transferableScripts += (num.description + "." + "\(interviewBubbleManager.currentInterview.details.userName) 님: " + interviewBubbleManager.currentInterview.recordSTT[idx] + "\n")
             }
         }
     }
     
     @ViewBuilder
-    private func AudioPlayerBuilder() -> some View {
+    private func AudioPlayerBuilder(with interview: Interview) -> some View {
         ZStack {
             Rectangle()
                 .fill(.clear)
@@ -234,12 +254,15 @@ struct InterviewDetailView: View {
                 // MARK: PLAY PROGRESS
                 // SLIDER....
                 VStack(spacing: 0) {
-                    Slider(value: $sliderRange)
+                    Slider(
+                        value: $interviewBubbleManager.progress,
+                        in: 0 ... CGFloat(interviewBubbleManager.progress)
+                    )
                     
                     HStack {
-                        Text("시작")
+                        Text("\(currentTime.description)")
                         Spacer()
-                        Text("끝")
+                        Text(interview.details.playTime)
                     }
                     .font(.caption)
                     .foregroundColor(.gray)
@@ -249,38 +272,31 @@ struct InterviewDetailView: View {
                 // MARK: PLAY BUTTONS
                 HStack(spacing: 40) {
                     Button {
-                        print("\(#file) L: \(#line) GO BACK 10 SECONDS")
-                    } label: {
-                        Rectangle()
-                            .frame(width: 44, height: 44)
-                            .foregroundColor(.clear)
-                            .overlay {
-                                Image(systemName: "gobackward.10")
-                                    .font(.title3)
-                            }
-                    }
-                    .buttonStyle(.borderless)
-                    
-                    Button {
                         isWholeRecordPlaying.toggle()
+                        
+                        // MARK: Start PLAY and Get Each Record's TimeInterval
+                        interviewBubbleManager.startPlayingRecordVoice(
+                            url: interview.records[currentRecordIndex].fileURL,
+                            isPlaying: $isWholeRecordPlaying
+                        )
                     } label: {
                         Rectangle()
                             .frame(width: 44, height: 44)
                             .foregroundColor(.clear)
                             .overlay {
-                                Image(systemName: isWholeRecordPlaying ? "pause.fill" : "play.fill")
+                                Image(systemName: isWholeRecordPlaying ? "stop.fill" : "play.fill")
                                     .font(.title3)
                             }
                     }
                     
                     Button {
-                        print("\(#file) L: \(#line) SKIP 10 SECONDS")
+                        print("\(#file) L: \(#line) Play Next")
                     } label: {
                         Rectangle()
                             .frame(width: 44, height: 44)
                             .foregroundColor(.clear)
                             .overlay {
-                                Image(systemName: "goforward.10")
+                                Image(systemName: "forward.end.alt.fill")
                                     .font(.title3)
                             }
                         
@@ -297,7 +313,12 @@ struct InterviewDetailView: View {
 struct InterviewDetailView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            InterviewDetailView(voiceViewModel: VoiceViewModel())
+            InterviewDetailView(
+                interviewBubbleManager: .init(
+                    currentInterview: .getDummyInterview()
+                )
+            )
         }
+        .navigationViewStyle(.stack)
     }
 }
