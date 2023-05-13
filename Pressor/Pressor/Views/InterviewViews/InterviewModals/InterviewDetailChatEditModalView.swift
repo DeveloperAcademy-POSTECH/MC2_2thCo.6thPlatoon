@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct InterviewDetailChatEditModalView: View {
-//    @ObservedObject var recordViewModel: RecordViewModel
+    @ObservedObject var interviewBubbleManager: InterviewBubbleManager
+    @State var record: Record
     @State private var interviewDescription: String = ""
     @Binding var isInterviewDetailChatEditModalViewDisplayed: Bool
     @FocusState var isTextEditorDisplayed: Bool
@@ -18,6 +19,8 @@ struct InterviewDetailChatEditModalView: View {
         NavigationView {
             Form {
                 TextEditor(text: $interviewDescription)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
                     .frame(
                         minHeight: UIScreen.main.bounds.height * 0.5,
                         maxHeight: .infinity
@@ -44,11 +47,15 @@ struct InterviewDetailChatEditModalView: View {
                         hideKeyboard()
                         dismiss()
                         // TODO: RECORD TEXT UPDATE HERE
+                        interviewBubbleManager.currentInterview.recordSTT[record.transcriptIndex] = interviewDescription
                     } label: {
                         Text("완료")
                     }
                 }
             }
+        }
+        .onAppear {
+            self.interviewDescription =  interviewBubbleManager.currentInterview.recordSTT[record.transcriptIndex]
         }
         .onTapGesture {
             hideKeyboard()
