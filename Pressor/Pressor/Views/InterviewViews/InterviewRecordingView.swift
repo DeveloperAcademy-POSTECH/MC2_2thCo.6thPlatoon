@@ -217,7 +217,7 @@ struct InterviewRecordingView: View {
                         .gesture(
                             DragGesture()
                                 .onEnded { value in
-                                    let isDraggingDownward = (value.translation.height > 100 && speakerSwitch == SpeakerSwitch.speakerTwo) || (value.translation.height < -100 && speakerSwitch == SpeakerSwitch.speakerOne)
+                                    let isDraggingDownward = (value.translation.height > 50 && speakerSwitch == SpeakerSwitch.speakerTwo) || (value.translation.height < -50 && speakerSwitch == SpeakerSwitch.speakerOne)
                                     withAnimation(.spring()) {
                                         if isDraggingDownward {
                                             // 오디오 비주얼라이저 색상
