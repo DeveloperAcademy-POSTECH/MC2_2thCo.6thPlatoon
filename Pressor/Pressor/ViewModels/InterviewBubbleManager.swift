@@ -9,14 +9,34 @@ import SwiftUI
 import AVFoundation
 
 final class InterviewBubbleManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
-    @Published var currentInterview: Interview?
+    @Published var currentInterview: Interview = .getDummyInterview()
+    @Published var duration: Double = 0.0
+    @Published var formattedDuration: String = ""
+    @Published var progress: CGFloat = 0.0
+    @Published var formattedProgress: String = "00:00"
+    
+    private var formatter = DateComponentsFormatter()
     private var audioPlayer: AVAudioPlayer = .init()
     
     // MARK: LIFECYCLE
     init(
         currentInterview: Interview? = nil
     ) {
-        self.currentInterview = currentInterview
+        self.currentInterview = currentInterview ?? .getDummyInterview()
+    }
+    
+    private func prepareAudioPlayer(with audioPlayer: AVAudioPlayer) {
+        formatter.allowedUnits = [.minute, .second]
+        formatter.unitsStyle = .positional
+        formatter.zeroFormattingBehavior = [ .pad ]
+        
+        formattedDuration = formatter.string(from: TimeInterval(audioPlayer.duration))!
+        duration = audioPlayer.duration
+        
+        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            self?.progress = CGFloat(audioPlayer.currentTime / audioPlayer.duration)
+            self?.formattedProgress = self?.formatter.string(from: TimeInterval(audioPlayer.currentTime))! ?? ""
+        }
     }
     
     // MARK: - Bubble Audio Control
@@ -33,6 +53,7 @@ final class InterviewBubbleManager: NSObject, ObservableObject, AVAudioPlayerDel
         }
         
         do {
+//            prepareAudioPlayer(with: self.audioPlayer)
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer.delegate = self
             audioPlayer.prepareToPlay()
@@ -46,26 +67,5 @@ final class InterviewBubbleManager: NSObject, ObservableObject, AVAudioPlayerDel
     public func stopPlayingRecordVoice(isPlaying: Binding<Bool>) {
         audioPlayer.stop()
         isPlaying.wrappedValue.toggle()
-    }
-    
-    // TODO: PLAY ALL RECORD WITH
-    public func playAllRecord(isPlaying: Binding<Bool>, inList urls: [URL]) {
-        let playSession = AVAudioSession.sharedInstance()
-        var idx = 0
-        
-        do {
-            try playSession.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
-        } catch {
-            print("Playing failed in Device")
-        }
-        
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: urls[idx])
-            audioPlayer.delegate = self
-            audioPlayer.prepareToPlay()
-            audioPlayer.play()
-        } catch {
-            print("Playing Failed")
-        }
     }
 }
