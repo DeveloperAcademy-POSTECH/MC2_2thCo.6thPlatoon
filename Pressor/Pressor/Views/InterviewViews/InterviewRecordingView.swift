@@ -10,6 +10,7 @@ import SwiftUI
 struct InterviewRecordingView: View {
     @ObservedObject var vm: VoiceViewModel
     
+    @State private var isDetailChanging: Bool = false
     @State private var isShowingList = false
     @State var transcriptIndex: Int = 0
     @StateObject private var audioInputManager = AudioInputViewModel()
@@ -166,7 +167,10 @@ struct InterviewRecordingView: View {
                     
                     // 완료 버튼 로직
                     NavigationLink(
-                        destination: InterviewDetailEditModalView(vm: vm),
+                        destination: InterviewDetailEditModalView(
+                            interviewBubbleManager: InterviewBubbleManager(currentInterview: vm.interview),
+                            isDetailChanging: $isDetailChanging
+                        ),
                         label: {
                             Text("완료")
                                 .font(.headline)
