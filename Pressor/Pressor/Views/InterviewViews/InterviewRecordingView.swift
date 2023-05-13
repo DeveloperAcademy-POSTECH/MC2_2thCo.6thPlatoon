@@ -166,13 +166,7 @@ struct InterviewRecordingView: View {
                     
                     // 완료 버튼 로직
                     NavigationLink(
-                        destination: InterviewDetailEditModalView(vm: vm)
-                            .onTapGesture {
-                                // 완료버튼 누를 때 interview 인스턴스를 업데이트
-                                vm.interview.recordSTT = vm.transcripts
-                                vm.interview.records = vm.recordings
-                                vm.interview.details.playTime = formattedDuration(duration)
-                            },
+                        destination: InterviewDetailEditModalView(vm: vm),
                         label: {
                             Text("완료")
                                 .font(.headline)
@@ -292,8 +286,14 @@ struct InterviewRecordingView: View {
             }
             .onDisappear {
                 audioInputManager.stopRecording()
+                // 마지막 STT Text가 시점 변경되는 시점을 무시하고 '일시정지 -> 완료'할 경우 오작동하는 경우가 있어서
+                // .onDisappear로 인스턴스 업데이트 시점 조절
+                vm.interview.recordSTT = vm.transcripts
+                vm.interview.records = vm.recordings
+                vm.interview.details.playTime = formattedDuration(duration)
             }
         } // NavigationView
+        .navigationViewStyle(.stack)
         .accentColor(Color.red)
     } // body
 } // struct
