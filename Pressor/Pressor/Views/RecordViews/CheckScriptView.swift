@@ -13,6 +13,7 @@ struct CheckScriptView: View {
     @ObservedObject var voiceViewModel: VoiceViewModel
     @State private var showingEditView = false
     @State private var navigateToEditScriptView = false
+    @State private var showingDeleteConfirmationAlert = false
     @Binding var scriptAdded: Bool
     let title: String
     let description: String
@@ -77,10 +78,7 @@ struct CheckScriptView: View {
                 Label("편집", systemImage: "pencil")
             }
             Button(role: .destructive, action: {
-                // 대본 삭제
-                scriptAdded = false
-                interviewViewModel.setScript(title: "", description: "")
-                presentationMode.wrappedValue.dismiss()
+                showingDeleteConfirmationAlert = true
             }) {
                 Label("삭제", systemImage: "trash")
             }
@@ -89,5 +87,15 @@ struct CheckScriptView: View {
         }
         // 네비게이션 링크 동작 버그로 .background 사용
         .background(NavigationLink("", destination: EditScriptView(interviewViewModel: interviewViewModel, showingEditView: $showingEditView, title: title, description: description), isActive: $navigateToEditScriptView))
+        .alert(isPresented: $showingDeleteConfirmationAlert) {
+            Alert(title: Text("대본 삭제"), message: Text("정말로 대본을 삭제하시겠습니까?"),
+                  primaryButton: .destructive(Text("삭제")) {
+                scriptAdded = false
+                interviewViewModel.setScript(title: "", description: "")
+                presentationMode.wrappedValue.dismiss()
+            },
+                  secondaryButton: .cancel(Text("취소"))
+            )
+        }
     }
 }
