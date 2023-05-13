@@ -56,6 +56,10 @@ struct MainRecordView: View {
                                         self.countSec -= 1
                                         if(countSec == 0){
                                             timerCount?.invalidate()
+                                            // MARK: 대본이 있다면 추가시키는 로직
+                                            if let scriptData = interviewViewModel?.getScript() {
+                                                vm.interview.script = scriptData
+                                            }
                                             self.isShownInterviewRecordingView.toggle()
                                             isTimerCounting.toggle()
                                         }
@@ -178,7 +182,7 @@ struct MainRecordView: View {
                 )
                 .disabled(isTimerCounting)
                 .sheet(isPresented: $showModal) {
-                    AddScriptModalView(interviewViewModel: interviewViewModel ?? InterviewViewModel(voiceViewModel: vm), voiceViewModel: vm, scriptAdded: $scriptAdded, title: scriptTitle, description: scriptDescription, mode: scriptAdded ? .edit : .add)
+                    AddScriptModalView(interviewViewModel: interviewViewModel ?? InterviewViewModel(), scriptAdded: $scriptAdded, title: scriptTitle, description: scriptDescription, mode: scriptAdded ? .edit : .add)
                 }
             }
             .tag(Constants.RECORD_TAB_ID)
@@ -187,8 +191,9 @@ struct MainRecordView: View {
                 Text("녹음")
             }
             .onAppear {
+                // MARK: VoiceViewModel과 interviewViewModel을 init합니다.
                 vm.initInterview()
-                interviewViewModel = InterviewViewModel(voiceViewModel: vm)
+                interviewViewModel = InterviewViewModel()
             }
             
             InterviewListView()

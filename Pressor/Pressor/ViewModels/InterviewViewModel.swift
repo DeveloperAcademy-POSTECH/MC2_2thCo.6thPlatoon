@@ -10,25 +10,18 @@ import Foundation
 
 class InterviewViewModel: ObservableObject {
     // Current script
-    @Published var script: Script
-    
-    // VoiceViewModel
-    @Published var voiceViewModel: VoiceViewModel
-
-    // Default initializer
-    init(voiceViewModel: VoiceViewModel) {
-        self.voiceViewModel = voiceViewModel
-        self.script = Script(title: "", description: "")
-    }
+    @Published var script: Script?
     
     // 대본 수정(추가, 삭제 - 공백으로 바꿀 경우)
     func setScript(title: String, description: String) {
         self.script = Script(title: title, description: description)
-        voiceViewModel.interview.script = script
     }
     
     // 대본 가져오기
     func getScript() -> Script {
-        return self.script
+        guard let script = self.script else {
+            return Script(title: "", description: "")
+        }
+        return script
     }
 }
