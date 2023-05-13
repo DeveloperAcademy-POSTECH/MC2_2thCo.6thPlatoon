@@ -24,6 +24,7 @@ class InterviewViewModel: ObservableObject {
     // 대본 수정(추가, 삭제 - 공백으로 바꿀 경우)
     func setScript(title: String, description: String) {
         self.script = Script(title: title, description: description)
+        voiceViewModel.interview.script = script
     }
     
     // 대본 가져오기
