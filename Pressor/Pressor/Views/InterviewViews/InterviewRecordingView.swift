@@ -44,8 +44,8 @@ struct InterviewRecordingView: View {
     
     // 타이머 시작 함수
     private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            duration += 0.1
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+            duration += 1
         }
     }
     
