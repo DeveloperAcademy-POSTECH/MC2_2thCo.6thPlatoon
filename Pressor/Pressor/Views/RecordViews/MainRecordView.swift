@@ -156,7 +156,7 @@ struct MainRecordView: View {
                                 }
                             Text("\(countSec)")
                                 .font(.system(size: 50, weight: .bold))
-                                .foregroundColor(.red)
+                                .foregroundColor(.orange)
                                 .fontDesign(.rounded)
                                 .padding(.bottom, 8)
                         }

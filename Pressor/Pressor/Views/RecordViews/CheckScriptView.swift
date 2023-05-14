@@ -68,7 +68,7 @@ struct CheckScriptView: View {
         Button("취소") {
             presentationMode.wrappedValue.dismiss()
         }
-        .foregroundColor(.PressorRed)
+        .foregroundColor(.accentColor)
     }
     
     // 수정 버튼
@@ -89,7 +89,7 @@ struct CheckScriptView: View {
                     Label("삭제", systemImage: "trash")
                 }
             } label: {
-                Image(systemName: "ellipsis.circle").foregroundColor(.PressorRed)
+                Image(systemName: "ellipsis.circle").foregroundColor(.accentColor)
             }
         }
         .alert(isPresented: $showingDeleteConfirmationAlert) {
