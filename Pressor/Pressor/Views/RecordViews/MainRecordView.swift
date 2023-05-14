@@ -120,10 +120,13 @@ struct MainRecordView: View {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             NavigationLink {
                                 SettingView(isShown: $isShowingSettingView)
+                                    .toolbar(.hidden, for: .tabBar)
                             } label: {
                                 Image(systemName: "gearshape.fill")
                                     .foregroundColor(.DisabledGary)
                             }
+                            .navigationBarTitleDisplayMode(.inline)
+                            .navigationBarHidden(true)
                         }
                     }
                     .disabled(isTimerCounting)
@@ -174,26 +177,9 @@ struct MainRecordView: View {
                 }
         }
         .accentColor(.red)
-                    .overlay(
-                        Group {
-                            if isShowingSettingView {
-                                SettingView(isShown: $isShowingSettingView)
-                            }
-                        }
-                    )
-                }
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            isShowingSettingView = true
-                        } label: {
-                            Image(systemName: "gearshape.fill")
-                                .foregroundColor(.DisabledGary)
-                        }
-                    }
-                }
-            }
         }
+    }
+}
 
 struct MainRecordView_Previews: PreviewProvider {
     static var previews: some View {
