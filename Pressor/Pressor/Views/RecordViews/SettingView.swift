@@ -14,7 +14,7 @@ struct SettingView: View {
     var body: some View {
         NavigationView{
             VStack{
-                Spacer(minLength: 40)
+                Spacer(minLength: 60)
                 Image("app_icon")  // 앱 아이콘 이미지
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -46,7 +46,7 @@ struct SettingView: View {
                 Text("Pressor 및 Pressor 로고는 Apple Developer Academy @ POSTECH 및 팀 2중대 6소대 소유이며 프로그램 전체 또는 일부를 무단 복제 및 배포시 민형사상 처벌을 받을 수 있습니다.")
                     .padding(.horizontal, 16)
                     .opacity(0.5).font(.caption)  // 저작권 정보
-                Spacer(minLength: 100)
+                Spacer(minLength: 120)
             }
             .navigationBarTitle("정보", displayMode: .inline)
             .navigationBarItems(leading: backButton)
