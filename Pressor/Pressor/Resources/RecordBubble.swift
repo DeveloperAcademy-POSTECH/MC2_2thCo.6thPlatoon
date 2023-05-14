@@ -15,128 +15,132 @@ import UniformTypeIdentifiers
  - Author: Celan
  */
 struct RecordBubble: View {
-//    @State var record: Record
-    @State var index: Int
-    @State var isInterviewer: Bool
+    @StateObject var bubbleManager: InterviewBubbleManager
+    @State var record: Record
     @State private var text: String = ""
-    @Binding var isEditing: Bool
+    @State private var isReadyToPlay: Bool = true
+    @State private var isEditing: Bool = false
 
+    var isInterviewerSpeaking: Bool {
+        record.type == Recorder.interviewer.rawValue
+    }
+    
+    // MARK: - body
     var body: some View {
-        if isInterviewer {
-            HStack(spacing: 10) {
-                // MARK: - Button
-                Rectangle()
-                    .fill(.clear)
-                    .frame(width: 44, height: 44)
-                    .overlay(alignment: .center) {
-                        Button {
-                            // TODO: - Play or Stop
-                        } label: {
-                            Image(systemName: "play.fill")
-                        }
-                        .frame(width: 34, height: 34)
-                        .background(Color.yellow)
-                        .clipShape(Circle())
-                    }
-                    .padding(.leading, 45)
+        HStack(spacing: 10) {
+            if isInterviewerSpeaking {
+                playButtonBuilder(with: bubbleManager.currentInterview)
                 
-                // MARK: - Bubble
-                VStack {
-                    if isEditing {
-                        TextField("", text: $text)
-                            .font(.system(size: 14))
-                            .frame(
-                                maxWidth: 278 - 39,
-                                minHeight: 44 - 22,
-                                alignment: .trailing
-                            )
-                            .padding(.vertical, 11)
-                            .padding(.horizontal, 19.5)
-                    } else {
-//                        Text("\(record.recordDescription)")
-                        Text("temp")
-                            .font(.system(size: 14))
-                            .frame(
-                                maxWidth: 278 - 39,
-                                minHeight: 44 - 22,
-                                alignment: .trailing
-                            )
-                            .padding(.vertical, 11)
-                            .padding(.horizontal, 19.5)
-                    }
-                    
-                }
-                .background(Color.orange)
-                .clipShape(Bubble(isInterviewer: isInterviewer))
-                .frame(
-                    maxWidth: .infinity,
-                    alignment: .trailing
-                )
-                .contextMenu {
-                    Button {
-//                        self.pasteToClipboard(with: record.recordDescription)
-                        self.pasteToClipboard(with: "temp")
-                    } label: {
-                        Label("복사", systemImage: "doc.on.doc")
-                    }
-                    
-                    Button {
-                        withAnimation {
-                            isEditing.toggle()
-                        }
-                    } label: {
-                        Label("편집", systemImage: "square.and.pencil")
-                    }
-                }
+                recordBubbleBuilder(with: bubbleManager.currentInterview)
+            } else {
+                recordBubbleBuilder(with: bubbleManager.currentInterview)
+
+                playButtonBuilder(with: bubbleManager.currentInterview)
             }
-            .padding(.trailing, 16)
-            .padding(.bottom, 8)
-            .sheet(isPresented: $isEditing) {
-                InterviewDetailChatEditModalView(isInterviewDetailChatEditModalViewDisplayed: $isEditing)
-            }
-        } else {
-            HStack(spacing: 10) {
-                VStack {
-                    Text("RecordDescription Here.")
-                        .font(.system(size: 14))
-                        .frame(
-                            maxWidth: 278 - 39,
-                            minHeight: 44 - 22,
-                            alignment: .leading
-                        )
-                        .padding(.vertical, 11)
-                        .padding(.horizontal, 19.5)
-                }
-                .background(Color.green)
-                .clipShape(Bubble(isInterviewer: isInterviewer))
-                .frame(
-                    maxWidth: .infinity,
-                    alignment: .trailing
-                )
-                
-                Rectangle()
-                    .fill(.clear)
-                    .frame(width: 44, height: 44)
-                    .overlay(alignment: .center) {
-                        Button {
-                            print("재생")
-                        } label: {
-                            Image(systemName: "play.fill")
-                        }
-                        .frame(width: 34, height: 34)
-                        .background(.yellow)
-                        .clipShape(Circle())
-                    }
-                    .padding(.trailing, 45)
-            }
-            .padding(.leading, 16)
-            .padding(.bottom, 8)
-            .sheet(isPresented: $isEditing) {
-                InterviewDetailChatEditModalView(isInterviewDetailChatEditModalViewDisplayed: $isEditing)
-            }
+        }
+        .padding(
+            isInterviewerSpeaking
+            ? .trailing
+            : .leading,
+            16
+        )
+        .padding(.bottom, 8)
+        .sheet(isPresented: $isEditing) {
+            InterviewDetailChatEditModalView(
+                interviewBubbleManager: bubbleManager,
+                isInterviewDetailChatEditModalViewDisplayed: $isEditing,
+                transcriptIndex: record.transcriptIndex
+            )
         }
     }
     
+    // MARK: - Builders
+    private func playButtonBuilder(with interview: Interview) -> some View {
+        Rectangle()
+            .fill(.clear)
+            .frame(width: 44, height: 44)
+            .overlay(alignment: .center) {
+                Button {
+                    // TODO: - Play or Stop
+                    if isReadyToPlay {
+                        bubbleManager.startPlayingRecordVoice(
+                            url: record.fileURL,
+                            isPlaying: $isReadyToPlay
+                        )
+                    } else {
+                        bubbleManager.stopPlayingRecordVoice(isPlaying: $isReadyToPlay)
+                    }
+                } label: {
+                    Image(systemName: isReadyToPlay ? "play.fill" : "stop.fill")
+                        .foregroundColor(
+                            isInterviewerSpeaking
+                            ? .pressorButtonOrangePrimary
+                            : .pressorButtonBluePrimary
+                        )
+                }
+                .frame(width: 34, height: 34)
+                .background(
+                    isInterviewerSpeaking
+                    ? Color.pressorButtonOrangeBackground
+                    : Color.pressorButtonBlueBackground
+                )
+                .clipShape(Circle())
+            }
+            .padding(
+                isInterviewerSpeaking
+                ? .leading
+                : .trailing,
+                45
+            )
+    }
+    
+    private func recordBubbleBuilder(with interview: Interview) -> some View {
+        VStack {
+            Text("\(interview.recordSTT[safe: record.transcriptIndex] ?? "")")
+                .font(.system(size: 14))
+                .frame(
+                    maxWidth: 278 - 39,
+                    minHeight: 44 - 22,
+                    alignment: isInterviewerSpeaking
+                    ? .trailing
+                    : .leading
+                )
+                .padding(.vertical, 11)
+                .padding(.horizontal, 19.5)
+        }
+        .background(
+            isInterviewerSpeaking
+            ? Color.PressorOrange_Light
+            : Color.PressorBlue_Light
+        )
+        .frame(
+            maxWidth: .infinity,
+            alignment: isInterviewerSpeaking ? .trailing : .leading
+        )
+        .clipShape(Bubble(isInterviewerSpeaking: isInterviewerSpeaking))
+        .contextMenu {
+            contextMenuButtonBuilder(with: interview)
+        }
+    }
+    
+    @ViewBuilder
+    private func contextMenuButtonBuilder(with interview: Interview) -> some View {
+        Button {
+            self.pasteToClipboard(with: interview.recordSTT[record.transcriptIndex])
+        } label: {
+            Label("복사", systemImage: "doc.on.doc")
+        }
+        
+        Button {
+            withAnimation {
+                isEditing.toggle()
+            }
+        } label: {
+            Label("편집", systemImage: "square.and.pencil")
+        }
+    }
+    
+    // MARK: - METHODS
     /**
      Clipboard로 복사하는 메소드입니다.
      완료되는 시점에 뷰에 복사 완료를 알리는 알람을 띄웁니다. <- Todo
@@ -150,13 +154,13 @@ struct RecordBubble: View {
 }
 
 struct Bubble: Shape {
-    var isInterviewer: Bool
+    let isInterviewerSpeaking: Bool
     
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(
             roundedRect: rect,
             byRoundingCorners:
-                isInterviewer
+                isInterviewerSpeaking
                 ? [.topLeft, .bottomLeft, .bottomRight]
                 : [.topRight, .bottomRight, .bottomLeft]
             ,
@@ -167,16 +171,5 @@ struct Bubble: Shape {
         )
         
         return Path(path.cgPath)
-    }
-}
-
-struct RecordBubble_Previews: PreviewProvider {
-    static var previews: some View {
-        ScrollView {
-//            RecordBubble(record: .init(recordDescription: "하이하이"), index: 0, isInterviewer: true)
-//            RecordBubble(record: .init(recordDescription: "안녕안녕"), index: 1, isInterviewer: false)
-//            RecordBubble(record: .init(recordDescription: "바이바이"), index: 0, isInterviewer: true)
-//            RecordBubble(record: .init(recordDescription: "그래그래"), index: 2, isInterviewer: false)
-        }
     }
 }

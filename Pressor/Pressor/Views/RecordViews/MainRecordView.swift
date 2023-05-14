@@ -10,8 +10,9 @@ import SwiftUI
 struct MainRecordView: View {
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject var routingManager: RoutingManager
-    @ObservedObject var vm: VoiceViewModel = VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(title: "", description: "")))
-    @State private var interviewViewModel: InterviewViewModel = InterviewViewModel()
+    @ObservedObject var vm: VoiceViewModel
+    @StateObject var interviewViewModel = InterviewViewModel()
+    
     @State var isSheetShowing: Bool = false
     @State var isShowingScriptDeleteAlert = false
     @State var showModal = false
@@ -26,11 +27,6 @@ struct MainRecordView: View {
     @State private var scriptDescription: String = ""
     @State private var scriptMode: ScriptMode = .add
     @State private var isShowingSettingView = false
-    
-    
-    init() {
-        UITabBar.appearance().scrollEdgeAppearance = .init()
-    }
     
     var body: some View {
         ZStack {
@@ -75,7 +71,6 @@ struct MainRecordView: View {
                                 } else {
                                     InterviewRecordingView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
                                 }
-                                
                             }
                         }
                         
@@ -159,14 +154,11 @@ struct MainRecordView: View {
                     AddScriptView(interviewViewModel: interviewViewModel, scriptAdded: $scriptAdded)
                 }
             }
+            .navigationViewStyle(.stack)
             .tag(Constants.RECORD_TAB_ID)
             .tabItem {
                 Image(systemName: "mic.circle.fill")
                 Text("녹음")
-            }
-            .onAppear {
-                // MARK: VoiceViewModel과 interviewViewModel을 init합니다.
-                vm.initInterview()
             }
             
             InterviewListView()
@@ -177,12 +169,15 @@ struct MainRecordView: View {
                 }
         }
         .accentColor(.red)
+        .onAppear {
+            UITabBar.appearance().scrollEdgeAppearance = .init()
+            vm.initInterview()
         }
     }
 }
 
 struct MainRecordView_Previews: PreviewProvider {
     static var previews: some View {
-        MainRecordView()
+        MainRecordView(vm: VoiceViewModel(interview: .getDummyInterview()))
     }
 }

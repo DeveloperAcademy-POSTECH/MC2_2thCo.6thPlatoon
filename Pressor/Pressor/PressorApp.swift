@@ -10,10 +10,12 @@ import SwiftUI
 @main
 struct PressorApp: App {
     @ObservedObject var routeManager: RoutingManager = .init()
+    @ObservedObject var voiceViewModel: VoiceViewModel = .init(interview: .getDummyInterview())
     @ObservedObject var permissionManager: PermissionManager = .init()
+    
     var body: some Scene {
         WindowGroup {
-            MainRecordView()
+            MainRecordView(vm: voiceViewModel)
                 .environmentObject(routeManager)
                 .onAppear {
                     permissionManager.requestAudioPermission()
