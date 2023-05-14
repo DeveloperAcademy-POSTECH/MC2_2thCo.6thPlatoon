@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingView: View {
     @Environment(\.presentationMode) private var presentationMode  // 프레젠테이션 모드에 접근하기 위한 변수
+    @Binding var isShown: Bool
     
     var body: some View {
         NavigationView{
@@ -48,19 +49,15 @@ struct SettingView: View {
                 Spacer(minLength: 100)
             }
             .navigationBarTitle("정보", displayMode: .inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    backButton  // 커스텀 뒤로가기 버튼 사용
-                }
-            }
+            .navigationBarItems(leading: backButton)
         }
-        .navigationBarBackButtonHidden(true)  // 기본 뒤로가기 버튼 숨기기
+        .navigationBarBackButtonHidden(true)
     }
-    
     // 뒤로가기 버튼
     private var backButton: some View {
         Button(action: {  // "뒤로" 텍스트 버튼
-            presentationMode.wrappedValue.dismiss()  // 버튼 클릭 시 현재 뷰 닫기
+            isShown = false // 버튼 클릭 시 현재 뷰 닫기
+            self.presentationMode.wrappedValue.dismiss()
         }) {
             HStack {
                 Image(systemName: "chevron.left")
@@ -71,9 +68,9 @@ struct SettingView: View {
         .foregroundColor(.PressorOrange)  // 버튼 색상 설정
     }
 }
-
-struct SettingView_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingView()
-    }
-}
+//
+//struct SettingView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        SettingView()
+//    }
+//}

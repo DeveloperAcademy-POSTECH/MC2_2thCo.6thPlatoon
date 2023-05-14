@@ -33,6 +33,7 @@ struct MainRecordView: View {
     }
     
     var body: some View {
+        ZStack {
         TabView(selection: $routingManager.currentTab) {
             NavigationView {
                 ZStack {
@@ -118,7 +119,7 @@ struct MainRecordView: View {
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             NavigationLink {
-                                SettingView()
+                                SettingView(isShown: $isShowingSettingView)
                             } label: {
                                 Image(systemName: "gearshape.fill")
                                     .foregroundColor(.DisabledGary)
@@ -173,8 +174,26 @@ struct MainRecordView: View {
                 }
         }
         .accentColor(.red)
-    }
-}
+                    .overlay(
+                        Group {
+                            if isShowingSettingView {
+                                SettingView(isShown: $isShowingSettingView)
+                            }
+                        }
+                    )
+                }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                            isShowingSettingView = true
+                        } label: {
+                            Image(systemName: "gearshape.fill")
+                                .foregroundColor(.DisabledGary)
+                        }
+                    }
+                }
+            }
+        }
 
 struct MainRecordView_Previews: PreviewProvider {
     static var previews: some View {
