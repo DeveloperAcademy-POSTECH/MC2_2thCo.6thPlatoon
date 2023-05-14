@@ -117,6 +117,13 @@ struct MainRecordView: View {
                         }
                     }
                     .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Image("app_logo")
+                                .foregroundColor(.clear)
+                                .padding(0)
+                                
+                        }
+                        
                         ToolbarItem(placement: .navigationBarTrailing) {
                             NavigationLink {
                                 SettingView(isShown: $isShowingSettingView)
