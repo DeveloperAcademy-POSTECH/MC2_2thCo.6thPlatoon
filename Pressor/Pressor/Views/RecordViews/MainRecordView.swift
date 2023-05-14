@@ -25,6 +25,7 @@ struct MainRecordView: View {
     @State private var scriptTitle: String = ""
     @State private var scriptDescription: String = ""
     @State private var scriptMode: ScriptMode = .add
+    @State private var isShowingSettingView = false
     
     
     init() {
@@ -116,7 +117,7 @@ struct MainRecordView: View {
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             NavigationLink {
-                                Text("세팅뷰")
+                                SettingView()
                             } label: {
                                 Image(systemName: "gearshape.fill")
                                     .foregroundColor(.DisabledGary)
