@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "mic_button@1x.png",
+      "filename" : "app_logo@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "mic_button@2x.png",
+      "filename" : "app_logo@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "mic_button@3x.png",
+      "filename" : "app_logo@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

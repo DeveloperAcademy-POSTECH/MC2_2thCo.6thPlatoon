@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SettingView: View {
     @Environment(\.presentationMode) private var presentationMode  // 프레젠테이션 모드에 접근하기 위한 변수
-    @Binding var isShown: Bool
+    @Binding var isShowingSettingView: Bool
     
     var body: some View {
         NavigationView{
@@ -52,11 +52,14 @@ struct SettingView: View {
             .navigationBarItems(leading: backButton)
         }
         .navigationBarBackButtonHidden(true)
+        .onAppear {
+            isShowingSettingView = true
+        }
     }
     // 뒤로가기 버튼
     private var backButton: some View {
         Button(action: {  // "뒤로" 텍스트 버튼
-            isShown = false // 버튼 클릭 시 현재 뷰 닫기
+            isShowingSettingView = false // 버튼 클릭 시 현재 뷰 닫기
             self.presentationMode.wrappedValue.dismiss()
         }) {
             HStack {

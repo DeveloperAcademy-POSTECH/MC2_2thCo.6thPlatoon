@@ -336,8 +336,8 @@ struct InterviewRecordingView: View {
                 stopTimer()
             }
         } // NavigationView
+        .accentColor(Color.orange)
         .navigationViewStyle(.stack)
-        .accentColor(Color.red)
     } // body
 } // struct
 

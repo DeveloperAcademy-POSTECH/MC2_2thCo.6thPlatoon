@@ -88,7 +88,7 @@ struct InterviewListView: View {
                                 isEditing.toggle()
                             } label: {
                                 Text("취소")
-                                    .foregroundColor(Color.red)
+                                    .foregroundColor(Color.orange)
                             }
 
                         }
@@ -106,7 +106,7 @@ struct InterviewListView: View {
 
                         } label: {
                             Text(isEditing ? "삭제" : "편집" )
-                                .foregroundColor(Color.red)
+                                .foregroundColor(Color.orange)
                         }
                         
                         

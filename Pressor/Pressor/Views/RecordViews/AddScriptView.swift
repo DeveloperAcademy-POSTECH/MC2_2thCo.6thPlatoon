@@ -80,7 +80,7 @@ struct AddScriptView: View {
         Button("취소") {
             presentationMode.wrappedValue.dismiss()
         }
-        .foregroundColor(.PressorRed)
+        .foregroundColor(.accentColor)
     }
     
     // 완료 버튼
@@ -94,7 +94,7 @@ struct AddScriptView: View {
             presentationMode.wrappedValue.dismiss()
         }
         // 제목과 본문을 입력하지 않은 경우, "완료" 버튼 비활성화
-        .foregroundColor(isInputValid() ? .PressorRed : .gray)
+        .foregroundColor(isInputValid() ? .accentColor : .gray)
         .disabled(!isInputValid())
     }
 }
