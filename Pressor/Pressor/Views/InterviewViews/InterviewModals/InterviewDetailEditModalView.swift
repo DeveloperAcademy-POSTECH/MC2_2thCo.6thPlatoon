@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct InterviewDetailEditModalView: View {
-    @ObservedObject var interviewBubbleManager: InterviewBubbleManager
+    @StateObject var interviewBubbleManager: InterviewBubbleManager
     @EnvironmentObject var routingManager: RoutingManager
     @Environment(\.dismiss) var dismiss
     @Binding var isDetailChanging: Bool
@@ -24,8 +24,6 @@ struct InterviewDetailEditModalView: View {
     
     var body: some View {
         Form {
-            Text("\(interviewBubbleManager.currentInterview.id)")
-            
             Section {
                 TextField(
                     "인터뷰 제목",
@@ -89,8 +87,6 @@ struct InterviewDetailEditModalView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isDetailChanging {
                     Button {
-                        updateInterviewDetails()
-                        
                         dismiss()
                     } label: {
                         Text("완료")
@@ -100,9 +96,6 @@ struct InterviewDetailEditModalView: View {
                         InterviewDetailView(
                             interviewBubbleManager: interviewBubbleManager
                         )
-                        .onAppear {
-                            updateInterviewDetails()
-                        }
                     } label: {
                         Text("완료")
                     }
@@ -116,10 +109,10 @@ struct InterviewDetailEditModalView: View {
         }
         .onDisappear {
             hideKeyboard()
+            updateInterviewDetails()
         }
         .onAppear {
-            // 인터뷰가 수정된 적이 있음
-            if isInterviewDetailEditted() {
+            if isDetailChanging {
                 updateState()
             }
         }
@@ -133,7 +126,6 @@ struct InterviewDetailEditModalView: View {
     }
     
     private func updateInterviewDetails() {
-        // 재할당으로 업데이트
         interviewBubbleManager.currentInterview.details.interviewTitle = interviewTitle
         interviewBubbleManager.currentInterview.details.userName = userName
         interviewBubbleManager.currentInterview.details.userEmail = userEmail

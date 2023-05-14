@@ -10,7 +10,7 @@ import CoreTransferable
 import AVFoundation
 
 struct InterviewDetailView: View {
-    @ObservedObject var interviewBubbleManager: InterviewBubbleManager
+    @StateObject var interviewBubbleManager: InterviewBubbleManager
     
     @State private var isEditing: Bool = false
     @State private var isInterviewInfoEditing: Bool = false
@@ -21,19 +21,6 @@ struct InterviewDetailView: View {
     @State private var wholeRecordPlayTime: CGFloat = 0
     @State private var currentTime: CGFloat = 0
     @State private var currentRecordIndex: Int = 0
-    
-    // MARK: - LIFECYCLE
-    init(
-        interviewBubbleManager: InterviewBubbleManager
-    ) {
-        self.interviewBubbleManager = interviewBubbleManager
-        
-        // MARK: SET SLIDER THUMB IMAGE
-        UISlider.appearance().setThumbImage(
-            .init(systemName: "circlebadge.fill"),
-            for: .normal
-        )
-    }
     
     // MARK: - BODY
     var body: some View {
@@ -66,10 +53,16 @@ struct InterviewDetailView: View {
         }
         .ignoresSafeArea(.container, edges: .bottom)
         .onAppear {
+            // MARK: SET SLIDER THUMB IMAGE
+            UISlider.appearance().setThumbImage(
+                .init(systemName: "circlebadge.fill"),
+                for: .normal
+            )
+            
             // TODO: GET Record List Here
             makeTransferableScripts()
         }
-        .navigationTitle("\(interviewBubbleManager.currentInterview.details.interviewTitle )")
+        .navigationTitle("\(interviewBubbleManager.currentInterview.details.interviewTitle)")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -129,11 +122,8 @@ struct InterviewDetailView: View {
                         NavigationLink {
                             InterviewDetailEditModalView(
                                 interviewBubbleManager: interviewBubbleManager,
-                                isDetailChanging: $isInterviewInfoEditing
+                                isDetailChanging: .constant(true)
                             )
-                            .onAppear {
-                                isInterviewInfoEditing = true
-                            }
                         } label: {
                             Image(systemName: "square.and.pencil")
                         }
