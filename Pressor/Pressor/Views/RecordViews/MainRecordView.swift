@@ -130,7 +130,7 @@ struct MainRecordView: View {
                                     .toolbar(.hidden, for: .tabBar)
                             } label: {
                                 Image(systemName: "gearshape.fill")
-                                    .foregroundColor(.DisabledGary)
+                                    .foregroundColor(.SymbolGray)
                             }
                             .navigationBarTitleDisplayMode(.inline)
                             .navigationBarHidden(true)
