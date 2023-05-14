@@ -9,7 +9,9 @@ import SwiftUI
 
 struct MainRecordView: View {
     @EnvironmentObject var routingManager: RoutingManager
-    @ObservedObject var vm: VoiceViewModel = VoiceViewModel(interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(scriptTitle: "", scriptContent: "")))
+    @ObservedObject var vm: VoiceViewModel
+    @StateObject var interviewViewModel = InterviewViewModel()
+    
     @State var isSheetShowing: Bool = false
     @State var isShowingAlert = false
     @State var showModal = false
@@ -17,16 +19,11 @@ struct MainRecordView: View {
     @State var navigateToNextView = false
     @State var isShownInterviewRecordingView = false
     @State var selectedScriptIndex: Int = 0
-    @StateObject var interviewViewModel = InterviewViewModel()
     @State var countSec: Int = 0
     @State var timerCount : Timer?
     @State var isTimerCounting: Bool = false
     @State private var currentTab: String = Constants.RECORD_TAB_ID
-    
-    init() {
-        UITabBar.appearance().scrollEdgeAppearance = .init()
-    }
-    
+        
     var body: some View {
         TabView(selection: $routingManager.currentTab) {
             NavigationView {
@@ -190,11 +187,15 @@ struct MainRecordView: View {
                 }
         }
         .accentColor(.red)
+        .onAppear {
+            UITabBar.appearance().scrollEdgeAppearance = .init()
+            vm.initInterview()
+        }
     }
 }
 
 struct MainRecordView_Previews: PreviewProvider {
     static var previews: some View {
-        MainRecordView()
+        MainRecordView(vm: VoiceViewModel(interview: .getDummyInterview()))
     }
 }
