@@ -352,7 +352,7 @@ struct InterviewRecordingScriptView: View {
                 audioInputManager.stopRecording()
             }
         } // NavigationView
-        .accentColor(Color.red)
+        .accentColor(Color.orange)
     } // body
 } // struct
 

@@ -93,9 +93,9 @@ struct MainRecordView: View {
                                             Image(systemName: "note.text")
                                                 .resizable()
                                                 .frame(width: 35, height: 33)
-                                                .foregroundColor(Color.accentColor)
+                                                .foregroundColor(Color.orange)
                                             Text("대본 확인")
-                                                .foregroundColor(Color.accentColor)
+                                                .foregroundColor(Color.orange)
                                         }
                                     } else {
                                         // 대본이 없을 경우
@@ -103,10 +103,10 @@ struct MainRecordView: View {
                                             Image(systemName: "note.text.badge.plus")
                                                 .resizable()
                                                 .frame(width: 42, height: 35)
-                                                .foregroundColor(Color.accentColor)
+                                                .foregroundColor(Color.orange)
                                                 .padding(.leading, 5)
                                             Text("대본 추가")
-                                                .foregroundColor(Color.accentColor)
+                                                .foregroundColor(Color.orange)
                                                 .fontWeight(.semibold)
                                         }
                                     }
@@ -183,7 +183,7 @@ struct MainRecordView: View {
                     Text("인터뷰")
                 }
         }
-        .accentColor(.red)
+        .accentColor(.orange)
         }
     }
 }
