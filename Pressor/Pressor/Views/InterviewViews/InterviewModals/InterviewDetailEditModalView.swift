@@ -87,6 +87,7 @@ struct InterviewDetailEditModalView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isDetailChanging {
                     Button {
+                        updateInterviewDetails()
                         dismiss()
                     } label: {
                         Text("완료")
@@ -96,6 +97,9 @@ struct InterviewDetailEditModalView: View {
                         InterviewDetailView(
                             interviewBubbleManager: interviewBubbleManager
                         )
+                        .onAppear {
+                            updateInterviewDetails()
+                        }
                     } label: {
                         Text("완료")
                     }
@@ -109,7 +113,6 @@ struct InterviewDetailEditModalView: View {
         }
         .onDisappear {
             hideKeyboard()
-            updateInterviewDetails()
         }
         .onAppear {
             if isDetailChanging {

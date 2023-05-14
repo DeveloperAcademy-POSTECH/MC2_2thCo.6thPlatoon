@@ -49,7 +49,7 @@ extension Color {
         .init(hex: "FFA600")
     }
     static var BackgroundGray_Dark: Self {
-        .init(hex: "2C2C2E")
+        .init(hex: "1C1C1E")
     }
     static var BackgroundGray_Light: Self {
         .init(hex: "F2F2F7")

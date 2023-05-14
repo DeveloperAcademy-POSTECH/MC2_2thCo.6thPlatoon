@@ -8,22 +8,25 @@
 import SwiftUI
 
 struct MainRecordView: View {
+    @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject var routingManager: RoutingManager
     @ObservedObject var vm: VoiceViewModel
     @StateObject var interviewViewModel = InterviewViewModel()
     
     @State var isSheetShowing: Bool = false
-    @State var isShowingAlert = false
+    @State var isShowingScriptDeleteAlert = false
     @State var showModal = false
     @State var scriptAdded: Bool = false
     @State var navigateToNextView = false
     @State var isShownInterviewRecordingView = false
-    @State var selectedScriptIndex: Int = 0
     @State var countSec: Int = 0
     @State var timerCount : Timer?
     @State var isTimerCounting: Bool = false
     @State private var currentTab: String = Constants.RECORD_TAB_ID
-        
+    @State private var scriptTitle: String = ""
+    @State private var scriptDescription: String = ""
+    @State private var scriptMode: ScriptMode = .add
+    
     var body: some View {
         TabView(selection: $routingManager.currentTab) {
             NavigationView {
@@ -40,7 +43,6 @@ struct MainRecordView: View {
                         VStack {
                             // MARK: - Mic Button
                             Button {
-                                
                                 if !isTimerCounting {
                                     countSec = 3
                                     isTimerCounting.toggle()
@@ -49,6 +51,8 @@ struct MainRecordView: View {
                                         self.countSec -= 1
                                         if(countSec == 0){
                                             timerCount?.invalidate()
+                                            // MARK: 대본이 있다면 추가시키는 로직
+                                            vm.interview.script = interviewViewModel.getScript()
                                             self.isShownInterviewRecordingView.toggle()
                                             isTimerCounting.toggle()
                                         }
@@ -60,84 +64,63 @@ struct MainRecordView: View {
                                     .padding(.bottom, 40)
                             }
                             .fullScreenCover(isPresented: $isShownInterviewRecordingView) {
-                                InterviewRecordingView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                if scriptAdded {
+                                    InterviewRecordingScriptView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                } else {
+                                    InterviewRecordingView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                }
                             }
-                            .simultaneousGesture(TapGesture().onEnded{
-                                vm.initInterview()
-                                print(vm.interview)
-                            })
                         }
                         
                         VStack {
-                            Button {
-                                if scriptAdded {
-                                    self.isSheetShowing = true
-                                    scriptAdded = true
-                                } else {
-                                    showModal.toggle()
-                                    scriptAdded = false
-                                }
-                            } label: {
-                                if scriptAdded {
-                                    // 대본이 있을 경우
-                                    VStack {
-                                        Image(systemName: "note.text")
-                                            .resizable()
-                                            .frame(width: 35, height: 33)
-                                            .foregroundColor(Color.accentColor)
-                                        
-                                        Text("대본편집")
-                                            .foregroundColor(Color.accentColor)
+                                Button {
+                                    if scriptAdded {
+                                        self.isSheetShowing = true
+                                    } else {
+                                        showModal.toggle()
                                     }
-                                    .confirmationDialog("타이틀", isPresented: $isSheetShowing) {
-                                        Button("대본 삭제", role: .destructive) {
-                                            isSheetShowing = false
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                                isShowingAlert = true
+                                } label: {
+                                    if scriptAdded {
+                                        // 대본이 있을 경우
+                                        NavigationLink(destination: CheckScriptView(interviewViewModel: interviewViewModel,  scriptAdded: $scriptAdded)) {
+                                            VStack {
+                                                Image(systemName: "note.text")
+                                                    .resizable()
+                                                    .frame(width: 35, height: 33)
+                                                    .foregroundColor(Color.accentColor)
+                                                Text("대본 확인")
+                                                    .foregroundColor(Color.accentColor)
                                             }
                                         }
-                                        
-                                        Button("대본 수정", role: .destructive) {
-                                            showModal = true
-                                            selectedScriptIndex = 0
+                                    } else {
+                                        // 대본이 없을 경우
+                                        VStack {
+                                            Image(systemName: "note.text.badge.plus")
+                                                .resizable()
+                                                .frame(width: 42, height: 35)
+                                                .foregroundColor(Color.accentColor)
+                                                .padding(.leading, 5)
+                                            Text("대본 추가")
+                                                .foregroundColor(Color.accentColor)
+                                                .fontWeight(.semibold)
                                         }
-                                        .sheet(isPresented: $showModal) {
-                                            AddScriptModalView(mode: .edit, scriptAdded: $scriptAdded, interviewViewModel: interviewViewModel, scriptIndex: selectedScriptIndex)
-                                        }
-                                        
-                                        Button("취소", role: .cancel) {
-                                            
-                                        }
-                                    }
-                                    .alert(isPresented: $isShowingAlert) {
-                                        Alert(
-                                            title: Text("대본 삭제"),
-                                            message: Text("정말로 이 대본을 삭제하시겠습니까?"),
-                                            primaryButton: .destructive(Text("삭제")) {
-                                                interviewViewModel.deleteScript(atIndex: selectedScriptIndex)
-                                                scriptAdded = false
-                                            },
-                                            secondaryButton: .cancel(Text("취소"))
-                                        )
-                                    }
-                                } else {
-                                    // 대본이 없을 경우
-                                    VStack {
-                                        Image(systemName: "note.text.badge.plus")
-                                            .resizable()
-                                            .frame(width: 42, height: 35)
-                                            .foregroundColor(Color.accentColor)
-                                            .padding(.leading, 5)
-                                        
-                                        Text("대본 추가")
-                                            .foregroundColor(Color.accentColor)
-                                            .fontWeight(.semibold)
                                     }
                                 }
+                        }
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            NavigationLink {
+                                Text("세팅뷰")
+                            } label: {
+                                Image(systemName: "gearshape.fill")
+                                    .foregroundColor(.DisabledGary)
                             }
                         }
                     }
-                    if countSec != 0 {
+                    .disabled(isTimerCounting)
+                    
+                    if isTimerCounting {
                         ZStack{
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(Color.white)
@@ -161,15 +144,8 @@ struct MainRecordView: View {
                         }
                     }
                 }
-                .navigationBarItems(trailing: NavigationLink(
-                    destination: Text("세팅뷰")) {
-                        Image(systemName: "gearshape.fill")
-                            .foregroundColor(.DisabledGary)
-                    }
-                )
-                .disabled(isTimerCounting)
-                .sheet(isPresented: $showModal) {
-                    AddScriptModalView(mode: scriptAdded ? .edit : .add, scriptAdded: $scriptAdded, interviewViewModel: interviewViewModel, scriptIndex: selectedScriptIndex)
+                .fullScreenCover(isPresented: $showModal) {
+                    AddScriptView(interviewViewModel: interviewViewModel, scriptAdded: $scriptAdded)
                 }
             }
             .navigationViewStyle(.stack)

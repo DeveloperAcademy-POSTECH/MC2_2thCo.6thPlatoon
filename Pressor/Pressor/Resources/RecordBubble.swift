@@ -15,11 +15,11 @@ import UniformTypeIdentifiers
  - Author: Celan
  */
 struct RecordBubble: View {
-    @ObservedObject var bubbleManager: InterviewBubbleManager
+    @StateObject var bubbleManager: InterviewBubbleManager
     @State var record: Record
     @State private var text: String = ""
-    @State private var isReadyToPlay: Bool = false
-    @Binding var isEditing: Bool
+    @State private var isReadyToPlay: Bool = true
+    @State private var isEditing: Bool = false
 
     var isInterviewerSpeaking: Bool {
         record.type == Recorder.interviewer.rawValue
@@ -28,17 +28,14 @@ struct RecordBubble: View {
     // MARK: - body
     var body: some View {
         HStack(spacing: 10) {
-            if
-                let interview = bubbleManager.currentInterview {
-                if isInterviewerSpeaking {
-                    playButtonBuilder(with: interview)
-                    
-                    recordBubbleBuilder(with: interview)
-                } else {
-                    recordBubbleBuilder(with: interview)
-                       
-                    playButtonBuilder(with: interview)
-                }
+            if isInterviewerSpeaking {
+                playButtonBuilder(with: bubbleManager.currentInterview)
+                
+                recordBubbleBuilder(with: bubbleManager.currentInterview)
+            } else {
+                recordBubbleBuilder(with: bubbleManager.currentInterview)
+
+                playButtonBuilder(with: bubbleManager.currentInterview)
             }
         }
         .padding(
@@ -51,8 +48,8 @@ struct RecordBubble: View {
         .sheet(isPresented: $isEditing) {
             InterviewDetailChatEditModalView(
                 interviewBubbleManager: bubbleManager,
-                record: record,
-                isInterviewDetailChatEditModalViewDisplayed: $isEditing
+                isInterviewDetailChatEditModalViewDisplayed: $isEditing,
+                transcriptIndex: record.transcriptIndex
             )
         }
     }
@@ -74,7 +71,7 @@ struct RecordBubble: View {
                         bubbleManager.stopPlayingRecordVoice(isPlaying: $isReadyToPlay)
                     }
                 } label: {
-                    Image(systemName: isReadyToPlay ? "stop.fill" : "play.fill")
+                    Image(systemName: isReadyToPlay ? "play.fill" : "stop.fill")
                         .foregroundColor(
                             isInterviewerSpeaking
                             ? .pressorButtonOrangePrimary
@@ -99,31 +96,17 @@ struct RecordBubble: View {
     
     private func recordBubbleBuilder(with interview: Interview) -> some View {
         VStack {
-            if isEditing {
-                TextField("", text: $text)
-                    .font(.system(size: 14))
-                    .frame(
-                        maxWidth: 278 - 39,
-                        minHeight: 44 - 22,
-                        alignment: isInterviewerSpeaking
-                            ? .trailing
-                            : .leading
-                    )
-                    .padding(.vertical, 11)
-                    .padding(.horizontal, 19.5)
-            } else {
-                Text("\(interview.recordSTT[safe: record.transcriptIndex] ?? "")")
-                    .font(.system(size: 14))
-                    .frame(
-                        maxWidth: 278 - 39,
-                        minHeight: 44 - 22,
-                        alignment: isInterviewerSpeaking
-                            ? .trailing
-                            : .leading
-                    )
-                    .padding(.vertical, 11)
-                    .padding(.horizontal, 19.5)
-            }
+            Text("\(interview.recordSTT[safe: record.transcriptIndex] ?? "")")
+                .font(.system(size: 14))
+                .frame(
+                    maxWidth: 278 - 39,
+                    minHeight: 44 - 22,
+                    alignment: isInterviewerSpeaking
+                    ? .trailing
+                    : .leading
+                )
+                .padding(.vertical, 11)
+                .padding(.horizontal, 19.5)
         }
         .background(
             isInterviewerSpeaking

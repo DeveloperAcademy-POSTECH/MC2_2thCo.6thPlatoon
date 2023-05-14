@@ -21,24 +21,18 @@ struct AudioVisualizerView: View {
     @State private var barHeights: [CGFloat] = Array(repeating: 0, count: 40)
     
     var body: some View {
-        VStack {
-            ZStack {
-                HStack {
-                    HStack(spacing: 3) {
-                        // 각 막대를 생성, 높이와 애니메이션 적용.
-                        ForEach(0..<barHeights.count, id: \.self) { index in
-                            BarView(
-                                height: barHeights[index] * weight(for: index),
-                                isRecording: isRecording,
-                                audioVisualColor: audioVisualizerColor
-                            )
-                                .animation(.easeInOut(duration: 0.15), value: barHeights[index])
-                        }
-                    }
-                }
+        HStack(spacing: 3) {
+            // 각 막대를 생성, 높이와 애니메이션 적용.
+            ForEach(0..<barHeights.count, id: \.self) { index in
+                BarView(
+                    height: barHeights[index] * weight(for: index),
+                    isRecording: isRecording,
+                    audioVisualColor: audioVisualizerColor
+                )
+                .animation(.easeInOut(duration: 0.15), value: barHeights[index])
             }
         }
-        .frame(width: 250, height: 80)
+        .frame(width: 280, height: 50)
         .onAppear {
             // 뷰가 나타날 때 현재 녹음 중이고 일시정지 상태가 아니면, 오디오 입력 관리자 시작
             if isRecording && !isPaused {
@@ -94,13 +88,12 @@ extension AudioVisualizerView {
         let samples = Array(UnsafeBufferPointer(start: buffer.floatChannelData?[0], count: Int(buffer.frameLength)))
         let sampleCount = samples.count
         let blockSize = sampleCount / barHeights.count
-        let maxHeight = UIScreen.main.bounds.height / 3
-
+        let maxHeight = UIScreen.main.bounds.height / 2
         for i in 0..<barHeights.count {
             let start = i * blockSize
             let end = start + blockSize
             let slice = samples[start..<end]
-
+            
             let rms = calculateRMS(for: Array(slice))
             let normalizedHeight = CGFloat(min(max(0, rms), 1)) * maxHeight
             barHeights[i] = min(max(normalizedHeight, 0), maxHeight)
@@ -121,7 +114,7 @@ struct BarView: View {
     var audioVisualColor: Color
     
     var body: some View {
-        let safeHeight = max(min(height, CGFloat.greatestFiniteMagnitude), 3)
+        let safeHeight = max(min(height, CGFloat.greatestFiniteMagnitude), 4)
         RoundedRectangle(cornerRadius: 4)
             .fill(audioVisualColor)
             .frame(maxHeight: safeHeight)

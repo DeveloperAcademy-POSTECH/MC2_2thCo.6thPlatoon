@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct InterviewDetailChatEditModalView: View {
-    @ObservedObject var interviewBubbleManager: InterviewBubbleManager
-    @State var record: Record
+    @StateObject var interviewBubbleManager: InterviewBubbleManager
+    @Environment(\.dismiss) var dismiss
     @State private var interviewDescription: String = ""
     @Binding var isInterviewDetailChatEditModalViewDisplayed: Bool
     @FocusState var isTextEditorDisplayed: Bool
-    @Environment(\.dismiss) var dismiss
+    
+    let transcriptIndex: Int
     
     var body: some View {
         NavigationView {
@@ -45,9 +46,9 @@ struct InterviewDetailChatEditModalView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         hideKeyboard()
+                        interviewBubbleManager.currentInterview.recordSTT[transcriptIndex] = interviewDescription
                         dismiss()
                         // TODO: RECORD TEXT UPDATE HERE
-                        interviewBubbleManager.currentInterview.recordSTT[record.transcriptIndex] = interviewDescription
                     } label: {
                         Text("완료")
                     }
@@ -55,7 +56,7 @@ struct InterviewDetailChatEditModalView: View {
             }
         }
         .onAppear {
-            self.interviewDescription =  interviewBubbleManager.currentInterview.recordSTT[record.transcriptIndex]
+            self.interviewDescription = interviewBubbleManager.currentInterview.recordSTT[transcriptIndex]
         }
         .onTapGesture {
             hideKeyboard()

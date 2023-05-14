@@ -12,7 +12,6 @@ import AVFoundation
 struct InterviewDetailView: View {
     @StateObject var interviewBubbleManager: InterviewBubbleManager
     
-    @State private var isEditing: Bool = false
     @State private var isInterviewInfoEditing: Bool = false
     @State private var isWholeRecordPlaying: Bool = false
     @State private var isRemovingInterview: Bool = false
@@ -26,30 +25,35 @@ struct InterviewDetailView: View {
     var body: some View {
         ZStack {
             ScrollView {
-                if
-                    let interview = interviewBubbleManager.currentInterview {
-                    LazyVStack {
-                        Section {
-                            ForEach(interview.records, id: \.id) { eachRecord in
-                                // TODO: DI ViewModel, Record
-                                RecordBubble(
-                                    bubbleManager: interviewBubbleManager,
-                                    record: eachRecord,
-                                    isEditing: $isEditing
-                                )
-                            }
-                        } header: {
-                            InterviewInfoHeader(with: interview)
-                                .padding(.bottom, 16)
+                LazyVStack {
+                    Section {
+                        ForEach(
+                            interviewBubbleManager.currentInterview.records,
+                            id: \.id
+                        ) { eachRecord in
+                            // TODO: DI ViewModel, Record
+                            RecordBubble(
+                                bubbleManager: interviewBubbleManager,
+                                record: eachRecord
+                            )
+                            .onChange(
+                                of: interviewBubbleManager.currentInterview.recordSTT) { _ in
+                                    print("?")
+                                    transferableScripts.removeAll()
+                                    makeTransferableScripts()
+                                }
                         }
+                    } header: {
+                        InterviewInfoHeader(with: interviewBubbleManager.currentInterview)
+                            .padding(.bottom, 16)
                     }
-                    .padding(.bottom, UIScreen.main.bounds.height * 0.2)
                 }
+                .padding(.bottom, UIScreen.main.bounds.height * 0.2)
             }
         }
         .overlay(alignment: .bottom) {
             // TODO: Not Completed
-//                AudioPlayerBuilder(with: interview)
+            //                AudioPlayerBuilder(with: interview)
         }
         .ignoresSafeArea(.container, edges: .bottom)
         .onAppear {
@@ -60,7 +64,6 @@ struct InterviewDetailView: View {
             )
             
             // TODO: GET Record List Here
-            makeTransferableScripts()
         }
         .navigationTitle("\(interviewBubbleManager.currentInterview.details.interviewTitle)")
         .navigationBarTitleDisplayMode(.inline)
@@ -68,24 +71,20 @@ struct InterviewDetailView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
                     // TODO: CRASH ERROR, ASK TO MENTOR
-                    if
-                        let interview = interviewBubbleManager.currentInterview {
-                        ShareLink(
-                            item: transferableScripts,
-                            subject: Text("\(interview.details.interviewTitle) 인터뷰 스크립트 보내기"),
-                            message: Text("'\(interview.details.interviewTitle)' 인터뷰의 스크립트")
-                        ) {
-                            Label(
-                                "공유하기",
-                                systemImage: "square.and.arrow.up"
-                            )
+                    ShareLink(item: transferableScripts) {
+                        Label(
+                            "공유하기",
+                            systemImage: "square.and.arrow.up"
+                        )
+                        .onAppear {
+                            makeTransferableScripts()
                         }
-                        
-                        Button(role: .destructive) {
-                            isRemovingInterview.toggle()
-                        } label: {
-                            Label("삭제하기", systemImage: "trash")
-                        }
+                    }
+                    
+                    Button(role: .destructive) {
+                        isRemovingInterview.toggle()
+                    } label: {
+                        Label("삭제하기", systemImage: "trash")
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -108,7 +107,6 @@ struct InterviewDetailView: View {
             )
         }
     }
-    
     
     // MARK: METHODS
     private func InterviewInfoHeader(with interview: Interview) -> some View {
@@ -153,20 +151,18 @@ struct InterviewDetailView: View {
                             Text("Name")
                         }
                         
-                        if
-                            let interview = interviewBubbleManager.currentInterview {
-                            if !interview.details.userEmail.isEmpty {
-                                HStack {
-                                    Text("Email")
-                                }
-                            }
-                            
-                            if !interview.details.userPhoneNumber.isEmpty {
-                                HStack {
-                                    Text("Phone")
-                                }
+                        if !interviewBubbleManager.currentInterview.details.userEmail.isEmpty {
+                            HStack {
+                                Text("Email")
                             }
                         }
+                        
+                        if !interviewBubbleManager.currentInterview.details.userPhoneNumber.isEmpty {
+                            HStack {
+                                Text("Phone")
+                            }
+                        }
+                        
                     }
                     .bold()
                     .foregroundColor(Color(.systemGray2))
@@ -176,22 +172,19 @@ struct InterviewDetailView: View {
                         spacing: 5
                     ) {
                         HStack {
-                            Text(interview.details.userName)
+                            Text(interviewBubbleManager.currentInterview.details.userName)
                                 .bold()
                         }
                         
-                        if
-                            let interview = interviewBubbleManager.currentInterview {
-                            if !interview.details.userEmail.isEmpty {
-                                HStack {
-                                    Text(interview.details.userEmail)
-                                }
+                        if !interviewBubbleManager.currentInterview.details.userEmail.isEmpty {
+                            HStack {
+                                Text(interviewBubbleManager.currentInterview.details.userEmail)
                             }
-                            
-                            if !interview.details.userPhoneNumber.isEmpty {
-                                HStack {
-                                    Text(interview.details.userPhoneNumber)
-                                }
+                        }
+                        
+                        if !interviewBubbleManager.currentInterview.details.userPhoneNumber.isEmpty {
+                            HStack {
+                                Text(interviewBubbleManager.currentInterview.details.userPhoneNumber)
                             }
                         }
                     }
@@ -216,13 +209,25 @@ struct InterviewDetailView: View {
     }
     
     private func makeTransferableScripts() {
-        for idx in 0 ..< interviewBubbleManager.currentInterview.recordSTT.count {
-            let num = idx + 1
-            if idx % 2 == 0 {
-                // 먼저 질문하는 사람이 인터뷰어가 된다.
-                self.transferableScripts += (num.description + "." + "인터뷰어: " + interviewBubbleManager.currentInterview.recordSTT[idx] + "\n")
-            } else {
-                self.transferableScripts += (num.description + "." + "\(interviewBubbleManager.currentInterview.details.userName) 님: " + interviewBubbleManager.currentInterview.recordSTT[idx] + "\n")
+        if transferableScripts.isEmpty {
+            transferableScripts += "'\(interviewBubbleManager.currentInterview.details.interviewTitle)' 인터뷰의 스크립트 \n"
+            transferableScripts += "\n"
+            
+            for idx in 0 ..< interviewBubbleManager.currentInterview.recordSTT.count {
+                let num = idx + 1
+                let script = interviewBubbleManager.currentInterview.recordSTT[idx]
+                let eachRecord = interviewBubbleManager.currentInterview.records[idx]
+                
+                switch eachRecord.type {
+                case Recorder.interviewer.rawValue:
+                    self.transferableScripts += ("\(num). 인터뷰어: " + script + "\n\n")
+                    
+                case Recorder.interviewee.rawValue:
+                    self.transferableScripts += ("\(num). \(interviewBubbleManager.currentInterview.details.userName) 님: " + script  + "\n\n")
+                    
+                default:
+                    self.transferableScripts += ""
+                }
             }
         }
     }

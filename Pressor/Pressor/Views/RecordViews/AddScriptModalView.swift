@@ -17,37 +17,24 @@ struct AddScriptModalView: View {
     // 화면 전환을 관리하는 presentationMode를 사용하여 모달 창을 닫을 수 있도록 하는 변수
     @Environment(\.presentationMode) private var presentationMode
     
-    @ObservedObject var interviewViewModel : InterviewViewModel
-    
+    @ObservedObject var interviewViewModel: InterviewViewModel
     // 외부에서 전달된 scriptAdded를 바인딩하여 완료 버튼을 눌렀을 때 업데이트
     @Binding var scriptAdded: Bool
     
-    // 현재 인터뷰 스크립트의 index (수정 모드인 경우 필요)
-    var scriptIndex: Int?
+    @State private var title: String
+    @State private var description: String
+    
+    // 뷰의 모드를 결정하는 변수
+    let mode: ScriptMode
     
     // 초기화 메서드
-    init(mode: ScriptMode, scriptAdded: Binding<Bool>, interviewViewModel: InterviewViewModel, scriptIndex: Int? = nil) {
-        self.mode = mode
-        self._scriptAdded = scriptAdded
+    init(interviewViewModel: InterviewViewModel, scriptAdded: Binding<Bool>, title: String, description: String, mode: ScriptMode) {
         self.interviewViewModel = interviewViewModel
-        self.scriptIndex = scriptIndex
-        
-        // 수정 모드인 경우, 현재 스크립트의 정보로 초기값 설정
-        if let scriptIndex = scriptIndex, mode == .edit {
-            let scripts = interviewViewModel.getScripts()
-            self._title = State(initialValue: scripts[scriptIndex].scriptTitle)
-            self._bodyText = State(initialValue: scripts[scriptIndex].scriptContent)
-        } else {
-            self._title = State(initialValue: "")
-            self._bodyText = State(initialValue: "")
-        }
+        _scriptAdded = scriptAdded
+        _title = State(initialValue: title)
+        _description = State(initialValue: description)
+        self.mode = mode
     }
-    
-    @State private var title: String
-    @State private var bodyText: String
-    
-    // 뷰의 모드를 결정하는 변수 추가
-    let mode: ScriptMode
     
     // 메인 뷰
     var body: some View {
@@ -76,11 +63,11 @@ struct AddScriptModalView: View {
     // 본문 입력 에디터
     private var bodyTextEditor: some View {
         ZStack(alignment: .topLeading) {
-            TextEditor(text: $bodyText)
+            TextEditor(text: $description)
                 .frame(height: 270)
                 .padding(.leading, -4)
             
-            if bodyText.isEmpty {
+            if description.isEmpty {
                 // 본문이 비어있을 때만 "본문" 텍스트 표시
                 Text("본문")
                     .foregroundColor(.gray.opacity(0.5))
@@ -104,11 +91,9 @@ struct AddScriptModalView: View {
             if isInputValid() {
                 switch mode {
                 case .add:
-                    interviewViewModel.createScript(title: title, content: bodyText)
+                    interviewViewModel.setScript(title: title, description: description)
                 case .edit:
-                    if let index = scriptIndex {
-                        interviewViewModel.updateScript(title: title, content: bodyText, atIndex: index)
-                    }
+                    interviewViewModel.setScript(title: title, description: description)
                 }
                 // 제목과 본문을 입력한 경우, scriptAdded를 true로 설정하고 모달 창 종료
                 scriptAdded = true
@@ -124,6 +109,6 @@ struct AddScriptModalView: View {
 private extension AddScriptModalView {
     // 제목과 본문을 입력했는지 확인하는 함수
     func isInputValid() -> Bool {
-        return !title.isEmpty && !bodyText.isEmpty
+        return !title.isEmpty && !description.isEmpty
     }
 }

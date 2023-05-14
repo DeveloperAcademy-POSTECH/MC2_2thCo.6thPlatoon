@@ -1,3 +1,5 @@
+
+//
 //  InterviewViewModel.swift
 //  Pressor
 //
@@ -7,35 +9,22 @@
 import Foundation
 
 class InterviewViewModel: ObservableObject {
-    // 인터뷰 목록
-    @Published var interviewScriptModel: InterviewScriptModel
+    // Current script
+    @Published var script: Script
     
     // Default initializer
     init() {
-        self.interviewScriptModel = InterviewScriptModel(interviewScripts: [])
+        self.script = Script(title: "", description: "")
     }
     
-    // 대본 생성
-    func createScript(title: String, content: String) {
-        // 대본 추가
-        interviewScriptModel.interviewScripts.append(Script(scriptTitle: title, scriptContent: content))
+    // 대본 수정(추가, 삭제 - 공백으로 바꿀 경우)
+    func setScript(title: String, description: String) {
+        self.script = Script(title: title, description: description)
     }
     
-    // 대본 읽기
-    func getScripts() -> [Script] {
-        // 대본 목록 반환
-        return interviewScriptModel.interviewScripts
-    }
-    
-    // 대본 수정
-    func updateScript(title: String, content: String, atIndex index: Int) {
-        // 대본 수정
-        interviewScriptModel.interviewScripts[index] = Script(scriptTitle: title, scriptContent: content)
-    }
-    
-    // 대본 삭제
-    func deleteScript(atIndex index: Int) {
-        // 대본 삭제
-        interviewScriptModel.interviewScripts.remove(at: index)
+    // 대본 가져오기
+    func getScript() -> Script {
+
+        return script
     }
 }

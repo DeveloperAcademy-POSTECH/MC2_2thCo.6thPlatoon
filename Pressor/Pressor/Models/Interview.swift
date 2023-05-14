@@ -15,6 +15,6 @@ struct Interview: Identifiable {
     var script: Script
     
     static func getDummyInterview() -> Self {
-        Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(scriptTitle: "", scriptContent: ""))
+        Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(title: "", description: ""))
     }
 }

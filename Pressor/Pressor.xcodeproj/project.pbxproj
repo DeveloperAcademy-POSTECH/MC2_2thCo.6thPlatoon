@@ -15,6 +15,8 @@
 		608D9D702A014BEE001E8E3C /* VoiceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608D9D6F2A014BEE001E8E3C /* VoiceViewModel.swift */; };
 		608D9D7D2A01F673001E8E3C /* InterviewDetailTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608D9D7C2A01F673001E8E3C /* InterviewDetailTestView.swift */; };
 		608D9D7F2A022F5E001E8E3C /* MainTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608D9D7E2A022F5E001E8E3C /* MainTestView.swift */; };
+		60D579B02A0E17C60006D884 /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D579AF2A0E17C60006D884 /* PermissionManager.swift */; };
+		60F0BC122A0E859600B6B539 /* InterviewRecordingScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F0BC112A0E859600B6B539 /* InterviewRecordingScriptView.swift */; };
 		7E392C792A0E092A00130338 /* InterviewBubbleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E392C782A0E092A00130338 /* InterviewBubbleManager.swift */; };
 		7E392C7B2A0E283C00130338 /* Array+SafeIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E392C7A2A0E283C00130338 /* Array+SafeIndex.swift */; };
 		7E3B3E5A2A0A0D6700DCA93A /* InterviewDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E3B3E592A0A0D6700DCA93A /* InterviewDetailView.swift */; };
@@ -36,11 +38,14 @@
 		7EDEB0D92A011E1500176D72 /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0D82A011E1500176D72 /* Record.swift */; };
 		7EDEB0DB2A011E2A00176D72 /* RecordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0DA2A011E2A00176D72 /* RecordViewModel.swift */; };
 		AC4F69E82A024ECD0035FC59 /* InterviewListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4F69E72A024ECD0035FC59 /* InterviewListView.swift */; };
+		C9089BF02A0E7E9A00AE57DC /* AddScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9089BEF2A0E7E9A00AE57DC /* AddScriptView.swift */; };
+		C9089BF22A0E7EA500AE57DC /* EditScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9089BF12A0E7EA500AE57DC /* EditScriptView.swift */; };
 		C918E6E02A09CC720074BAF0 /* AddScriptModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C918E6DF2A09CC720074BAF0 /* AddScriptModalView.swift */; };
 		C91E4D312A0A545800E5F983 /* InterviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91E4D302A0A545800E5F983 /* InterviewViewModel.swift */; };
 		C91E4D332A0A8CAE00E5F983 /* InterviewScriptTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91E4D322A0A8CAE00E5F983 /* InterviewScriptTestView.swift */; };
 		C91E4D392A0A979F00E5F983 /* EditInterviewScriptTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91E4D382A0A979F00E5F983 /* EditInterviewScriptTestView.swift */; };
 		C91E4D3B2A0B746300E5F983 /* InterviewScriptModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91E4D3A2A0B746300E5F983 /* InterviewScriptModel.swift */; };
+		C9478BB92A0EA0100041604F /* CheckScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9478BB82A0EA0100041604F /* CheckScriptView.swift */; };
 		C957BB9F2A027D05006649A8 /* InterviewRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C957BB9E2A027D05006649A8 /* InterviewRecordingView.swift */; };
 		C957BBA12A028DDC006649A8 /* AudioInputVIewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C957BBA02A028DDC006649A8 /* AudioInputVIewModel.swift */; };
 		C9C7BC822A021F1F005E473B /* AudioVisualizerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C7BC812A021F1F005E473B /* AudioVisualizerView.swift */; };
@@ -56,6 +61,8 @@
 		608D9D7C2A01F673001E8E3C /* InterviewDetailTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewDetailTestView.swift; sourceTree = "<group>"; };
 		608D9D7E2A022F5E001E8E3C /* MainTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTestView.swift; sourceTree = "<group>"; };
 		608D9D802A026014001E8E3C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		60D579AF2A0E17C60006D884 /* PermissionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
+		60F0BC112A0E859600B6B539 /* InterviewRecordingScriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewRecordingScriptView.swift; sourceTree = "<group>"; };
 		7E392C782A0E092A00130338 /* InterviewBubbleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewBubbleManager.swift; sourceTree = "<group>"; };
 		7E392C7A2A0E283C00130338 /* Array+SafeIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SafeIndex.swift"; sourceTree = "<group>"; };
 		7E3B3E592A0A0D6700DCA93A /* InterviewDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewDetailView.swift; sourceTree = "<group>"; };
@@ -78,11 +85,14 @@
 		7EDEB0D82A011E1500176D72 /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		7EDEB0DA2A011E2A00176D72 /* RecordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewModel.swift; sourceTree = "<group>"; };
 		AC4F69E72A024ECD0035FC59 /* InterviewListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewListView.swift; sourceTree = "<group>"; };
+		C9089BEF2A0E7E9A00AE57DC /* AddScriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddScriptView.swift; sourceTree = "<group>"; };
+		C9089BF12A0E7EA500AE57DC /* EditScriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScriptView.swift; sourceTree = "<group>"; };
 		C918E6DF2A09CC720074BAF0 /* AddScriptModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddScriptModalView.swift; sourceTree = "<group>"; };
 		C91E4D302A0A545800E5F983 /* InterviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewViewModel.swift; sourceTree = "<group>"; };
 		C91E4D322A0A8CAE00E5F983 /* InterviewScriptTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewScriptTestView.swift; sourceTree = "<group>"; };
 		C91E4D382A0A979F00E5F983 /* EditInterviewScriptTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditInterviewScriptTestView.swift; sourceTree = "<group>"; };
 		C91E4D3A2A0B746300E5F983 /* InterviewScriptModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewScriptModel.swift; sourceTree = "<group>"; };
+		C9478BB82A0EA0100041604F /* CheckScriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckScriptView.swift; sourceTree = "<group>"; };
 		C957BB9E2A027D05006649A8 /* InterviewRecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewRecordingView.swift; sourceTree = "<group>"; };
 		C957BBA02A028DDC006649A8 /* AudioInputVIewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioInputVIewModel.swift; sourceTree = "<group>"; };
 		C9C7BC812A021F1F005E473B /* AudioVisualizerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioVisualizerView.swift; sourceTree = "<group>"; };
@@ -192,6 +202,7 @@
 				C91E4D302A0A545800E5F983 /* InterviewViewModel.swift */,
 				7E74F30A2A0CDB4700D03AF3 /* RoutingManager.swift */,
 				7E392C782A0E092A00130338 /* InterviewBubbleManager.swift */,
+				60D579AF2A0E17C60006D884 /* PermissionManager.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -224,6 +235,9 @@
 				7EDEB0D22A011DE800176D72 /* AddRecordScriptModalView.swift */,
 				C9C7BC812A021F1F005E473B /* AudioVisualizerView.swift */,
 				C918E6DF2A09CC720074BAF0 /* AddScriptModalView.swift */,
+				C9089BEF2A0E7E9A00AE57DC /* AddScriptView.swift */,
+				C9089BF12A0E7EA500AE57DC /* EditScriptView.swift */,
+				C9478BB82A0EA0100041604F /* CheckScriptView.swift */,
 			);
 			path = RecordViews;
 			sourceTree = "<group>";
@@ -235,6 +249,7 @@
 				7EDEB0D42A011DF600176D72 /* MainInterviewList.swift */,
 				7E3B3E592A0A0D6700DCA93A /* InterviewDetailView.swift */,
 				C957BB9E2A027D05006649A8 /* InterviewRecordingView.swift */,
+				60F0BC112A0E859600B6B539 /* InterviewRecordingScriptView.swift */,
 				AC4F69E72A024ECD0035FC59 /* InterviewListView.swift */,
 			);
 			path = InterviewViews;
@@ -320,16 +335,20 @@
 				7EC9A2982A0A398A004D14A1 /* BlurBackground.swift in Sources */,
 				7EDEB0D12A011DD100176D72 /* MainRecordView.swift in Sources */,
 				7EDEB0D32A011DE800176D72 /* AddRecordScriptModalView.swift in Sources */,
+				60F0BC122A0E859600B6B539 /* InterviewRecordingScriptView.swift in Sources */,
 				7EDEB0DB2A011E2A00176D72 /* RecordViewModel.swift in Sources */,
 				6072D0E72A0542E6005583FC /* InterviewRecordingEndTestView.swift in Sources */,
+				C9478BB92A0EA0100041604F /* CheckScriptView.swift in Sources */,
 				7EDEB0BD2A011B4B00176D72 /* PressorApp.swift in Sources */,
 				7EDEB0D92A011E1500176D72 /* Record.swift in Sources */,
 				6072D0F42A05E513005583FC /* InterviewDetail.swift in Sources */,
 				7EC865E72A0501810041B31A /* Constants.swift in Sources */,
+				C9089BF02A0E7E9A00AE57DC /* AddScriptView.swift in Sources */,
 				7EDEB0D12A011DD100176D72 /* MainRecordView.swift in Sources */,
 				7E392C7B2A0E283C00130338 /* Array+SafeIndex.swift in Sources */,
 				7EDEB0D32A011DE800176D72 /* AddRecordScriptModalView.swift in Sources */,
 				C9C7BC822A021F1F005E473B /* AudioVisualizerView.swift in Sources */,
+				C9089BF22A0E7EA500AE57DC /* EditScriptView.swift in Sources */,
 				AC4F69E82A024ECD0035FC59 /* InterviewListView.swift in Sources */,
 				7E392C792A0E092A00130338 /* InterviewBubbleManager.swift in Sources */,
 				7EDEB0DB2A011E2A00176D72 /* RecordViewModel.swift in Sources */,
@@ -346,6 +365,7 @@
 				608D9D702A014BEE001E8E3C /* VoiceViewModel.swift in Sources */,
 				608D9D7D2A01F673001E8E3C /* InterviewDetailTestView.swift in Sources */,
 				C91E4D312A0A545800E5F983 /* InterviewViewModel.swift in Sources */,
+				60D579B02A0E17C60006D884 /* PermissionManager.swift in Sources */,
 				7EDEB0D52A011DF600176D72 /* MainInterviewList.swift in Sources */,
 				6072D0E52A053E93005583FC /* Interview.swift in Sources */,
 				601CCC4D2A08D53F005B02C7 /* Date+.swift in Sources */,

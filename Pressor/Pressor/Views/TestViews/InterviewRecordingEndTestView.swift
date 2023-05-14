@@ -74,7 +74,7 @@ struct InterviewRecordingEndTestView: View {
 struct InterviewRecordingEndModalTestView_Previews: PreviewProvider {
     static var previews: some View {
         InterviewRecordingEndTestView(vm: VoiceViewModel(
-            interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(scriptTitle: "", scriptContent: "")))
+            interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: .init(title: "", description: "")))
         )
     }
 }
