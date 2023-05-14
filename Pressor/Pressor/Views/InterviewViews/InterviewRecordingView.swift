@@ -9,7 +9,9 @@ import SwiftUI
 
 struct InterviewRecordingView: View {
     @ObservedObject var vm: VoiceViewModel
+    @StateObject var interviewBubbleManager: InterviewBubbleManager = .init(currentInterview: .getDummyInterview())
     
+    @State private var isDetailChanging: Bool = false
     @State private var isShowingList = false
     @State var transcriptIndex: Int = 0
     @StateObject private var audioInputManager = AudioInputViewModel()
@@ -25,7 +27,6 @@ struct InterviewRecordingView: View {
     @State private var isShowingTopImage = true
     @Binding var isShownInterviewRecordingView: Bool
     @State var isShowingCancelAlert = false
-    
     
     // 타이머 시간 포맷
     func formattedDuration(_ duration: TimeInterval) -> String {
@@ -86,6 +87,8 @@ struct InterviewRecordingView: View {
                                 message: Text("진행중인 녹음이 삭제됩니다."),
                                 primaryButton: .destructive(Text("녹음 취소")) {
                                     self.isShownInterviewRecordingView.toggle()
+                                    // 취소하면 인터뷰 초기화
+                                    vm.initInterview()
                                 },
                                 secondaryButton: .cancel(Text("되돌아가기"))
                             )
@@ -179,25 +182,28 @@ struct InterviewRecordingView: View {
                                 visualColor = Color.PressorBlue
                             }
                         }
-                        
+
                         // 완료 버튼 로직
                         NavigationLink(
-                            destination: InterviewDetailEditModalView(vm: vm)
-                                .onTapGesture {
-                                    // 완료버튼 누를 때 interview 인스턴스를 업데이트
-                                    vm.interview.recordSTT = vm.transcripts
-                                    vm.interview.records = vm.recordings
-                                    vm.interview.details.playTime = formattedDuration(duration)
-                                },
+                            destination: InterviewDetailEditModalView(
+                                interviewBubbleManager: interviewBubbleManager,
+                                isDetailChanging: $isDetailChanging
+                            )
+                            .onAppear {
+                                vm.interview.recordSTT = vm.transcripts
+                                vm.interview.records = vm.recordings
+                                vm.interview.details.playTime = formattedDuration(duration)
+                                interviewBubbleManager.currentInterview = vm.interview
+                            },
                             label: {
                                 Text("완료")
                                     .font(.headline)
                                 // 녹음 중일때 -> 회색, 녹음 일시정지일때 -> 빨간색
-                                    .foregroundColor(!isPaused ? Color.BackgroundGray_Dark : Color.red)
+                                    .foregroundColor(!isPaused ? Color(red: 117/255, green: 117/255, blue: 117/255) : Color.red)
                                 // 녹음 중일 때 완료 버튼 비활성화
                                     .position(
                                         x: UIScreen.main.bounds.width / 6,
-                                        y: UIScreen.main.bounds.height * 0.03
+                                        y: UIScreen.main.bounds.height * 0.02
                                     )
                             } //label
                         ) // NavigationLink
@@ -323,12 +329,15 @@ struct InterviewRecordingView: View {
             )
             .onAppear {
                 audioInputManager.prepare()
+                interviewBubbleManager.currentInterview = .getDummyInterview()
             }
             .onDisappear {
                 audioInputManager.stopRecording()
+                stopTimer()
             }
         } // NavigationView
         .accentColor(Color.orange)
+        .navigationViewStyle(.stack)
     } // body
 } // struct
 
