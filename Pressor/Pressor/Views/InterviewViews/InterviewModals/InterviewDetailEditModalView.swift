@@ -13,16 +13,23 @@ struct InterviewDetailEditModalView: View {
     @Environment(\.dismiss) var dismiss
     @Binding var isDetailChanging: Bool
     
+    @State private var interviewTitle: String = ""
+    @State private var userName: String = ""
+    @State private var userEmail: String = ""
+    @State private var userPhoneNumber: String = ""
+    
     private var isNotRequestedInfoAllSubmitted: Bool {
-        interviewBubbleManager.currentInterview.details.userName.isEmpty || interviewBubbleManager.currentInterview.details.interviewTitle.isEmpty
+        userName.isEmpty || interviewTitle.isEmpty
     }
     
     var body: some View {
         Form {
+            Text("\(interviewBubbleManager.currentInterview.id)")
+            
             Section {
                 TextField(
                     "인터뷰 제목",
-                    text: $interviewBubbleManager.currentInterview.details.interviewTitle
+                    text: $interviewTitle
                 )
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
@@ -38,7 +45,7 @@ struct InterviewDetailEditModalView: View {
             Section {
                 TextField(
                     "이름",
-                    text: $interviewBubbleManager.currentInterview.details.userName
+                    text: $userName
                 )
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
@@ -50,14 +57,14 @@ struct InterviewDetailEditModalView: View {
                 
                 TextField(
                     "이메일",
-                    text: $interviewBubbleManager.currentInterview.details.userEmail
+                    text: $userEmail
                 )
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 
                 TextField(
                     "전화번호",
-                    text: $interviewBubbleManager.currentInterview.details.userPhoneNumber
+                    text: $userPhoneNumber
                 )
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
@@ -82,8 +89,8 @@ struct InterviewDetailEditModalView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isDetailChanging {
                     Button {
-                        // 재할당으로 업데이트
-                        interviewBubbleManager.currentInterview = self.interviewBubbleManager.currentInterview
+                        updateInterviewDetails()
+                        
                         dismiss()
                     } label: {
                         Text("완료")
@@ -93,6 +100,9 @@ struct InterviewDetailEditModalView: View {
                         InterviewDetailView(
                             interviewBubbleManager: interviewBubbleManager
                         )
+                        .onAppear {
+                            updateInterviewDetails()
+                        }
                     } label: {
                         Text("완료")
                     }
@@ -106,6 +116,35 @@ struct InterviewDetailEditModalView: View {
         }
         .onDisappear {
             hideKeyboard()
+        }
+        .onAppear {
+            // 인터뷰가 수정된 적이 있음
+            if isInterviewDetailEditted() {
+                updateState()
+            }
+        }
+    }
+    
+    private func updateState() {
+        interviewTitle = interviewBubbleManager.currentInterview.details.interviewTitle
+        userName = interviewBubbleManager.currentInterview.details.userName
+        userEmail = interviewBubbleManager.currentInterview.details.userEmail
+        userPhoneNumber = interviewBubbleManager.currentInterview.details.userPhoneNumber
+    }
+    
+    private func updateInterviewDetails() {
+        // 재할당으로 업데이트
+        interviewBubbleManager.currentInterview.details.interviewTitle = interviewTitle
+        interviewBubbleManager.currentInterview.details.userName = userName
+        interviewBubbleManager.currentInterview.details.userEmail = userEmail
+        interviewBubbleManager.currentInterview.details.userPhoneNumber = userPhoneNumber
+    }
+    
+    private func isInterviewDetailEditted() -> Bool {
+        if !interviewBubbleManager.currentInterview.details.interviewTitle.isEmpty {
+            return true
+        } else {
+            return false
         }
     }
 }
