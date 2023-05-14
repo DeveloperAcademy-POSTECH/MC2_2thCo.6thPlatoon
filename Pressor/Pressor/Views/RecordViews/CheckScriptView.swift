@@ -68,27 +68,30 @@ struct CheckScriptView: View {
         Button("취소") {
             presentationMode.wrappedValue.dismiss()
         }
-        .foregroundColor(.red)
+        .foregroundColor(.PressorRed)
     }
     
     // 수정 버튼
     private var editButton: some View {
-        Menu {
-            Button(action: {
-                navigateToEditScriptView = true
-            }) {
-                Label("편집", systemImage: "pencil")
+        HStack {
+            NavigationLink(destination: EditScriptView(interviewViewModel: interviewViewModel, showingEditView: $showingEditView, title: title, description: description), isActive: $navigateToEditScriptView) {
+                EmptyView()
             }
-            Button(role: .destructive, action: {
-                showingDeleteConfirmationAlert = true
-            }) {
-                Label("삭제", systemImage: "trash")
+            Menu {
+                Button(action: {
+                    navigateToEditScriptView = true
+                }) {
+                    Label("편집", systemImage: "pencil")
+                }
+                Button(role: .destructive, action: {
+                    showingDeleteConfirmationAlert = true
+                }) {
+                    Label("삭제", systemImage: "trash")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle").foregroundColor(.PressorRed)
             }
-        } label: {
-            Image(systemName: "ellipsis.circle")
         }
-        // 네비게이션 링크 동작 버그로 .background 사용
-        .background(NavigationLink("", destination: EditScriptView(interviewViewModel: interviewViewModel, showingEditView: $showingEditView, title: title, description: description), isActive: $navigateToEditScriptView))
         .alert(isPresented: $showingDeleteConfirmationAlert) {
             Alert(title: Text("대본 삭제"), message: Text("정말로 대본을 삭제하시겠습니까?"),
                   primaryButton: .destructive(Text("삭제")) {

@@ -25,6 +25,7 @@ struct MainRecordView: View {
     @State private var scriptTitle: String = ""
     @State private var scriptDescription: String = ""
     @State private var scriptMode: ScriptMode = .add
+    @State private var isShowingSettingView = false
     
     
     init() {
@@ -32,6 +33,7 @@ struct MainRecordView: View {
     }
     
     var body: some View {
+        ZStack {
         TabView(selection: $routingManager.currentTab) {
             NavigationView {
                 ZStack {
@@ -87,15 +89,13 @@ struct MainRecordView: View {
                                 } label: {
                                     if scriptAdded {
                                         // 대본이 있을 경우
-                                        NavigationLink(destination: CheckScriptView(interviewViewModel: interviewViewModel,  scriptAdded: $scriptAdded)) {
-                                            VStack {
-                                                Image(systemName: "note.text")
-                                                    .resizable()
-                                                    .frame(width: 35, height: 33)
-                                                    .foregroundColor(Color.accentColor)
-                                                Text("대본 확인")
-                                                    .foregroundColor(Color.accentColor)
-                                            }
+                                        VStack {
+                                            Image(systemName: "note.text")
+                                                .resizable()
+                                                .frame(width: 35, height: 33)
+                                                .foregroundColor(Color.accentColor)
+                                            Text("대본 확인")
+                                                .foregroundColor(Color.accentColor)
                                         }
                                     } else {
                                         // 대본이 없을 경우
@@ -111,16 +111,22 @@ struct MainRecordView: View {
                                         }
                                     }
                                 }
+                            .fullScreenCover(isPresented: $isSheetShowing) {
+                                CheckScriptView(interviewViewModel: interviewViewModel, scriptAdded: $scriptAdded)
+                                }
                         }
                     }
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             NavigationLink {
-                                Text("세팅뷰")
+                                SettingView(isShown: $isShowingSettingView)
+                                    .toolbar(.hidden, for: .tabBar)
                             } label: {
                                 Image(systemName: "gearshape.fill")
                                     .foregroundColor(.DisabledGary)
                             }
+                            .navigationBarTitleDisplayMode(.inline)
+                            .navigationBarHidden(true)
                         }
                     }
                     .disabled(isTimerCounting)
@@ -171,6 +177,7 @@ struct MainRecordView: View {
                 }
         }
         .accentColor(.red)
+        }
     }
 }
 
