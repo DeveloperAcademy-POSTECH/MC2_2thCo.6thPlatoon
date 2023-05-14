@@ -88,15 +88,13 @@ struct MainRecordView: View {
                                 } label: {
                                     if scriptAdded {
                                         // 대본이 있을 경우
-                                        NavigationLink(destination: CheckScriptView(interviewViewModel: interviewViewModel,  scriptAdded: $scriptAdded)) {
-                                            VStack {
-                                                Image(systemName: "note.text")
-                                                    .resizable()
-                                                    .frame(width: 35, height: 33)
-                                                    .foregroundColor(Color.accentColor)
-                                                Text("대본 확인")
-                                                    .foregroundColor(Color.accentColor)
-                                            }
+                                        VStack {
+                                            Image(systemName: "note.text")
+                                                .resizable()
+                                                .frame(width: 35, height: 33)
+                                                .foregroundColor(Color.accentColor)
+                                            Text("대본 확인")
+                                                .foregroundColor(Color.accentColor)
                                         }
                                     } else {
                                         // 대본이 없을 경우
@@ -111,6 +109,9 @@ struct MainRecordView: View {
                                                 .fontWeight(.semibold)
                                         }
                                     }
+                                }
+                            .fullScreenCover(isPresented: $isSheetShowing) {
+                                CheckScriptView(interviewViewModel: interviewViewModel, scriptAdded: $scriptAdded)
                                 }
                         }
                     }
