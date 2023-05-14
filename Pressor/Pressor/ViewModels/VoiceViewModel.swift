@@ -8,6 +8,7 @@
 import Foundation
 import AVFoundation
 import Speech
+import UIKit
 
 enum Recorder: String {
     case interviewee
@@ -76,6 +77,9 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
     }
     
     public func startRecording() {
+        // 녹음이 시잘될 때 슬립모드 방지 시작
+        UIApplication.shared.isIdleTimerDisabled = true
+        
         // > 녹음 권한 요청 (싱글톤 객체)
         let recordingSession = AVAudioSession.sharedInstance()
         do {
@@ -126,6 +130,8 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
     
     
     public func stopRecording(index: Int, recoder: Recorder){
+        // 녹음이 끝날 때 슬립모드 방지 해제
+        UIApplication.shared.isIdleTimerDisabled = false
         // 녹음 중지
         audioRecorder.stop()
         isRecording = false
