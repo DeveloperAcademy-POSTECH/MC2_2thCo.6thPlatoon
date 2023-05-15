@@ -14,15 +14,16 @@ final class InterviewBubbleManager: NSObject, ObservableObject, AVAudioPlayerDel
     @Published var formattedDuration: String = ""
     @Published var progress: CGFloat = 0.0
     @Published var formattedProgress: String = "00:00"
+    @Published var isReadyToPlay: Bool = true
     
     private var formatter = DateComponentsFormatter()
     private var audioPlayer: AVAudioPlayer = .init()
     
     // MARK: LIFECYCLE
     init(
-        currentInterview: Interview? = nil
+        currentInterview: Interview
     ) {
-        self.currentInterview = currentInterview ?? .getDummyInterview()
+        super.init()
     }
     
     private func prepareAudioPlayer(with audioPlayer: AVAudioPlayer) {
@@ -34,15 +35,16 @@ final class InterviewBubbleManager: NSObject, ObservableObject, AVAudioPlayerDel
         duration = audioPlayer.duration
         
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            self?.progress = CGFloat(audioPlayer.currentTime / audioPlayer.duration)
-            self?.formattedProgress = self?.formatter.string(from: TimeInterval(audioPlayer.currentTime))! ?? ""
+            guard let self else { return }
+            self.progress = CGFloat(audioPlayer.currentTime / audioPlayer.duration)
+            self.formattedProgress = self.formatter.string(from: TimeInterval(audioPlayer.currentTime))!
         }
     }
     
     // MARK: - Bubble Audio Control
     public func startPlayingRecordVoice(
         url: URL,
-        isPlaying: Binding<Bool>
+        isReadyToPlay: Binding<Bool>
     ) {
         let playSession = AVAudioSession.sharedInstance()
         
@@ -53,19 +55,57 @@ final class InterviewBubbleManager: NSObject, ObservableObject, AVAudioPlayerDel
         }
         
         do {
-//            prepareAudioPlayer(with: self.audioPlayer)
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer.delegate = self
             audioPlayer.prepareToPlay()
             audioPlayer.play()
-            isPlaying.wrappedValue.toggle()
+            
+            // true -> False, PLAYING
+            self.isReadyToPlay = false
+            isReadyToPlay.wrappedValue.toggle()
         } catch {
             print("Playing Failed")
         }
     }
     
-    public func stopPlayingRecordVoice(isPlaying: Binding<Bool>) {
+    public func stopPlayingRecordVoice() {
         audioPlayer.stop()
-        isPlaying.wrappedValue.toggle()
+        isReadyToPlay = true
+    }
+    
+    // MARK: AUDIO DELEGATE
+    internal func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        if flag {
+            self.isReadyToPlay = true
+        } else {
+            print("NOT SUCCESS: \(flag.description)")
+        }
+    }
+}
+
+// MARK: - Interview Edit & Update
+extension InterviewBubbleManager {
+    public func updateState(
+        interviewTitle: inout String,
+        userName: inout String,
+        userEmail: inout String,
+        userPhoneNumber: inout String
+    ) {
+        interviewTitle = currentInterview.details.interviewTitle
+        userName = currentInterview.details.userName
+        userEmail = currentInterview.details.userEmail
+        userPhoneNumber = currentInterview.details.userPhoneNumber
+    }
+    
+    public func updateInterviewDetails(
+        interviewTitle: String,
+        userName: String,
+        userEmail: String,
+        userPhoneNumber: String
+    ) {
+        currentInterview.details.interviewTitle = interviewTitle
+        currentInterview.details.userName = userName
+        currentInterview.details.userEmail = userEmail
+        currentInterview.details.userPhoneNumber = userPhoneNumber
     }
 }
