@@ -191,6 +191,8 @@ struct InterviewRecordingView: View {
                             )
                             .onAppear {
                                 vm.interview.recordSTT = vm.transcripts
+                                print("VIEWMODEL_TRANSCRIPT", vm.transcripts)
+                                print("VIEWMODEL_INTERVIEW_TRANSCRIPT", vm.interview.recordSTT)
                                 vm.interview.records = vm.recordings
                                 vm.interview.details.playTime = formattedDuration(duration)
                                 interviewBubbleManager.currentInterview = vm.interview
@@ -199,11 +201,11 @@ struct InterviewRecordingView: View {
                                 Text("완료")
                                     .font(.headline)
                                 // 녹음 중일때 -> 회색, 녹음 일시정지일때 -> 빨간색
-                                    .foregroundColor(!isPaused ? Color(red: 117/255, green: 117/255, blue: 117/255) : Color.red)
+                                    .foregroundColor(!isPaused ? Color.BackgroundGray_Dark : Color.red)
                                 // 녹음 중일 때 완료 버튼 비활성화
                                     .position(
                                         x: UIScreen.main.bounds.width / 6,
-                                        y: UIScreen.main.bounds.height * 0.02
+                                        y: UIScreen.main.bounds.height * 0.03
                                     )
                             } //label
                         ) // NavigationLink

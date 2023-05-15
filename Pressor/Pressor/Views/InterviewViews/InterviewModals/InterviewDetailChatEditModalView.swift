@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct InterviewDetailChatEditModalView: View {
-    @StateObject var interviewBubbleManager: InterviewBubbleManager
+    @ObservedObject var interviewBubbleManager: InterviewBubbleManager
     @Environment(\.dismiss) var dismiss
     @State private var interviewDescription: String = ""
     @Binding var isInterviewDetailChatEditModalViewDisplayed: Bool

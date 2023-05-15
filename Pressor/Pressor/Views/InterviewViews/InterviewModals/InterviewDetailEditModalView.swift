@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct InterviewDetailEditModalView: View {
-    @StateObject var interviewBubbleManager: InterviewBubbleManager
+    @ObservedObject var interviewBubbleManager: InterviewBubbleManager
     @EnvironmentObject var routingManager: RoutingManager
     @Environment(\.dismiss) var dismiss
     @Binding var isDetailChanging: Bool
@@ -39,6 +39,7 @@ struct InterviewDetailEditModalView: View {
             } header: {
                 Text("인터뷰 제목")
             }
+            .listRowBackground(Color.BackgroundGray_Light)
             
             Section {
                 TextField(
@@ -76,7 +77,9 @@ struct InterviewDetailEditModalView: View {
                     Text("는 필수 입력 정보입니다.")
                 }
             }
+            .listRowBackground(Color.BackgroundGray_Light)
         }
+        .scrollContentBackground(.hidden)
         .navigationTitle(
             isDetailChanging
             ? "인터뷰 수정하기"
@@ -87,19 +90,25 @@ struct InterviewDetailEditModalView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if isDetailChanging {
                     Button {
-                        updateInterviewDetails()
-                        dismiss()
+                        interviewBubbleManager.updateInterviewDetails(
+                            interviewTitle: interviewTitle,
+                            userName: userName,
+                            userEmail: userEmail,
+                            userPhoneNumber: userPhoneNumber
+                        )
                     } label: {
                         Text("완료")
+                    }
+                    .onChange(
+                        of: interviewBubbleManager.currentInterview.details.interviewTitle
+                    ) { _ in
+                        dismiss()
                     }
                 } else {
                     NavigationLink {
                         InterviewDetailView(
                             interviewBubbleManager: interviewBubbleManager
                         )
-                        .onAppear {
-                            updateInterviewDetails()
-                        }
                     } label: {
                         Text("완료")
                     }
@@ -113,26 +122,21 @@ struct InterviewDetailEditModalView: View {
         }
         .onDisappear {
             hideKeyboard()
+            interviewBubbleManager.updateInterviewDetails(
+                interviewTitle: interviewTitle,
+                userName: userName,
+                userEmail: userEmail,
+                userPhoneNumber: userPhoneNumber
+            )
         }
         .onAppear {
-            if isDetailChanging {
-                updateState()
-            }
+            interviewBubbleManager.updateState(
+                interviewTitle: &interviewTitle,
+                userName: &userName,
+                userEmail: &userEmail,
+                userPhoneNumber: &userPhoneNumber
+            )
         }
-    }
-    
-    private func updateState() {
-        interviewTitle = interviewBubbleManager.currentInterview.details.interviewTitle
-        userName = interviewBubbleManager.currentInterview.details.userName
-        userEmail = interviewBubbleManager.currentInterview.details.userEmail
-        userPhoneNumber = interviewBubbleManager.currentInterview.details.userPhoneNumber
-    }
-    
-    private func updateInterviewDetails() {
-        interviewBubbleManager.currentInterview.details.interviewTitle = interviewTitle
-        interviewBubbleManager.currentInterview.details.userName = userName
-        interviewBubbleManager.currentInterview.details.userEmail = userEmail
-        interviewBubbleManager.currentInterview.details.userPhoneNumber = userPhoneNumber
     }
     
     private func isInterviewDetailEditted() -> Bool {

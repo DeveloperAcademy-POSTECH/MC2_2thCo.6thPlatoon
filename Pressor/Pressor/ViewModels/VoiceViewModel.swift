@@ -151,6 +151,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         transcribe(url: currentPath)
     }
     
+    // MARK: - STT
     private func transcribe(url: URL) {
         // Initialize the speech recogniter with your preffered language
         guard let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ko_KR")) else {

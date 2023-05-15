@@ -8,9 +8,10 @@
 import SwiftUI
 import CoreTransferable
 import AVFoundation
+import OSLog
 
 struct InterviewDetailView: View {
-    @StateObject var interviewBubbleManager: InterviewBubbleManager
+    @ObservedObject var interviewBubbleManager: InterviewBubbleManager
     
     @State private var isInterviewInfoEditing: Bool = false
     @State private var isWholeRecordPlaying: Bool = false
@@ -21,11 +22,15 @@ struct InterviewDetailView: View {
     @State private var currentTime: CGFloat = 0
     @State private var currentRecordIndex: Int = 0
     
+    private var isNotRequestedInfoAllSubmitted: Bool {
+        interviewBubbleManager.currentInterview.details.userName.isEmpty || interviewBubbleManager.currentInterview.details.interviewTitle.isEmpty
+    }
+    
     // MARK: - BODY
     var body: some View {
         ZStack {
             ScrollView {
-                LazyVStack {
+//                LazyVStack {
                     Section {
                         ForEach(
                             interviewBubbleManager.currentInterview.records,
@@ -36,18 +41,20 @@ struct InterviewDetailView: View {
                                 bubbleManager: interviewBubbleManager,
                                 record: eachRecord
                             )
-                            .onChange(
-                                of: interviewBubbleManager.currentInterview.recordSTT) { _ in
-                                    print("?")
-                                    transferableScripts.removeAll()
-                                    makeTransferableScripts()
-                                }
+                            .onChange(of: interviewBubbleManager.currentInterview.recordSTT[safe: eachRecord.transcriptIndex]) { _ in
+                                transferableScripts.removeAll()
+                                makeTransferableScripts()
+                            }
+                            .onChange(of: isNotRequestedInfoAllSubmitted) { _ in
+                                transferableScripts.removeAll()
+                                makeTransferableScripts()
+                            }
                         }
                     } header: {
                         InterviewInfoHeader(with: interviewBubbleManager.currentInterview)
                             .padding(.bottom, 16)
                     }
-                }
+//                }
                 .padding(.bottom, UIScreen.main.bounds.height * 0.2)
             }
         }
@@ -64,8 +71,10 @@ struct InterviewDetailView: View {
             )
             
             // TODO: GET Record List Here
+            transferableScripts.removeAll()
+            makeTransferableScripts()
         }
-        .navigationTitle("\(interviewBubbleManager.currentInterview.details.interviewTitle)")
+        .navigationTitle(interviewBubbleManager.currentInterview.details.interviewTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -151,13 +160,13 @@ struct InterviewDetailView: View {
                             Text("Name")
                         }
                         
-                        if !interviewBubbleManager.currentInterview.details.userEmail.isEmpty {
+                        if !interview.details.userEmail.isEmpty {
                             HStack {
                                 Text("Email")
                             }
                         }
                         
-                        if !interviewBubbleManager.currentInterview.details.userPhoneNumber.isEmpty {
+                        if !interview.details.userPhoneNumber.isEmpty {
                             HStack {
                                 Text("Phone")
                             }
@@ -172,19 +181,19 @@ struct InterviewDetailView: View {
                         spacing: 5
                     ) {
                         HStack {
-                            Text(interviewBubbleManager.currentInterview.details.userName)
+                            Text(interview.details.userName)
                                 .bold()
                         }
                         
-                        if !interviewBubbleManager.currentInterview.details.userEmail.isEmpty {
+                        if !interview.details.userEmail.isEmpty {
                             HStack {
-                                Text(interviewBubbleManager.currentInterview.details.userEmail)
+                                Text(interview.details.userEmail)
                             }
                         }
                         
-                        if !interviewBubbleManager.currentInterview.details.userPhoneNumber.isEmpty {
+                        if !interview.details.userPhoneNumber.isEmpty {
                             HStack {
-                                Text(interviewBubbleManager.currentInterview.details.userPhoneNumber)
+                                Text(interview.details.userPhoneNumber)
                             }
                         }
                     }
@@ -215,18 +224,22 @@ struct InterviewDetailView: View {
             
             for idx in 0 ..< interviewBubbleManager.currentInterview.recordSTT.count {
                 let num = idx + 1
-                let script = interviewBubbleManager.currentInterview.recordSTT[idx]
-                let eachRecord = interviewBubbleManager.currentInterview.records[idx]
+                let script = interviewBubbleManager.currentInterview.recordSTT[safe: idx]
+                let eachRecord = interviewBubbleManager.currentInterview.records[safe: idx]
                 
-                switch eachRecord.type {
-                case Recorder.interviewer.rawValue:
-                    self.transferableScripts += ("\(num). 인터뷰어: " + script + "\n\n")
-                    
-                case Recorder.interviewee.rawValue:
-                    self.transferableScripts += ("\(num). \(interviewBubbleManager.currentInterview.details.userName) 님: " + script  + "\n\n")
-                    
-                default:
-                    self.transferableScripts += ""
+                if
+                    let eachRecord,
+                    let script {
+                    switch eachRecord.type {
+                    case Recorder.interviewer.rawValue:
+                        self.transferableScripts += ("\(num). 인터뷰어: " + script + "\n\n")
+                        
+                    case Recorder.interviewee.rawValue:
+                        self.transferableScripts += ("\(num). \(interviewBubbleManager.currentInterview.details.userName) 님: " + script  + "\n\n")
+                        
+                    default:
+                        self.transferableScripts += ""
+                    }
                 }
             }
         }
@@ -272,7 +285,7 @@ struct InterviewDetailView: View {
                         // MARK: Start PLAY and Get Each Record's TimeInterval
                         interviewBubbleManager.startPlayingRecordVoice(
                             url: interview.records[currentRecordIndex].fileURL,
-                            isPlaying: $isWholeRecordPlaying
+                            isReadyToPlay: $isWholeRecordPlaying
                         )
                     } label: {
                         Rectangle()
