@@ -65,10 +65,10 @@ struct RecordBubble: View {
                     if isReadyToPlay {
                         bubbleManager.startPlayingRecordVoice(
                             url: record.fileURL,
-                            isPlaying: $isReadyToPlay
+                            isReadyToPlay: $isReadyToPlay
                         )
                     } else {
-                        bubbleManager.stopPlayingRecordVoice(isPlaying: $isReadyToPlay)
+                        bubbleManager.stopPlayingRecordVoice()
                     }
                 } label: {
                     Image(systemName: isReadyToPlay ? "play.fill" : "stop.fill")
@@ -85,6 +85,11 @@ struct RecordBubble: View {
                     : Color.pressorButtonBlueBackground
                 )
                 .clipShape(Circle())
+                .onChange(of: bubbleManager.isReadyToPlay) { newValue in
+                    if bubbleManager.isReadyToPlay {
+                        self.isReadyToPlay = true
+                    }
+                }
             }
             .padding(
                 isInterviewerSpeaking
