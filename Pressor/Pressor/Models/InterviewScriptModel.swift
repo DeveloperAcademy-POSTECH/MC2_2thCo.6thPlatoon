@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Script {
+struct Script: Codable {
     var title: String
     var description: String
 }
