@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreTransferable
 import AVFoundation
+import OSLog
 
 struct InterviewDetailView: View {
     @ObservedObject var interviewBubbleManager: InterviewBubbleManager
@@ -21,11 +22,15 @@ struct InterviewDetailView: View {
     @State private var currentTime: CGFloat = 0
     @State private var currentRecordIndex: Int = 0
     
+    private var isNotRequestedInfoAllSubmitted: Bool {
+        interviewBubbleManager.currentInterview.details.userName.isEmpty || interviewBubbleManager.currentInterview.details.interviewTitle.isEmpty
+    }
+    
     // MARK: - BODY
     var body: some View {
         ZStack {
             ScrollView {
-                LazyVStack {
+//                LazyVStack {
                     Section {
                         ForEach(
                             interviewBubbleManager.currentInterview.records,
@@ -36,18 +41,20 @@ struct InterviewDetailView: View {
                                 bubbleManager: interviewBubbleManager,
                                 record: eachRecord
                             )
-                            .onChange(
-                                of: interviewBubbleManager.currentInterview.recordSTT
-                            ) { _ in
-                                    transferableScripts.removeAll()
-                                    makeTransferableScripts()
-                                }
+                            .onChange(of: interviewBubbleManager.currentInterview.recordSTT[safe: eachRecord.transcriptIndex]) { _ in
+                                transferableScripts.removeAll()
+                                makeTransferableScripts()
+                            }
+                            .onChange(of: isNotRequestedInfoAllSubmitted) { _ in
+                                transferableScripts.removeAll()
+                                makeTransferableScripts()
+                            }
                         }
                     } header: {
                         InterviewInfoHeader(with: interviewBubbleManager.currentInterview)
                             .padding(.bottom, 16)
                     }
-                }
+//                }
                 .padding(.bottom, UIScreen.main.bounds.height * 0.2)
             }
         }
@@ -64,6 +71,8 @@ struct InterviewDetailView: View {
             )
             
             // TODO: GET Record List Here
+            transferableScripts.removeAll()
+            makeTransferableScripts()
         }
         .navigationTitle(interviewBubbleManager.currentInterview.details.interviewTitle)
         .navigationBarTitleDisplayMode(.inline)
@@ -215,18 +224,22 @@ struct InterviewDetailView: View {
             
             for idx in 0 ..< interviewBubbleManager.currentInterview.recordSTT.count {
                 let num = idx + 1
-                let script = interviewBubbleManager.currentInterview.recordSTT[idx]
-                let eachRecord = interviewBubbleManager.currentInterview.records[idx]
+                let script = interviewBubbleManager.currentInterview.recordSTT[safe: idx]
+                let eachRecord = interviewBubbleManager.currentInterview.records[safe: idx]
                 
-                switch eachRecord.type {
-                case Recorder.interviewer.rawValue:
-                    self.transferableScripts += ("\(num). 인터뷰어: " + script + "\n\n")
-                    
-                case Recorder.interviewee.rawValue:
-                    self.transferableScripts += ("\(num). \(interviewBubbleManager.currentInterview.details.userName) 님: " + script  + "\n\n")
-                    
-                default:
-                    self.transferableScripts += ""
+                if
+                    let eachRecord,
+                    let script {
+                    switch eachRecord.type {
+                    case Recorder.interviewer.rawValue:
+                        self.transferableScripts += ("\(num). 인터뷰어: " + script + "\n\n")
+                        
+                    case Recorder.interviewee.rawValue:
+                        self.transferableScripts += ("\(num). \(interviewBubbleManager.currentInterview.details.userName) 님: " + script  + "\n\n")
+                        
+                    default:
+                        self.transferableScripts += ""
+                    }
                 }
             }
         }

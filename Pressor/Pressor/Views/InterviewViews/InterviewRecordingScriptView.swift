@@ -198,11 +198,11 @@ struct InterviewRecordingScriptView: View {
                                 Text("완료")
                                     .font(.headline)
                                 // 녹음 중일때 -> 회색, 녹음 일시정지일때 -> 빨간색
-                                    .foregroundColor(!isPaused ? Color(red: 117/255, green: 117/255, blue: 117/255) : Color.red)
+                                    .foregroundColor(!isPaused ? Color.BackgroundGray_Dark : Color.red)
                                 // 녹음 중일 때 완료 버튼 비활성화
                                     .position(
                                         x: UIScreen.main.bounds.width / 6,
-                                        y: UIScreen.main.bounds.height * 0.02
+                                        y: UIScreen.main.bounds.height * 0.03
                                     )
                             } //label
                         ) // NavigationLink
@@ -216,10 +216,14 @@ struct InterviewRecordingScriptView: View {
                                 Text("\n\n\(vm.interview.script.description)\n\n")
                                     .font(.system(size: 22))
                                     .foregroundColor(.white)
+                                    .multilineTextAlignment(.leading)
+                                    .frame(
+                                        width: UIScreen.main.bounds.width * 0.90,
+                                        alignment: .leading
+                                    )
                             }
                         }
-                        .frame(height: UIScreen.main.bounds.height * 0.31)
-                        .padding()
+                        // MARK: BLURRED BACKGROUND
                         VStack {
                             Rectangle()
                                 .frame(height: 5)
@@ -235,8 +239,15 @@ struct InterviewRecordingScriptView: View {
                             .shadow(color: .black, radius: 5, x: 0, y: -3)
                             .shadow(color: .black, radius: 7, x: 0, y: -3)
                         }
-                        .frame(height: UIScreen.main.bounds.height * 0.31)
+                        .frame(
+                            height: UIScreen.main.bounds.height * 0.31
+                        )
+                        
                     }
+                    .frame(
+                        width: UIScreen.main.bounds.width * 0.93,
+                        height: UIScreen.main.bounds.height * 0.31
+                    )
                     // 화자 전환 기능
                     RoundedRectangle(cornerRadius: 44)
                         // 화자전환 영역

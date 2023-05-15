@@ -39,6 +39,7 @@ struct InterviewDetailEditModalView: View {
             } header: {
                 Text("인터뷰 제목")
             }
+            .listRowBackground(Color.BackgroundGray_Light)
             
             Section {
                 TextField(
@@ -76,7 +77,9 @@ struct InterviewDetailEditModalView: View {
                     Text("는 필수 입력 정보입니다.")
                 }
             }
+            .listRowBackground(Color.BackgroundGray_Light)
         }
+        .scrollContentBackground(.hidden)
         .navigationTitle(
             isDetailChanging
             ? "인터뷰 수정하기"

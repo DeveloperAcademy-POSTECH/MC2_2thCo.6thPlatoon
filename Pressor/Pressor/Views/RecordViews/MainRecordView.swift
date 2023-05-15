@@ -90,7 +90,7 @@ struct MainRecordView: View {
                                                 .frame(width: 35, height: 33)
                                                 .foregroundColor(Color.orange)
                                             Text("대본 확인")
-                                                .foregroundColor(Color.orange)
+                                                .foregroundColor(Color.SymbolGray)
                                         }
                                     } else {
                                         // 대본이 없을 경우
@@ -101,7 +101,7 @@ struct MainRecordView: View {
                                                 .foregroundColor(Color.orange)
                                                 .padding(.leading, 5)
                                             Text("대본 추가")
-                                                .foregroundColor(Color.orange)
+                                                .foregroundColor(Color.SymbolGray)
                                                 .fontWeight(.semibold)
                                         }
                                     }
