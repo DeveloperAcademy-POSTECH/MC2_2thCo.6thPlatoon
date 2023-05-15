@@ -10,7 +10,7 @@ import CoreTransferable
 import AVFoundation
 
 struct InterviewDetailView: View {
-    @StateObject var interviewBubbleManager: InterviewBubbleManager
+    @ObservedObject var interviewBubbleManager: InterviewBubbleManager
     
     @State private var isInterviewInfoEditing: Bool = false
     @State private var isWholeRecordPlaying: Bool = false
@@ -37,8 +37,8 @@ struct InterviewDetailView: View {
                                 record: eachRecord
                             )
                             .onChange(
-                                of: interviewBubbleManager.currentInterview.recordSTT) { _ in
-                                    print("?")
+                                of: interviewBubbleManager.currentInterview.recordSTT
+                            ) { _ in
                                     transferableScripts.removeAll()
                                     makeTransferableScripts()
                                 }
@@ -65,7 +65,7 @@ struct InterviewDetailView: View {
             
             // TODO: GET Record List Here
         }
-        .navigationTitle("\(interviewBubbleManager.currentInterview.details.interviewTitle)")
+        .navigationTitle(interviewBubbleManager.currentInterview.details.interviewTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -151,13 +151,13 @@ struct InterviewDetailView: View {
                             Text("Name")
                         }
                         
-                        if !interviewBubbleManager.currentInterview.details.userEmail.isEmpty {
+                        if !interview.details.userEmail.isEmpty {
                             HStack {
                                 Text("Email")
                             }
                         }
                         
-                        if !interviewBubbleManager.currentInterview.details.userPhoneNumber.isEmpty {
+                        if !interview.details.userPhoneNumber.isEmpty {
                             HStack {
                                 Text("Phone")
                             }
@@ -172,19 +172,19 @@ struct InterviewDetailView: View {
                         spacing: 5
                     ) {
                         HStack {
-                            Text(interviewBubbleManager.currentInterview.details.userName)
+                            Text(interview.details.userName)
                                 .bold()
                         }
                         
-                        if !interviewBubbleManager.currentInterview.details.userEmail.isEmpty {
+                        if !interview.details.userEmail.isEmpty {
                             HStack {
-                                Text(interviewBubbleManager.currentInterview.details.userEmail)
+                                Text(interview.details.userEmail)
                             }
                         }
                         
-                        if !interviewBubbleManager.currentInterview.details.userPhoneNumber.isEmpty {
+                        if !interview.details.userPhoneNumber.isEmpty {
                             HStack {
-                                Text(interviewBubbleManager.currentInterview.details.userPhoneNumber)
+                                Text(interview.details.userPhoneNumber)
                             }
                         }
                     }
@@ -272,7 +272,7 @@ struct InterviewDetailView: View {
                         // MARK: Start PLAY and Get Each Record's TimeInterval
                         interviewBubbleManager.startPlayingRecordVoice(
                             url: interview.records[currentRecordIndex].fileURL,
-                            isPlaying: $isWholeRecordPlaying
+                            isReadyToPlay: $isWholeRecordPlaying
                         )
                     } label: {
                         Rectangle()
