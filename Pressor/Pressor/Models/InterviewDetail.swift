@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct InterviewDetail {
+struct InterviewDetail: Codable {
     var interviewTitle: String
     var userName: String
     var userEmail: String
