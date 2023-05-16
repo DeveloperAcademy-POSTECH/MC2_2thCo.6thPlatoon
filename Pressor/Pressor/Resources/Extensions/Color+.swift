@@ -65,6 +65,10 @@ extension Color {
         .init(hex: "F2F2F7")
     }
     
+    static var pressorSystemGray_dark: Self {
+        .init(hex: "#C7C7CC")
+    }
+    
     static var pressorButtonBluePrimary: Self {
         .init(hex: "00C7BE")
     }
