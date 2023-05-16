@@ -8,7 +8,7 @@
 import Foundation
 
 struct Record: Codable {
-    let id: String = UUID().uuidString
+    var id: String = UUID().uuidString
     var fileURL : URL
     var createdAt : Date
     var type: String
