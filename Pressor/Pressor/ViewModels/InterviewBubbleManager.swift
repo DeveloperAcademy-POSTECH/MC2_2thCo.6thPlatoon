@@ -9,7 +9,6 @@ import SwiftUI
 import AVFoundation
 
 final class InterviewBubbleManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
-    @Published var currentInterview: Interview = .getDummyInterview()
     @Published var duration: Double = 0.0
     @Published var formattedDuration: String = ""
     @Published var progress: CGFloat = 0.0
@@ -18,13 +17,6 @@ final class InterviewBubbleManager: NSObject, ObservableObject, AVAudioPlayerDel
     
     private var formatter = DateComponentsFormatter()
     private var audioPlayer: AVAudioPlayer = .init()
-    
-    // MARK: LIFECYCLE
-    init(
-        currentInterview: Interview
-    ) {
-        super.init()
-    }
     
     private func prepareAudioPlayer(with audioPlayer: AVAudioPlayer) {
         formatter.allowedUnits = [.minute, .second]
@@ -80,32 +72,5 @@ final class InterviewBubbleManager: NSObject, ObservableObject, AVAudioPlayerDel
         } else {
             print("NOT SUCCESS: \(flag.description)")
         }
-    }
-}
-
-// MARK: - Interview Edit & Update
-extension InterviewBubbleManager {
-    public func updateState(
-        interviewTitle: inout String,
-        userName: inout String,
-        userEmail: inout String,
-        userPhoneNumber: inout String
-    ) {
-        interviewTitle = currentInterview.details.interviewTitle
-        userName = currentInterview.details.userName
-        userEmail = currentInterview.details.userEmail
-        userPhoneNumber = currentInterview.details.userPhoneNumber
-    }
-    
-    public func updateInterviewDetails(
-        interviewTitle: String,
-        userName: String,
-        userEmail: String,
-        userPhoneNumber: String
-    ) {
-        currentInterview.details.interviewTitle = interviewTitle
-        currentInterview.details.userName = userName
-        currentInterview.details.userEmail = userEmail
-        currentInterview.details.userPhoneNumber = userPhoneNumber
     }
 }
