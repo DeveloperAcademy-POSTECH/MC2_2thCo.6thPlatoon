@@ -9,6 +9,7 @@ import Foundation
 import AVFoundation
 import Speech
 import UIKit
+import Combine
 
 enum Recorder: String {
     case interviewee
@@ -16,23 +17,27 @@ enum Recorder: String {
 }
 
 class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
+    typealias STTCompeletion = () -> ()
     
     private var audioRecorder : AVAudioRecorder!
     private var audioPlayer : AVAudioPlayer!
     
     @Published var interview: Interview
+    @Published var isRecording : Bool = false
+    @Published var countSec = 0
+    @Published var timerCount : Timer?
+    @Published var timer : String = "0:00"
+    @Published var isSTTCompleted: Bool = false
+    
     public var interviewPath: URL = URL(fileURLWithPath: "")
     private var currentPath: URL = URL(fileURLWithPath: "")
     public var recoderType: Recorder = Recorder.interviewer
     public var recordings = [Record]()
     public var transcripts: [String] = []
-    @Published var isRecording : Bool = false
-    @Published var countSec = 0
-    @Published var timerCount : Timer?
-    @Published var timer : String = "0:00"
     public var playTime: String = ""
     public var date: Date = Date()
     private var playingURL : URL?
+    private var sfSpeech = SFSpeechRecognizer(locale: Locale(identifier: "ko_KR"))
     
     init(interview: Interview){
         self.interview = interview
@@ -168,24 +173,27 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         SFSpeechRecognizer.requestAuthorization { authStatus in
             print(">> transcripts Waits")
             if (authStatus == .authorized) {
-                // Grab a local audio sample to parse
-                //                let fileURL = URL(fileURLWithPath: Bundle.main.path(forResource: "one_more_thing", ofType: "mp3")!)
                 let fileURL = url
-                // Get the party started and watch for results in the completion block.
-                // It gets fired every time a new word (aka transcription) gets detected.
                 let request = SFSpeechURLRecognitionRequest(url: fileURL)
                 print(">>>### URL: \(fileURL)")
                 
-                speechRecognizer.recognitionTask(with: request, resultHandler: { (result, error) in
-                    if result == nil {
-                        self.transcripts.append("(대화 없음)")
-                    } else if (result?.isFinal)! {
-                        if let res = result?.bestTranscription.formattedString {
-                            self.transcripts.append(res)
-                            print(res)
+                
+                let task = speechRecognizer.recognitionTask(
+                    with: request,
+                    resultHandler: { (result, error) in
+                        self.isSTTCompleted = false
+                        // MARK: 음성을 차례대로 정확하게 변환하기 위해
+                        if result == nil {
+                            self.transcripts.append("(대화 없음)")
+                        } else if (result?.isFinal)! {
+                            if let res = result?.bestTranscription.formattedString {
+                                self.transcripts.append(res)
+                                self.isSTTCompleted = true
+                                self.interview.recordSTT = self.transcripts
+                                print(res)
+                            }
                         }
-                    }
-                })
+                    })
             } else {
                 print("Error: Speech-API not authorized!");
             }
