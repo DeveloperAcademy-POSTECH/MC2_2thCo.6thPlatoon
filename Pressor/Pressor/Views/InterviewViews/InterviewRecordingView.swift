@@ -26,6 +26,7 @@ struct InterviewRecordingView: View {
     @State private var initChevronOffsetYValue = CGFloat.zero
     @State private var isShowingTopImage = true
     @State var isShowingCancelAlert = false
+    @State var urls: [URL] = []
     
     // 타이머 시간 포맷
     func formattedDuration(_ duration: TimeInterval) -> String {
@@ -208,6 +209,13 @@ struct InterviewRecordingView: View {
                                 .onEnded { _ in
                                     vm.interview.records = vm.recordings
                                     vm.interview.details.playTime = formattedDuration(duration)
+                                    
+                                    // urls에 저장된 음성파일의 모든 fileURL추가
+                                    for record in vm.recordings {
+                                        urls.append(record.fileURL)
+                                    }
+                                    vm.transURLs(urls: urls)
+                                    
                                 }
                         )
                         .navigationTitle("뒤로")
