@@ -85,6 +85,53 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         self.isSTTCompleted = false
     }
     
+    public func deleteInterview(with interview: Interview) {
+        let fileManager = FileManager.default
+        let documentUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let directoryPath = documentUrl.appendingPathComponent("\(interview.id)")
+        
+        let fileSavePath = directoryPath
+        
+        var fileList : Array<Any>? = nil
+        do {
+            fileList = try FileManager.default.contentsOfDirectory(atPath: fileSavePath.path)
+        }
+        catch {
+            print("[Error] : \(error.localizedDescription)")
+        }
+        
+        
+        // MARK: [삭제전 로그 출력]
+        print("삭제 전")
+        print("====================================")
+        print("[fileSavePath :: \(fileSavePath)]")
+        print("[fileList :: \(String(describing: fileList))]")
+        print("====================================")
+        print("")
+        
+        do {
+            try fileManager.removeItem(atPath: directoryPath.path)
+            print("delete complete")
+        } catch {
+            print("Can't delete")
+        }
+        
+        var fileList2 : Array<Any>? = nil
+        do {
+            fileList2 = try FileManager.default.contentsOfDirectory(atPath: fileSavePath.path)
+        }
+        catch {
+            print("[Error] : \(error.localizedDescription)")
+        }
+        // MARK: [삭제 후 로그 출력]
+        print("삭제 후")
+        print("====================================")
+        print("[fileSavePath :: \(fileSavePath)]")
+        print("[fileList :: \(String(describing: fileList2))]")
+        print("====================================")
+        print("")
+    }
+    
     public func setInterviewDetail(interviewDetail: InterviewDetail) {
         self.interview.details = interviewDetail
         print(">>Set InterviewDatail")
@@ -135,8 +182,6 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
                 self.countSec += 1
                 self.timer = self.covertSecToMinAndHour(seconds: self.countSec)
             })
-            
-            // TODO: 여기에 오디오 비주얼라이저 넣으면 될 것 같음
             
         } catch {
             print("Failed to Setup the Recording")
