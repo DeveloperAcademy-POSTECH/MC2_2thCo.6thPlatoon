@@ -24,17 +24,29 @@ struct RecordBubble: View {
     
     // MARK: - body
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(alignment: .top, spacing: 2) {
             if
-                let interviewList = interviewListViewModel.interviewList[safe: idx] {
+                let interview = interviewListViewModel.interviewList[safe: idx] {
                 if isInterviewerSpeaking {
-                    playButtonBuilder(with: interviewList)
-
-                    recordBubbleBuilder(with: interviewList)
+                    recordBubbleBuilder(with: interview)
+                        .padding(.leading, 32)
+                    
+                    playButtonBuilder(with: interview)
+                        .offset(y: -8)
+                    
                 } else {
-                    recordBubbleBuilder(with: interviewList)
-
-                    playButtonBuilder(with: interviewList)
+                    playButtonBuilder(with: interview)
+                        .offset(y: 16)
+                    
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(interview.details.userName)
+                            .fontWeight(.semibold)
+                            .font(.subheadline)
+                        
+                        recordBubbleBuilder(with: interview)
+                            .padding(.trailing, 32)
+                    }
+                    
                 }
             }
         }
@@ -92,12 +104,6 @@ struct RecordBubble: View {
                     }
                 }
             }
-            .padding(
-                isInterviewerSpeaking
-                ? .leading
-                : .trailing,
-                45
-            )
     }
     
     private func recordBubbleBuilder(with interview: Interview) -> some View {
@@ -105,11 +111,11 @@ struct RecordBubble: View {
             Text("\(interview.recordSTT[safe: record.transcriptIndex] ?? "")")
                 .font(.system(size: 14))
                 .frame(
-                    maxWidth: 278 - 39,
+                    maxWidth: .infinity,
                     minHeight: 44 - 22,
                     alignment: isInterviewerSpeaking
-                    ? .trailing
-                    : .leading
+                        ? .trailing
+                        : .leading
                 )
                 .padding(.vertical, 11)
                 .padding(.horizontal, 19.5)
