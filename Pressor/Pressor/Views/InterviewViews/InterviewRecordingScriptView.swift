@@ -9,7 +9,7 @@ import SwiftUI
 
 struct InterviewRecordingScriptView: View {
     @ObservedObject var vm: VoiceViewModel
-    @StateObject var interviewBubbleManager: InterviewBubbleManager = .init(currentInterview: .getDummyInterview())
+    @EnvironmentObject var routingManager: RoutingManager
     
     @State private var isShowingList = false
     @State var transcriptIndex: Int = 0
@@ -24,7 +24,7 @@ struct InterviewRecordingScriptView: View {
     @State private var isShowingBottomImage = true
     @State private var initChevronOffsetYValue = CGFloat.zero
     @State private var isShowingTopImage = true
-    @Binding var isShownInterviewRecordingView: Bool
+//    @Binding var isShownInterviewRecordingView: Bool
     @State var isShowingCancelAlert = false
     
     
@@ -86,7 +86,7 @@ struct InterviewRecordingScriptView: View {
                                 title: Text("녹음 취소"),
                                 message: Text("진행중인 녹음이 삭제됩니다."),
                                 primaryButton: .destructive(Text("녹음 취소")) {
-                                    self.isShownInterviewRecordingView.toggle()
+                                    routingManager.isRecordViewDisplayed.toggle()
                                     vm.initInterview()
                                 },
                                 secondaryButton: .cancel(Text("되돌아가기"))
@@ -185,17 +185,14 @@ struct InterviewRecordingScriptView: View {
                         // 완료 버튼 로직
                         NavigationLink(
                             destination: InterviewDetailEditModalView(
-                                interviewBubbleManager: interviewBubbleManager,
-                                isDetailChanging: .constant(false)
+                                isDetailChanging: .constant(false),
+                                interview: vm.interview
                             )
                             .onAppear {
-                                vm.interview.recordSTT = vm.transcripts
-                                vm.interview.records = vm.recordings
-                                vm.interview.details.playTime = formattedDuration(duration)
-                                interviewBubbleManager.currentInterview = vm.interview
+                                vm.isSTTCompleted = false
                             },
                             label: {
-                                Text("완료")
+                                Text(vm.isSTTCompleted ? "완료" : "음성 변환중")
                                     .font(.headline)
                                 // 녹음 중일때 -> 회색, 녹음 일시정지일때 -> 빨간색
                                     .foregroundColor(!isPaused ? Color.BackgroundGray_Dark : Color.red)
@@ -206,9 +203,16 @@ struct InterviewRecordingScriptView: View {
                                     )
                             } //label
                         ) // NavigationLink
+                        .simultaneousGesture(
+                            TapGesture()
+                                .onEnded { _ in
+                                    vm.interview.records = vm.recordings
+                                    vm.interview.details.playTime = formattedDuration(duration)
+                                }
+                        )
                         .navigationTitle("뒤로")
                         .navigationBarHidden(true)
-                        .disabled(isRecording)
+                        .disabled(isRecording || !vm.isSTTCompleted)
                     } // HStack
                     ZStack {
                         ScrollView(.vertical, showsIndicators: false) {
@@ -363,7 +367,6 @@ struct InterviewRecordingScriptView: View {
             )
             .onAppear {
                 audioInputManager.prepare()
-                interviewBubbleManager.currentInterview = .getDummyInterview()
             }
             .onDisappear {
                 audioInputManager.stopRecording()
@@ -378,7 +381,6 @@ struct InterviewRecordingScriptView_Previews: PreviewProvider {
         InterviewRecordingScriptView(
             vm: VoiceViewModel(
                 interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: Script(title: "", description: "")))
-            , isShownInterviewRecordingView: .constant(false)
         )
     }
 }

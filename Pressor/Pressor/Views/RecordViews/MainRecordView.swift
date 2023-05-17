@@ -18,7 +18,6 @@ struct MainRecordView: View {
     @State var showModal = false
     @State var scriptAdded: Bool = false
     @State var navigateToNextView = false
-    @State var isShownInterviewRecordingView = false
     @State var countSec: Int = 0
     @State var timerCount : Timer?
     @State var isTimerCounting: Bool = false
@@ -55,7 +54,7 @@ struct MainRecordView: View {
                                                 timerCount?.invalidate()
                                                 // MARK: 대본이 있다면 추가시키는 로직
                                                 vm.interview.script = interviewViewModel.getScript()
-                                                self.isShownInterviewRecordingView.toggle()
+                                                routingManager.isRecordViewDisplayed.toggle()
                                                 isTimerCounting.toggle()
                                             }
                                         })
@@ -65,11 +64,11 @@ struct MainRecordView: View {
                                     Image("mic_button")
                                         .padding(.bottom, 40)
                                 }
-                                .fullScreenCover(isPresented: $isShownInterviewRecordingView) {
+                                .fullScreenCover(isPresented: $routingManager.isRecordViewDisplayed) {
                                     if scriptAdded {
-                                        InterviewRecordingScriptView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                        InterviewRecordingScriptView(vm: vm)
                                     } else {
-                                        InterviewRecordingView(vm: vm, isShownInterviewRecordingView: $isShownInterviewRecordingView)
+                                        InterviewRecordingView(vm: vm)
                                     }
                                 }
                             }

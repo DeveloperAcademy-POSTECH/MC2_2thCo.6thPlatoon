@@ -11,4 +11,5 @@ enum Constants {
     static let NO_NAME_INTERVIEW: String = "이름 없는 인터뷰"
     static let RECORD_TAB_ID: String = "recordViewTab"
     static let INTERVIEW_TAB_ID: String = "interviewViewTab"
+    static let USERDEFAULTS_INTERVIEWS_KEY: String = "Interviews"
 }

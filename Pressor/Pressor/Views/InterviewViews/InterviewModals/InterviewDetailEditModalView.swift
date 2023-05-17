@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct InterviewDetailEditModalView: View {
-    @ObservedObject var interviewBubbleManager: InterviewBubbleManager
     @EnvironmentObject var routingManager: RoutingManager
+    @EnvironmentObject var interviewListViewModel: InterviewListViewModel
     @Environment(\.dismiss) var dismiss
     @Binding var isDetailChanging: Bool
+    @State var interview: Interview
     
     @State private var interviewTitle: String = ""
     @State private var userName: String = ""
@@ -88,27 +89,38 @@ struct InterviewDetailEditModalView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
+                // NavigationLinked > NavigationView
                 if isDetailChanging {
                     Button {
-                        interviewBubbleManager.updateInterviewDetails(
+                        updateInterviewDetails(
                             interviewTitle: interviewTitle,
                             userName: userName,
                             userEmail: userEmail,
                             userPhoneNumber: userPhoneNumber
                         )
-                    } label: {
-                        Text("완료")
-                    }
-                    .onChange(
-                        of: interviewBubbleManager.currentInterview.details.interviewTitle
-                    ) { _ in
+                        
+                        if let idx = interviewListViewModel.interviewList.firstIndex(where: { eachInterview in
+                            eachInterview.id == interview.id
+                        }) {
+                            interviewListViewModel.interviewList[idx] = interview
+                        }
                         dismiss()
+                    } label: {
+                        Text("수정")
                     }
+                    .disabled(isNotRequestedInfoAllSubmitted)
                 } else {
-                    NavigationLink {
-                        InterviewDetailView(
-                            interviewBubbleManager: interviewBubbleManager
+                    Button {
+                        updateInterviewDetails(
+                            interviewTitle: interviewTitle,
+                            userName: userName,
+                            userEmail: userEmail,
+                            userPhoneNumber: userPhoneNumber
                         )
+                        
+                        interviewListViewModel.interviewList.append(interview)
+                        // 저장된 걸 보여주고 dismiss 해야 할 것 같은데
+                        routingManager.isRecordViewDisplayed = false
                     } label: {
                         Text("완료")
                     }
@@ -122,28 +134,36 @@ struct InterviewDetailEditModalView: View {
         }
         .onDisappear {
             hideKeyboard()
-            interviewBubbleManager.updateInterviewDetails(
-                interviewTitle: interviewTitle,
-                userName: userName,
-                userEmail: userEmail,
-                userPhoneNumber: userPhoneNumber
-            )
         }
         .onAppear {
-            interviewBubbleManager.updateState(
-                interviewTitle: &interviewTitle,
-                userName: &userName,
-                userEmail: &userEmail,
-                userPhoneNumber: &userPhoneNumber
-            )
+            updateState()
         }
     }
     
     private func isInterviewDetailEditted() -> Bool {
-        if !interviewBubbleManager.currentInterview.details.interviewTitle.isEmpty {
+        if !interview.details.interviewTitle.isEmpty {
             return true
         } else {
             return false
         }
+    }
+    
+    private func updateState() {
+        self.interviewTitle = interview.details.interviewTitle
+        self.userName = interview.details.userName
+        self.userEmail = interview.details.userEmail
+        self.userPhoneNumber = interview.details.userPhoneNumber
+    }
+    
+    private func updateInterviewDetails(
+        interviewTitle: String,
+        userName: String,
+        userEmail: String,
+        userPhoneNumber: String
+    ) {
+        interview.details.interviewTitle = interviewTitle
+        interview.details.userName = userName
+        interview.details.userEmail = userEmail
+        interview.details.userPhoneNumber = userPhoneNumber
     }
 }

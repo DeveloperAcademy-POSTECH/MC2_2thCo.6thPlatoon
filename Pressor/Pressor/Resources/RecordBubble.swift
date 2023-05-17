@@ -8,18 +8,15 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-/**
- 인터뷰의 내용과 음성 컨트롤러를 담는 레코드 버블 입니다.
- 해당 뷰는 반드시 "스크롤뷰 내부"에서 호출합니다.
- 
- - Author: Celan
- */
 struct RecordBubble: View {
+    @EnvironmentObject var interviewListViewModel: InterviewListViewModel
     @StateObject var bubbleManager: InterviewBubbleManager
     @State var record: Record
     @State private var text: String = ""
     @State private var isReadyToPlay: Bool = true
     @State private var isEditing: Bool = false
+
+    let idx: Int
 
     var isInterviewerSpeaking: Bool {
         record.type == Recorder.interviewer.rawValue
@@ -28,14 +25,17 @@ struct RecordBubble: View {
     // MARK: - body
     var body: some View {
         HStack(spacing: 10) {
-            if isInterviewerSpeaking {
-                playButtonBuilder(with: bubbleManager.currentInterview)
-                
-                recordBubbleBuilder(with: bubbleManager.currentInterview)
-            } else {
-                recordBubbleBuilder(with: bubbleManager.currentInterview)
+            if
+                let interviewList = interviewListViewModel.interviewList[safe: idx] {
+                if isInterviewerSpeaking {
+                    playButtonBuilder(with: interviewList)
 
-                playButtonBuilder(with: bubbleManager.currentInterview)
+                    recordBubbleBuilder(with: interviewList)
+                } else {
+                    recordBubbleBuilder(with: interviewList)
+
+                    playButtonBuilder(with: interviewList)
+                }
             }
         }
         .padding(
@@ -49,7 +49,8 @@ struct RecordBubble: View {
             InterviewDetailChatEditModalView(
                 interviewBubbleManager: bubbleManager,
                 isInterviewDetailChatEditModalViewDisplayed: $isEditing,
-                transcriptIndex: record.transcriptIndex
+                transcriptIndex: record.transcriptIndex,
+                interviewIdx: idx
             )
         }
     }
