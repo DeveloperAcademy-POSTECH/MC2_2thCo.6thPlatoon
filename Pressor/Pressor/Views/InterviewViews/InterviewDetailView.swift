@@ -82,7 +82,7 @@ struct InterviewDetailView: View {
             
             // TODO: GET Record List Here
             transferableScripts.removeAll()
-            makeTransferableScripts()
+            makeTransferableScripts()   
         }
         .navigationTitle(interviewListViewModel.getEachInterviewDetail(idx: interviewIndex)?.interviewTitle ?? "DELETED")
         .navigationBarTitleDisplayMode(.inline)

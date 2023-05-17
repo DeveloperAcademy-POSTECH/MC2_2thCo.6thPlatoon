@@ -9,7 +9,7 @@ import SwiftUI
 
 struct InterviewRecordingView: View {
     @EnvironmentObject var routingManager: RoutingManager
-    @ObservedObject var vm: VoiceViewModel
+    @EnvironmentObject var vm: VoiceViewModel
     
     @State private var isDetailChanging: Bool = false
     @State private var isShowingList = false
@@ -26,7 +26,6 @@ struct InterviewRecordingView: View {
     @State private var initChevronOffsetYValue = CGFloat.zero
     @State private var isShowingTopImage = true
     @State var isShowingCancelAlert = false
-    @State var urls: [URL] = []
     
     // 타이머 시간 포맷
     func formattedDuration(_ duration: TimeInterval) -> String {
@@ -188,12 +187,9 @@ struct InterviewRecordingView: View {
                             destination: InterviewDetailEditModalView(
                                 isDetailChanging: .constant(false),
                                 interview: vm.interview
-                            )
-                            .onAppear {
-                                vm.isSTTCompleted = false
-                            },
+                            ),
                             label: {
-                                Text(vm.isSTTCompleted ? "완료" : "음성 변환중")
+                                Text("완료")
                                     .font(.headline)
                                 // 녹음 중일때 -> 회색, 녹음 일시정지일때 -> 빨간색
                                     .foregroundColor(!isPaused ? Color.BackgroundGray_Dark : Color.red)
@@ -209,18 +205,11 @@ struct InterviewRecordingView: View {
                                 .onEnded { _ in
                                     vm.interview.records = vm.recordings
                                     vm.interview.details.playTime = formattedDuration(duration)
-                                    
-                                    // urls에 저장된 음성파일의 모든 fileURL추가
-                                    for record in vm.recordings {
-                                        urls.append(record.fileURL)
-                                    }
-                                    vm.transURLs(urls: urls)
-                                    
                                 }
                         )
                         .navigationTitle("뒤로")
                         .navigationBarHidden(true)
-                        .disabled(isRecording || !vm.isSTTCompleted)
+                        .disabled(isRecording)
                     } // HStack
                     // 화자 전환 기능
                     RoundedRectangle(cornerRadius: 44)
@@ -351,11 +340,3 @@ struct InterviewRecordingView: View {
     } // body
 } // struct
 
-struct InterviewRecordingView_Previews: PreviewProvider {
-    static var previews: some View {
-        InterviewRecordingView(
-            vm: VoiceViewModel(
-                interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: Script(title: "", description: "")))
-        )
-    }
-}

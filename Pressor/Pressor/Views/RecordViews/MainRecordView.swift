@@ -10,7 +10,7 @@ import SwiftUI
 struct MainRecordView: View {
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject var routingManager: RoutingManager
-    @ObservedObject var vm: VoiceViewModel
+    @EnvironmentObject var vm: VoiceViewModel
     @StateObject var interviewViewModel = InterviewViewModel()
     
     @State var isSheetShowing: Bool = false
@@ -66,9 +66,9 @@ struct MainRecordView: View {
                                 }
                                 .fullScreenCover(isPresented: $routingManager.isRecordViewDisplayed) {
                                     if scriptAdded {
-                                        InterviewRecordingScriptView(vm: vm)
+                                        InterviewRecordingScriptView()
                                     } else {
-                                        InterviewRecordingView(vm: vm)
+                                        InterviewRecordingView()
                                     }
                                 }
                             }
@@ -177,14 +177,8 @@ struct MainRecordView: View {
             .accentColor(.orange)
             .onAppear {
                 UITabBar.appearance().scrollEdgeAppearance = .init()
-                vm.initInterview()
             }
         }
     }
 }
 
-struct MainRecordView_Previews: PreviewProvider {
-    static var previews: some View {
-        MainRecordView(vm: VoiceViewModel(interview: .getDummyInterview()))
-    }
-}
