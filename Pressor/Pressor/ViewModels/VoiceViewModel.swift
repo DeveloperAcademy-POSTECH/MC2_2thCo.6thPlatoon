@@ -5,7 +5,7 @@
 //  Created by 홍승완 on 2023/05/02.
 //
 
-import Foundation
+import SwiftUI
 import AVFoundation
 import Speech
 import UIKit
@@ -41,6 +41,11 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
     
     init(interview: Interview){
         self.interview = interview
+        super.init()
+    }
+    
+    public func getTranscribeArray() -> [String] {
+        return self.transcripts
     }
     
     public func initInterview() {
@@ -61,7 +66,11 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         }
         do {
             if !fileManager.fileExists(atPath: directoryPath.path) {
-                try fileManager.createDirectory(atPath: directoryPath.path, withIntermediateDirectories: false, attributes: nil)
+                try fileManager.createDirectory(
+                    atPath: directoryPath.path,
+                    withIntermediateDirectories: false,
+                    attributes: nil
+                )
             }
         } catch {
             print("create folder error. do something")
@@ -73,6 +82,7 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         // vm의 recording과 STT배열 초기화
         self.recordings.removeAll()
         self.transcripts.removeAll()
+        self.isSTTCompleted = false
     }
     
     public func setInterviewDetail(interviewDetail: InterviewDetail) {
@@ -133,7 +143,6 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         }
     }
     
-    
     public func stopRecording(index: Int, recoder: Recorder){
         // 녹음이 끝날 때 슬립모드 방지 해제
         UIApplication.shared.isIdleTimerDisabled = false
@@ -153,11 +162,11 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         // timer init
         self.countSec = 0
         timerCount!.invalidate()
-        transcribe(url: currentPath)
     }
     
     // MARK: - STT
-    private func transcribe(url: URL) {
+    // TODO: DEPRECATED
+    private func transcribe_DEPRECATED(url: URL) {
         // Initialize the speech recogniter with your preffered language
         guard let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ko_KR")) else {
             print("Speech recognizer is not available for this locale!")
@@ -181,15 +190,15 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
                 let task = speechRecognizer.recognitionTask(
                     with: request,
                     resultHandler: { (result, error) in
-                        self.isSTTCompleted = false
                         // MARK: 음성을 차례대로 정확하게 변환하기 위해
                         if result == nil {
-                            self.transcripts.append("(대화 없음)")
+//                            self.transcripts.append("(대화 없음)")
+//                            self.completedInterview.recordSTT.append("(대화 없음)")
                         } else if (result?.isFinal)! {
                             if let res = result?.bestTranscription.formattedString {
-                                self.transcripts.append(res)
-                                self.isSTTCompleted = true
-                                self.interview.recordSTT = self.transcripts
+//                                self.transcripts.append(res)
+//                                self.interview.recordSTT = self.transcripts
+//                                self.completedInterview.recordSTT.append(res)
                                 print(res)
                             }
                         }
@@ -200,7 +209,28 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         }
     }
     
-    private func transcribe2(url: URL, completion: @escaping (Bool) -> Void) {
+    public func transURLs(urls: [URL]) {
+        var idx = 0
+        var numberOfURLs = urls.count
+        
+        loopTransURL(urls: urls, idx: idx, numberOfURLs: numberOfURLs)
+    }
+    
+    private func loopTransURL(urls: [URL], idx: Int, numberOfURLs: Int) {
+        self.transcribe(url: urls[idx]) { success in
+            if success,
+               idx < numberOfURLs - 1 {
+                self.loopTransURL(urls: urls, idx: idx+1, numberOfURLs: numberOfURLs)
+            } else {
+                print("Transcribing failed for \(urls[idx])")
+                
+                self.isSTTCompleted = true
+                // STT Completed.
+            }
+        }
+    }
+    
+    private func transcribe(url: URL, completion: @escaping (Bool) -> Void) {
         guard let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ko_KR")) else {
             print("Speech recognizer is not available for this locale!")
             completion(false)
@@ -220,19 +250,16 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
                 let request = SFSpeechURLRecognitionRequest(url: fileURL)
                 print(">>>### URL: \(fileURL)")
                 
-                
                 let task = speechRecognizer.recognitionTask(
                     with: request,
                     resultHandler: { (result, error) in
-                        self.isSTTCompleted = false
                         // MARK: 음성을 차례대로 정확하게 변환하기 위해
                         if result == nil {
                             self.transcripts.append("(대화 없음)")
+                            completion(true)
                         } else if (result?.isFinal)! {
                             if let res = result?.bestTranscription.formattedString {
                                 self.transcripts.append(res)
-                                self.isSTTCompleted = true
-                                self.interview.recordSTT = self.transcripts
                                 print(res)
                                 completion(true)
                             }
@@ -240,25 +267,6 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
                     })
             } else {
                 print("Error: Speech-API not authorized!");
-            }
-        }
-    }
-    
-    public func transURLs(urls: [URL]) {
-        var idx = 0
-        var numberOfURLs = urls.count
-        
-        loopTransURL(urls: urls, idx: idx, numberOfURLs: numberOfURLs)
-    }
-    
-    private func loopTransURL(urls: [URL], idx: Int, numberOfURLs: Int) {
-        self.transcribe2(url: urls[idx]) { success in
-            if success,
-               idx < numberOfURLs - 1
-            {
-                self.loopTransURL(urls: urls, idx: idx+1, numberOfURLs: numberOfURLs)
-            } else {
-                print("Transcribing failed for \(urls[idx])")
             }
         }
     }
