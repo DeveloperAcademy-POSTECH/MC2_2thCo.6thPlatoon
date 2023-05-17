@@ -10,6 +10,7 @@ import SwiftUI
 struct InterviewListView: View {
     @EnvironmentObject var interviewListViewModel: InterviewListViewModel
     @StateObject var interviewBubbleManager: InterviewBubbleManager = InterviewBubbleManager()
+    @EnvironmentObject var voiceViewModel: VoiceViewModel
     @State private var selectedRows = Set<String>()
     @State private var isEditing = false
     @State private var showAlert = false
@@ -72,6 +73,9 @@ struct InterviewListView: View {
             //편집 클릭시 멀티셀렉션 돌아가게 해주는 내용
             .animation(.default, value: isEditing)
             .searchable(text: $searchText, prompt: "Interview 검색")
+        }
+        .onChange(of: voiceViewModel.interviewList) { newValue in
+            interviewListViewModel.interviewList = newValue
         }
     }
 
