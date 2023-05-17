@@ -86,6 +86,10 @@ struct InterviewRecordingView: View {
                                 message: Text("진행중인 녹음이 삭제됩니다."),
                                 primaryButton: .destructive(Text("녹음 취소")) {
                                     routingManager.isRecordViewDisplayed.toggle()
+                                    
+                                    // MARK: - 해당 interview의 path의 FileManger Directory 모두 삭제 -> 이후 initInterview 해야함
+                                    vm.deleteInterview(with: vm.interview)
+                                    
                                     // 취소하면 인터뷰 초기화
                                     vm.initInterview()
                                 },

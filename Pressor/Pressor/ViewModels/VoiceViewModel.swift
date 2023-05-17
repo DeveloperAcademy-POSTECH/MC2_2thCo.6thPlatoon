@@ -85,6 +85,53 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         self.isSTTCompleted = false
     }
     
+    public func deleteInterview(with interview: Interview) {
+        let fileManager = FileManager.default
+        let documentUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let directoryPath = documentUrl.appendingPathComponent("\(interview.id)")
+        
+        let fileSavePath = directoryPath
+        
+        var fileList : Array<Any>? = nil
+        do {
+            fileList = try FileManager.default.contentsOfDirectory(atPath: fileSavePath.path)
+        }
+        catch {
+            print("[Error] : \(error.localizedDescription)")
+        }
+        
+        
+        // MARK: [삭제전 로그 출력]
+        print("삭제 전")
+        print("====================================")
+        print("[fileSavePath :: \(fileSavePath)]")
+        print("[fileList :: \(String(describing: fileList))]")
+        print("====================================")
+        print("")
+        
+        do {
+            try fileManager.removeItem(atPath: directoryPath.path)
+            print("delete complete")
+        } catch {
+            print("Can't delete")
+        }
+        
+        var fileList2 : Array<Any>? = nil
+        do {
+            fileList2 = try FileManager.default.contentsOfDirectory(atPath: fileSavePath.path)
+        }
+        catch {
+            print("[Error] : \(error.localizedDescription)")
+        }
+        // MARK: [삭제 후 로그 출력]
+        print("삭제 후")
+        print("====================================")
+        print("[fileSavePath :: \(fileSavePath)]")
+        print("[fileList :: \(String(describing: fileList2))]")
+        print("====================================")
+        print("")
+    }
+    
     public func setInterviewDetail(interviewDetail: InterviewDetail) {
         self.interview.details = interviewDetail
         print(">>Set InterviewDatail")
@@ -136,8 +183,6 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
                 self.timer = self.covertSecToMinAndHour(seconds: self.countSec)
             })
             
-            // TODO: 여기에 오디오 비주얼라이저 넣으면 될 것 같음
-            
         } catch {
             print("Failed to Setup the Recording")
         }
@@ -162,113 +207,6 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
         // timer init
         self.countSec = 0
         timerCount!.invalidate()
-    }
-    
-    // MARK: - STT
-    // TODO: DEPRECATED
-    private func transcribe_DEPRECATED(url: URL) {
-        // Initialize the speech recogniter with your preffered language
-        guard let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ko_KR")) else {
-            print("Speech recognizer is not available for this locale!")
-            return
-        }
-        
-        // Check the availability. It currently only works on the device
-        if (speechRecognizer.isAvailable == false) {
-            print("Speech recognizer is not available for this device!")
-            return
-        }
-        
-        SFSpeechRecognizer.requestAuthorization { authStatus in
-            print(">> transcripts Waits")
-            if (authStatus == .authorized) {
-                let fileURL = url
-                let request = SFSpeechURLRecognitionRequest(url: fileURL)
-                print(">>>### URL: \(fileURL)")
-                
-                
-                let task = speechRecognizer.recognitionTask(
-                    with: request,
-                    resultHandler: { (result, error) in
-                        // MARK: 음성을 차례대로 정확하게 변환하기 위해
-                        if result == nil {
-//                            self.transcripts.append("(대화 없음)")
-//                            self.completedInterview.recordSTT.append("(대화 없음)")
-                        } else if (result?.isFinal)! {
-                            if let res = result?.bestTranscription.formattedString {
-//                                self.transcripts.append(res)
-//                                self.interview.recordSTT = self.transcripts
-//                                self.completedInterview.recordSTT.append(res)
-                                print(res)
-                            }
-                        }
-                    })
-            } else {
-                print("Error: Speech-API not authorized!");
-            }
-        }
-    }
-    
-    public func transURLs(urls: [URL]) {
-        var idx = 0
-        var numberOfURLs = urls.count
-        
-        loopTransURL(urls: urls, idx: idx, numberOfURLs: numberOfURLs)
-    }
-    
-    private func loopTransURL(urls: [URL], idx: Int, numberOfURLs: Int) {
-        self.transcribe(url: urls[idx]) { success in
-            if success,
-               idx < numberOfURLs - 1 {
-                self.loopTransURL(urls: urls, idx: idx+1, numberOfURLs: numberOfURLs)
-            } else {
-                print("Transcribing failed for \(urls[idx])")
-                
-                self.isSTTCompleted = true
-                // STT Completed.
-            }
-        }
-    }
-    
-    private func transcribe(url: URL, completion: @escaping (Bool) -> Void) {
-        guard let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ko_KR")) else {
-            print("Speech recognizer is not available for this locale!")
-            completion(false)
-            return
-        }
-
-        if !speechRecognizer.isAvailable {
-            print("Speech recognizer is not available for this device!")
-            completion(false)
-            return
-        }
-
-        SFSpeechRecognizer.requestAuthorization { authStatus in
-            print(">> transcripts Waits")
-            if (authStatus == .authorized) {
-                let fileURL = url
-                let request = SFSpeechURLRecognitionRequest(url: fileURL)
-                print(">>>### URL: \(fileURL)")
-                
-                let task = speechRecognizer.recognitionTask(
-                    with: request,
-                    resultHandler: { (result, error) in
-                        // MARK: 음성을 차례대로 정확하게 변환하기 위해
-                        if result == nil {
-                            self.transcripts.append("(대화 없음)")
-                            completion(true)
-                        } else if (result?.isFinal)! {
-                            if let res = result?.bestTranscription.formattedString {
-                                self.transcripts.append(res)
-                                print(res)
-                                completion(true)
-                            }
-                        }
-                    })
-            } else {
-                print("Error: Speech-API not authorized!");
-            }
-        }
     }
     
     public func startPlaying(url : URL) {
@@ -397,3 +335,67 @@ class VoiceViewModel : NSObject, ObservableObject , AVAudioPlayerDelegate{
     }
 }
 
+extension VoiceViewModel {
+    // MARK: - STT
+    public func transURLs(urls: [URL]) {
+        var idx = 0
+        var numberOfURLs = urls.count
+        
+        loopTransURL(urls: urls, idx: idx, numberOfURLs: numberOfURLs)
+    }
+    
+    private func loopTransURL(urls: [URL], idx: Int, numberOfURLs: Int) {
+        self.transcribe(url: urls[idx]) { success in
+            if success,
+               idx < numberOfURLs - 1 {
+                self.loopTransURL(urls: urls, idx: idx+1, numberOfURLs: numberOfURLs)
+            } else {
+                print("Transcribing failed for \(urls[idx])")
+                
+                self.isSTTCompleted = true
+                // STT Completed.
+            }
+        }
+    }
+    
+    private func transcribe(url: URL, completion: @escaping (Bool) -> Void) {
+        guard let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ko_KR")) else {
+            print("Speech recognizer is not available for this locale!")
+            completion(false)
+            return
+        }
+
+        if !speechRecognizer.isAvailable {
+            print("Speech recognizer is not available for this device!")
+            completion(false)
+            return
+        }
+
+        SFSpeechRecognizer.requestAuthorization { authStatus in
+            print(">> transcripts Waits")
+            if (authStatus == .authorized) {
+                let fileURL = url
+                let request = SFSpeechURLRecognitionRequest(url: fileURL)
+                print(">>>### URL: \(fileURL)")
+                
+                let task = speechRecognizer.recognitionTask(
+                    with: request,
+                    resultHandler: { (result, error) in
+                        // MARK: 음성을 차례대로 정확하게 변환하기 위해
+                        if result == nil {
+                            self.transcripts.append("(대화 없음)")
+                            completion(true)
+                        } else if (result?.isFinal)! {
+                            if let res = result?.bestTranscription.formattedString {
+                                self.transcripts.append(res)
+                                print(res)
+                                completion(true)
+                            }
+                        }
+                    })
+            } else {
+                print("Error: Speech-API not authorized!");
+            }
+        }
+    }
+}

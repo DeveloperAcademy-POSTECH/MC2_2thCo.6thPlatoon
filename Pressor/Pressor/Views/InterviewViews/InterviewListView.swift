@@ -88,6 +88,14 @@ struct InterviewListView: View {
     }
 
     private func delete(at offsets: IndexSet) {
+        // MARK: FileManager에서 해당하는 파일 트래킹하여 삭제 후 interviewList에서 remove 시켜주기
+        if let index = offsets.last {
+            if let interview = interviewListViewModel.getEachInterview(idx: index){
+                voiceViewModel.deleteInterview(with: interview)
+            }
+        }
+        
         interviewListViewModel.interviewList.remove(atOffsets: offsets)
     }
+    
 }
