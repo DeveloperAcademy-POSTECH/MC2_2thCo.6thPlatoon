@@ -10,17 +10,15 @@ import SwiftUI
 struct InterviewDetailEditModalView: View {
     @EnvironmentObject var routingManager: RoutingManager
     @EnvironmentObject var interviewListViewModel: InterviewListViewModel
+    @EnvironmentObject var voiceViewModel: VoiceViewModel
     @Environment(\.dismiss) var dismiss
     @Binding var isDetailChanging: Bool
     @State var interview: Interview
     
-    @State private var interviewTitle: String = ""
-    @State private var userName: String = ""
-    @State private var userEmail: String = ""
-    @State private var userPhoneNumber: String = ""
+    @State private var transcribeURLArray: [URL] = []
     
     private var isNotRequestedInfoAllSubmitted: Bool {
-        userName.isEmpty || interviewTitle.isEmpty
+        interviewListViewModel.userName.isEmpty || interviewListViewModel.interviewTitle.isEmpty
     }
     
     var body: some View {
@@ -28,7 +26,7 @@ struct InterviewDetailEditModalView: View {
             Section {
                 TextField(
                     "인터뷰 제목",
-                    text: $interviewTitle
+                    text: $interviewListViewModel.interviewTitle
                 )
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
@@ -45,7 +43,7 @@ struct InterviewDetailEditModalView: View {
             Section {
                 TextField(
                     "이름",
-                    text: $userName
+                    text: $interviewListViewModel.userName
                 )
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
@@ -57,14 +55,14 @@ struct InterviewDetailEditModalView: View {
                 
                 TextField(
                     "이메일",
-                    text: $userEmail
+                    text: $interviewListViewModel.userEmail
                 )
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 
                 TextField(
                     "전화번호",
-                    text: $userPhoneNumber
+                    text: $interviewListViewModel.userPhoneNumber
                 )
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
@@ -93,10 +91,10 @@ struct InterviewDetailEditModalView: View {
                 if isDetailChanging {
                     Button {
                         updateInterviewDetails(
-                            interviewTitle: interviewTitle,
-                            userName: userName,
-                            userEmail: userEmail,
-                            userPhoneNumber: userPhoneNumber
+                            interviewTitle: interviewListViewModel.interviewTitle,
+                            userName: interviewListViewModel.userName,
+                            userEmail: interviewListViewModel.userEmail,
+                            userPhoneNumber: interviewListViewModel.userPhoneNumber
                         )
                         
                         if let idx = interviewListViewModel.interviewList.firstIndex(where: { eachInterview in
@@ -111,14 +109,22 @@ struct InterviewDetailEditModalView: View {
                     .disabled(isNotRequestedInfoAllSubmitted)
                 } else {
                     Button {
-                        updateInterviewDetails(
-                            interviewTitle: interviewTitle,
-                            userName: userName,
-                            userEmail: userEmail,
-                            userPhoneNumber: userPhoneNumber
-                        )
+                        // 선 어펜드
+                        interviewListViewModel.completedInterview = interview
+                        // MARK: DETAIL 먼저 할당 후, append 시킨다.
+                        interviewListViewModel.updateInterviewDetails()
+                        interviewListViewModel.interviewList.append(interviewListViewModel.completedInterview)
                         
-                        interviewListViewModel.interviewList.append(interview)
+                        voiceViewModel.initInterview()
+                        
+                        // urls에 저장된 음성파일의 모든 fileURL추가
+                        for record in interviewListViewModel.completedInterview.records {
+                            transcribeURLArray.append(record.fileURL)
+                        }
+                        
+                        // STT 시동
+                        voiceViewModel.transURLs(urls: transcribeURLArray)
+                        
                         // 저장된 걸 보여주고 dismiss 해야 할 것 같은데
                         routingManager.isRecordViewDisplayed = false
                     } label: {
@@ -136,7 +142,9 @@ struct InterviewDetailEditModalView: View {
             hideKeyboard()
         }
         .onAppear {
-            updateState()
+            if isDetailChanging {
+                interviewListViewModel.updateState(with: interview)
+            }
         }
     }
     
@@ -146,13 +154,6 @@ struct InterviewDetailEditModalView: View {
         } else {
             return false
         }
-    }
-    
-    private func updateState() {
-        self.interviewTitle = interview.details.interviewTitle
-        self.userName = interview.details.userName
-        self.userEmail = interview.details.userEmail
-        self.userPhoneNumber = interview.details.userPhoneNumber
     }
     
     private func updateInterviewDetails(
