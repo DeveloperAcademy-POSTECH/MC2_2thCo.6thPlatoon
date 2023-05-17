@@ -58,7 +58,7 @@ struct InterviewDetailChatEditModalView: View {
             }
         }
         .onAppear {
-            self.interviewDescription = interviewListViewModel.interviewList[interviewIdx].recordSTT[transcriptIndex]
+            self.interviewDescription = interviewListViewModel.getEachInterview(idx: interviewIdx)?.recordSTT[safe: transcriptIndex] ?? ""
         }
         .onTapGesture {
             hideKeyboard()

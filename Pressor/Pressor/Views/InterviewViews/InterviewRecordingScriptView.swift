@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct InterviewRecordingScriptView: View {
-    @ObservedObject var vm: VoiceViewModel
+    @EnvironmentObject var vm: VoiceViewModel
     @EnvironmentObject var routingManager: RoutingManager
     
     @State private var isShowingList = false
@@ -26,7 +26,6 @@ struct InterviewRecordingScriptView: View {
     @State private var isShowingTopImage = true
 //    @Binding var isShownInterviewRecordingView: Bool
     @State var isShowingCancelAlert = false
-    
     
     // 타이머 시간 포맷
     func formattedDuration(_ duration: TimeInterval) -> String {
@@ -187,12 +186,9 @@ struct InterviewRecordingScriptView: View {
                             destination: InterviewDetailEditModalView(
                                 isDetailChanging: .constant(false),
                                 interview: vm.interview
-                            )
-                            .onAppear {
-                                vm.isSTTCompleted = false
-                            },
+                            ),
                             label: {
-                                Text(vm.isSTTCompleted ? "완료" : "음성 변환중")
+                                Text("완료")
                                     .font(.headline)
                                 // 녹음 중일때 -> 회색, 녹음 일시정지일때 -> 빨간색
                                     .foregroundColor(!isPaused ? Color.BackgroundGray_Dark : Color.red)
@@ -212,7 +208,7 @@ struct InterviewRecordingScriptView: View {
                         )
                         .navigationTitle("뒤로")
                         .navigationBarHidden(true)
-                        .disabled(isRecording || !vm.isSTTCompleted)
+                        .disabled(isRecording)
                     } // HStack
                     ZStack {
                         ScrollView(.vertical, showsIndicators: false) {
@@ -376,11 +372,3 @@ struct InterviewRecordingScriptView: View {
     } // body
 } // struct
 
-struct InterviewRecordingScriptView_Previews: PreviewProvider {
-    static var previews: some View {
-        InterviewRecordingScriptView(
-            vm: VoiceViewModel(
-                interview: Interview(details: InterviewDetail(interviewTitle: "", userName: "", userEmail: "", userPhoneNumber: "", date: Date(), playTime: ""), records: [], recordSTT: [], script: Script(title: "", description: "")))
-        )
-    }
-}

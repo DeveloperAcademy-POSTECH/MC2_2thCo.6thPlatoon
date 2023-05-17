@@ -10,6 +10,7 @@ import SwiftUI
 struct InterviewListView: View {
     @EnvironmentObject var interviewListViewModel: InterviewListViewModel
     @StateObject var interviewBubbleManager: InterviewBubbleManager = InterviewBubbleManager()
+    @EnvironmentObject var voiceViewModel: VoiceViewModel
     @State private var selectedRows = Set<String>()
     @State private var isEditing = false
     @State private var showAlert = false
@@ -46,13 +47,24 @@ struct InterviewListView: View {
                                 
                                 Spacer()
                                 
-                                Text(interviewDetail.playTime)
-                                    .font(.headline)
-                                    .foregroundColor(Color.pressorSystemGray_dark)
-                                
+                                if
+                                    let interview = interviewListViewModel.getEachInterview(idx: index) {
+                                    if interview.recordSTT.isEmpty {
+                                        Text("변환 중")
+                                            .foregroundColor(.PressorOrange)
+                                        
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle(tint: Color.pressorSystemGray_dark))
+                                    } else {
+                                        Text(interviewDetail.playTime)
+                                            .font(.headline)
+                                            .foregroundColor(Color.pressorSystemGray_dark)
+                                    }
+                                }
                             }
                         }
                         .listRowBackground(Color.BackgroundGray_Light)
+                        .disabled(interviewListViewModel.getEachInterview(idx: index)?.recordSTT.isEmpty ?? false)
                     } else {
                         Text("NO INTERVIEWS TO SHOW")
                     }
@@ -79,11 +91,3 @@ struct InterviewListView: View {
         interviewListViewModel.interviewList.remove(atOffsets: offsets)
     }
 }
-
-struct InterviewListView_Previews: PreviewProvider {
-    static var previews: some View {
-        InterviewListView()
-            .environmentObject(InterviewListViewModel())
-    }
-}
-
