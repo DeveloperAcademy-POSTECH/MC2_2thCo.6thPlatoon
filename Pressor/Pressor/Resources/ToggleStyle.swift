@@ -7,14 +7,28 @@
 
 import SwiftUI
 
-struct ToggleStyle: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
-
-struct ToggleStyle_Previews: PreviewProvider {
-    static var previews: some View {
-        ToggleStyle()
+struct CircleToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack {
+            Circle()
+                .stroke(Color.pressorSystemGray_dark, lineWidth: 2)
+                .background(
+                    configuration.isOn
+                    ? Color.green
+                    : Color.clear
+                )
+                .clipShape(Circle())
+                .frame(width: 25, height: 25)
+                .overlay {
+                    Image(systemName: configuration.isOn ? "checkmark" : "")
+                        .foregroundColor(.white)
+                }
+                .onTapGesture {
+                    withAnimation(.spring()) {
+                        configuration.isOn.toggle()
+                    }
+                }
+            configuration.label
+        }
     }
 }
