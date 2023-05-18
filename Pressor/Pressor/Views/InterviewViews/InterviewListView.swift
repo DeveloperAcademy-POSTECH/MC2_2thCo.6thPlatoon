@@ -77,6 +77,7 @@ struct InterviewListView: View {
                                         if interview.id == target.id {
                                             if let targetIndex = interviewListViewModel.interviewList.firstIndex(of: interview) {
                                                 interviewListViewModel.interviewList.remove(at: targetIndex)
+                                                voiceViewModel.deleteInterview(with: interview)
                                             }
                                         }
                                     }

@@ -111,7 +111,6 @@ struct RecordBubble: View {
             Text("\(interview.recordSTT[safe: record.transcriptIndex] ?? "")")
                 .font(.system(size: 14))
                 .frame(
-                    maxWidth: .infinity,
                     minHeight: 44 - 22,
                     alignment: isInterviewerSpeaking
                         ? .trailing
@@ -125,11 +124,11 @@ struct RecordBubble: View {
             ? Color.PressorOrange_Light
             : Color.PressorBlue_Light
         )
+        .clipShape(Bubble(isInterviewerSpeaking: isInterviewerSpeaking))
         .frame(
             maxWidth: .infinity,
             alignment: isInterviewerSpeaking ? .trailing : .leading
         )
-        .clipShape(Bubble(isInterviewerSpeaking: isInterviewerSpeaking))
         .contextMenu {
             contextMenuButtonBuilder(with: interview)
         }
