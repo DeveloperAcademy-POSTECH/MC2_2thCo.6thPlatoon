@@ -41,6 +41,7 @@
 		7EDEB0D72A011E0E00176D72 /* RecordBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0D62A011E0E00176D72 /* RecordBubble.swift */; };
 		7EDEB0D92A011E1500176D72 /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0D82A011E1500176D72 /* Record.swift */; };
 		7EDEB0DB2A011E2A00176D72 /* RecordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDEB0DA2A011E2A00176D72 /* RecordViewModel.swift */; };
+		7EF625AD2A1533B200D16214 /* ToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EF625AC2A1533B200D16214 /* ToggleStyle.swift */; };
 		C9089BF02A0E7E9A00AE57DC /* AddScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9089BEF2A0E7E9A00AE57DC /* AddScriptView.swift */; };
 		C9089BF22A0E7EA500AE57DC /* EditScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9089BF12A0E7EA500AE57DC /* EditScriptView.swift */; };
 		C918E6E02A09CC720074BAF0 /* AddScriptModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C918E6DF2A09CC720074BAF0 /* AddScriptModalView.swift */; };
@@ -92,6 +93,7 @@
 		7EDEB0D62A011E0E00176D72 /* RecordBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordBubble.swift; sourceTree = "<group>"; };
 		7EDEB0D82A011E1500176D72 /* Record.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
 		7EDEB0DA2A011E2A00176D72 /* RecordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewModel.swift; sourceTree = "<group>"; };
+		7EF625AC2A1533B200D16214 /* ToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleStyle.swift; sourceTree = "<group>"; };
 		C9089BEF2A0E7E9A00AE57DC /* AddScriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddScriptView.swift; sourceTree = "<group>"; };
 		C9089BF12A0E7EA500AE57DC /* EditScriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScriptView.swift; sourceTree = "<group>"; };
 		C918E6DF2A09CC720074BAF0 /* AddScriptModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddScriptModalView.swift; sourceTree = "<group>"; };
@@ -235,6 +237,7 @@
 				7EC865E82A05043C0041B31A /* Extensions */,
 				7EDEB0D62A011E0E00176D72 /* RecordBubble.swift */,
 				7EC865E62A0501810041B31A /* Constants.swift */,
+				7EF625AC2A1533B200D16214 /* ToggleStyle.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -368,6 +371,7 @@
 				7EDEB0DB2A011E2A00176D72 /* RecordViewModel.swift in Sources */,
 				7E6E395D2A03A16C0073CDD0 /* InterviewDetailEditModalView.swift in Sources */,
 				C91E4D392A0A979F00E5F983 /* EditInterviewScriptTestView.swift in Sources */,
+				7EF625AD2A1533B200D16214 /* ToggleStyle.swift in Sources */,
 				7EDEB0BD2A011B4B00176D72 /* PressorApp.swift in Sources */,
 				7EDEB0D92A011E1500176D72 /* Record.swift in Sources */,
 				C91E4D332A0A8CAE00E5F983 /* InterviewScriptTestView.swift in Sources */,

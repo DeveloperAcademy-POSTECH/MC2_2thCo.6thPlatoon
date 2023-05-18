@@ -277,10 +277,10 @@ struct InterviewDetailView: View {
                 // MARK: PLAY PROGRESS
                 // SLIDER....
                 VStack(spacing: 0) {
-                    Slider(
-                        value: $interviewBubbleManager.progress,
-                        in: 0 ... CGFloat(interviewBubbleManager.progress)
-                    )
+//                    Slider(
+//                        value: $interviewBubbleManager.progress,
+//                        in: 0 ... CGFloat(interviewBubbleManager.progress)
+//                    )
                     
                     HStack {
                         Text("\(currentTime.description)")
@@ -298,10 +298,10 @@ struct InterviewDetailView: View {
                         isWholeRecordPlaying.toggle()
                         
                         // MARK: Start PLAY and Get Each Record's TimeInterval
-                        interviewBubbleManager.startPlayingRecordVoice(
-                            url: interview.records[currentRecordIndex].fileURL,
-                            isReadyToPlay: $isWholeRecordPlaying
-                        )
+//                        interviewBubbleManager.startPlayingRecordVoice(
+//                            url: interview.records[currentRecordIndex].fileURL,
+//                            isReadyToPlay: $isWholeRecordPlaying
+//                        )
                     } label: {
                         Rectangle()
                             .frame(width: 44, height: 44)

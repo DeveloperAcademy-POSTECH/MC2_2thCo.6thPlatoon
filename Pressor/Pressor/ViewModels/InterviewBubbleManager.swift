@@ -9,29 +9,9 @@ import SwiftUI
 import AVFoundation
 
 final class InterviewBubbleManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
-    @Published var duration: Double = 0.0
-    @Published var formattedDuration: String = ""
-    @Published var progress: CGFloat = 0.0
-    @Published var formattedProgress: String = "00:00"
     @Published var isReadyToPlay: Bool = true
     
-    private var formatter = DateComponentsFormatter()
     private var audioPlayer: AVAudioPlayer = .init()
-    
-    private func prepareAudioPlayer(with audioPlayer: AVAudioPlayer) {
-        formatter.allowedUnits = [.minute, .second]
-        formatter.unitsStyle = .positional
-        formatter.zeroFormattingBehavior = [ .pad ]
-        
-        formattedDuration = formatter.string(from: TimeInterval(audioPlayer.duration))!
-        duration = audioPlayer.duration
-        
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            self.progress = CGFloat(audioPlayer.currentTime / audioPlayer.duration)
-            self.formattedProgress = self.formatter.string(from: TimeInterval(audioPlayer.currentTime))!
-        }
-    }
     
     // MARK: - Bubble Audio Control
     public func startPlayingRecordVoice(
