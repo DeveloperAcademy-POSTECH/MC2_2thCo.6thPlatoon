@@ -10,6 +10,7 @@ import SwiftUI
 struct MainRecordView: View {
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject var routingManager: RoutingManager
+    @EnvironmentObject var interviewListViewModel: InterviewListViewModel
     @EnvironmentObject var vm: VoiceViewModel
     @StateObject var interviewViewModel = InterviewViewModel()
     
@@ -27,13 +28,18 @@ struct MainRecordView: View {
     @State private var scriptMode: ScriptMode = .add
     @State private var isShowingSettingView = false
     
+    private var isRecordingSTTTranscribing: Bool {
+        interviewListViewModel.completedInterview.recordSTT.isEmpty &&
+        !interviewListViewModel.completedInterview.details.interviewTitle.isEmpty
+    }
+    
     var body: some View {
         ZStack {
             TabView(selection: $routingManager.currentTab) {
                 NavigationView {
                     ZStack {
                         VStack {
-                            Text("새로운 인터뷰 녹음을 시작하려면\n아래 녹음 버튼을 눌러주세요.")
+                            Text(isRecordingSTTTranscribing ? "변환중인 인터뷰가 있습니다.\n잠시만 기다려 주세요." : "새로운 인터뷰 녹음을 시작하려면\n아래 녹음 버튼을 눌러주세요.")
                                 .font(.headline)
                                 .foregroundColor(Color(red: 193/255, green: 193/255, blue: 200/255))
                                 .fontWeight(.semibold)
@@ -61,9 +67,12 @@ struct MainRecordView: View {
                                         
                                     }
                                 } label: {
-                                    Image("mic_button")
+                                    Image(isRecordingSTTTranscribing ? "mic_button_disable" : "mic_button")
                                         .padding(.bottom, 40)
                                 }
+                                .disabled(
+                                    isRecordingSTTTranscribing
+                                )
                                 .fullScreenCover(isPresented: $routingManager.isRecordViewDisplayed) {
                                     if scriptAdded {
                                         InterviewRecordingScriptView()

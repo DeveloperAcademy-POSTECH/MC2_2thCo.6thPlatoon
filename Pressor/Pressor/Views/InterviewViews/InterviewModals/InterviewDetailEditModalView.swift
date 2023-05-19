@@ -127,6 +127,7 @@ struct InterviewDetailEditModalView: View {
                         
                         // 저장된 걸 보여주고 dismiss 해야 할 것 같은데
                         routingManager.isRecordViewDisplayed = false
+                        routingManager.currentTab = Constants.INTERVIEW_TAB_ID
                     } label: {
                         Text("완료")
                     }
