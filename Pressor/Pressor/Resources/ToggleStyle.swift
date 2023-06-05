@@ -11,10 +11,10 @@ struct CircleToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         HStack {
             Circle()
-                .stroke(Color.pressorSystemGray_dark, lineWidth: 2)
+                .stroke(Color.pressorSystemGray_dark, lineWidth: 1)
                 .background(
                     configuration.isOn
-                    ? Color.green
+                    ? Color.PressorOrange
                     : Color.clear
                 )
                 .clipShape(Circle())

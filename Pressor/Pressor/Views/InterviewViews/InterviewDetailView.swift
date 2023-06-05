@@ -143,7 +143,7 @@ struct InterviewDetailView: View {
                         } label: {
                             Image(systemName: "square.and.pencil")
                         }
-                        .tint(Color.pressorRed)
+                        .tint(Color.PressorOrange)
                     }
                     
                     HStack {
