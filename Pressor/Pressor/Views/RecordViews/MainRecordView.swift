@@ -127,17 +127,17 @@ struct MainRecordView: View {
                                 
                             }
                             
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                NavigationLink {
-                                    SettingView(isShowingSettingView: $isShowingSettingView)
-                                        .toolbar(isShowingSettingView ? .hidden : .visible, for: .tabBar)
-                                } label: {
-                                    Image(systemName: "gearshape.fill")
-                                        .foregroundColor(.SymbolGray)
-                                }
-                                .navigationBarTitleDisplayMode(.inline)
-                                .navigationBarHidden(true)
-                            }
+//                            ToolbarItem(placement: .navigationBarTrailing) {
+//                                NavigationLink {
+//                                    SettingView(isShowingSettingView: $isShowingSettingView)
+//                                        .toolbar(isShowingSettingView ? .hidden : .visible, for: .tabBar)
+//                                } label: {
+//                                    Image(systemName: "gearshape.fill")
+//                                        .foregroundColor(.SymbolGray)
+//                                }
+//                                .navigationBarTitleDisplayMode(.inline)
+//                                .navigationBarHidden(true)
+//                            }
                         }
                         .disabled(isTimerCounting)
                         
