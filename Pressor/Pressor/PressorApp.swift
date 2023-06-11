@@ -12,7 +12,6 @@ struct PressorApp: App {
     @StateObject var routeManager: RoutingManager = .init()
     @StateObject var voiceViewModel: VoiceViewModel = .init(interview: .getInitInterview())
     @StateObject var interviewListViewModel: InterviewListViewModel = .init()
-    @ObservedObject var permissionManager: PermissionManager = .init()
     
     var body: some Scene {
         WindowGroup {
@@ -21,9 +20,6 @@ struct PressorApp: App {
                 .environmentObject(interviewListViewModel)
                 .environmentObject(voiceViewModel)
                 .onAppear {
-                    permissionManager.requestAudioPermission()
-                    permissionManager.requestRecordingPermission()
-                    permissionManager.requestSpeechRecognizerPermission()
                     voiceViewModel.initInterview()
                 }
                 .onChange(of: voiceViewModel.isSTTCompleted) { newValue in

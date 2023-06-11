@@ -7,6 +7,7 @@
 
 import AVFoundation
 import Speech
+import UIKit
 
 class PermissionManager : ObservableObject {
     var recordingSession: AVAudioSession!
@@ -35,47 +36,132 @@ class PermissionManager : ObservableObject {
         }
     }
     
+    func requestMicPermission() -> Bool {
+        let allScenes = UIApplication.shared.connectedScenes
+        let scene = allScenes.first { $0.activationState == .foregroundActive }
+        
+        switch AVAudioSession.sharedInstance().recordPermission {
+            
+        case AVAudioSession.RecordPermission.granted:
+            return true
+            
+        case AVAudioSession.RecordPermission.denied:
+            return false
+            let NOTIalert: UIAlertController = UIAlertController(title: "마이크와 음성 인식 권한 설정", message: "서비스 이용을 위해 마이크와 음성 인식 권한을 허용해주세요.", preferredStyle: .alert)
+            let NOTIaction: UIAlertAction = UIAlertAction(title: "설정 변경", style: .default, handler: { (ACTION) in
+                //앱 강제 종료
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {exit(0)})
+                //앱 설정 이동
+                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                    return
+                }
+                if UIApplication.shared.canOpenURL(settingsUrl) {
+                    UIApplication.shared.open(settingsUrl)
+                }
+            })
+            NOTIalert.addAction(NOTIaction)
+            DispatchQueue.main.async{
+                if #available(iOS 15, *) {
+                    if let windowScene = scene as? UIWindowScene {
+                        windowScene.keyWindow?.rootViewController?.present(NOTIalert, animated: true, completion: nil)
+                    }
+                } else {
+                    UIApplication.shared.keyWindow?.rootViewController?.present(NOTIalert, animated: true, completion: nil)
+                }
+            }
+        case AVAudioSession.RecordPermission.undetermined:
+            AVAudioSession.sharedInstance().requestRecordPermission({ (granted) -> Void in
+                if granted {
+
+                } else {
+                    let NOTIalert: UIAlertController = UIAlertController(title: "마이크와 음성 인식 권한 설정", message: "서비스 이용을 위해 마이크와 음성 인식 권한을 허용해주세요.", preferredStyle: .alert)
+                    let NOTIaction: UIAlertAction = UIAlertAction(title: "설정 변경", style: .default, handler: { (ACTION) in
+                        //앱 강제 종료
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {exit(0)})
+                        //앱 설정 이동
+                        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                            return
+                        }
+                        if UIApplication.shared.canOpenURL(settingsUrl) {
+                            UIApplication.shared.open(settingsUrl)
+                        }
+                    })
+                    NOTIalert.addAction(NOTIaction)
+                    DispatchQueue.main.async{
+                        if #available(iOS 15, *) {
+                            if let windowScene = scene as? UIWindowScene {
+                                windowScene.keyWindow?.rootViewController?.present(NOTIalert, animated: true, completion: nil)
+                            }
+                        } else {
+                            UIApplication.shared.keyWindow?.rootViewController?.present(NOTIalert, animated: true, completion: nil)
+                        }
+                    }
+                }
+            })
+        default:
+            break
+        }
+        
+        return false
+    }
+    
     /**
      * 음성인식 권한을 요청합니다.
      */
-    func requestSpeechRecognizerPermission() {
-        // Initialize the speech recogniter with your preffered language
+    func requestSpeechRecognizerPermission() -> Bool {
+        var authCheck = false
+        
+        // Initialize the speech recognizer with your preferred language
         guard let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "ko_KR")) else {
             print("Speech recognizer is not available for this locale!")
-            return
+            return false
         }
         
         // Check the availability. It currently only works on the device
-        if (speechRecognizer.isAvailable == false) {
+        if speechRecognizer.isAvailable == false {
             print("Speech recognizer is not available for this device!")
-            return
+            return false
         }
         
-        // Make the authorization request
-        SFSpeechRecognizer.requestAuthorization { authStatus in
+        // Request authorization synchronously
+        let authStatus = SFSpeechRecognizer.authorizationStatus()
+        switch authStatus {
+        case .authorized:
+            print("Speech Recognizer: 권한 허용")
+            authCheck = true
+        case .denied:
+            print("Speech Recognizer: 권한 거부")
+            authCheck = false
+        case .restricted:
+            print("Speech Recognizer: restricted")
+            authCheck = false
+        case .notDetermined:
+            print("Speech Recognizer: notDetermined")
             
-            // The authorization status results in changes to the
-            // app’s interface, so process the results on the app’s
-            // main queue.
-            OperationQueue.main.addOperation {
-                switch authStatus {
+            SFSpeechRecognizer.requestAuthorization { newAuthStatus in
+                switch newAuthStatus {
                 case .authorized:
                     print("Speech Recognizer: 권한 허용")
-
+                    authCheck = true
                 case .denied:
                     print("Speech Recognizer: 권한 거부")
-                    
+                    authCheck = false
                 case .restricted:
                     print("Speech Recognizer: restricted")
-                    
+                    authCheck = false
                 case .notDetermined:
                     print("Speech Recognizer: notDetermined")
-                
+                    authCheck = false
                 @unknown default:
                     fatalError()
                 }
             }
+        @unknown default:
+            fatalError()
         }
+        
+        print(authCheck)
+        return authCheck
     }
     
     
