@@ -331,9 +331,6 @@ struct InterviewRecordingView: View {
             .background (
                 Color.black
             )
-            .onAppear {
-                audioInputManager.prepare()
-            }
             .onDisappear {
                 audioInputManager.stopRecording()
                 stopTimer()

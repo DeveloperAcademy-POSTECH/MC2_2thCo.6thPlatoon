@@ -366,9 +366,6 @@ struct InterviewRecordingScriptView: View {
             .background (
                 Color.black
             )
-            .onAppear {
-                audioInputManager.prepare()
-            }
             .onDisappear {
                 audioInputManager.stopRecording()
             }
