@@ -9,12 +9,8 @@
 /* Begin PBXBuildFile section */
 		601CCC4D2A08D53F005B02C7 /* Date+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601CCC4C2A08D53F005B02C7 /* Date+.swift */; };
 		6072D0E52A053E93005583FC /* Interview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6072D0E42A053E93005583FC /* Interview.swift */; };
-		6072D0E72A0542E6005583FC /* InterviewRecordingEndTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6072D0E62A0542E6005583FC /* InterviewRecordingEndTestView.swift */; };
 		6072D0F42A05E513005583FC /* InterviewDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6072D0F32A05E513005583FC /* InterviewDetail.swift */; };
-		608D9D6C2A013AF0001E8E3C /* InterviewRecordingTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608D9D6B2A013AF0001E8E3C /* InterviewRecordingTestView.swift */; };
 		608D9D702A014BEE001E8E3C /* VoiceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608D9D6F2A014BEE001E8E3C /* VoiceViewModel.swift */; };
-		608D9D7D2A01F673001E8E3C /* InterviewDetailTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608D9D7C2A01F673001E8E3C /* InterviewDetailTestView.swift */; };
-		608D9D7F2A022F5E001E8E3C /* MainTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608D9D7E2A022F5E001E8E3C /* MainTestView.swift */; };
 		60D01A322A120EDC00CE3E0A /* UserDefaults+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D01A312A120EDC00CE3E0A /* UserDefaults+.swift */; };
 		60D579B02A0E17C60006D884 /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D579AF2A0E17C60006D884 /* PermissionManager.swift */; };
 		60F0BC122A0E859600B6B539 /* InterviewRecordingScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F0BC112A0E859600B6B539 /* InterviewRecordingScriptView.swift */; };
@@ -46,8 +42,6 @@
 		C9089BF22A0E7EA500AE57DC /* EditScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9089BF12A0E7EA500AE57DC /* EditScriptView.swift */; };
 		C918E6E02A09CC720074BAF0 /* AddScriptModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C918E6DF2A09CC720074BAF0 /* AddScriptModalView.swift */; };
 		C91E4D312A0A545800E5F983 /* InterviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91E4D302A0A545800E5F983 /* InterviewViewModel.swift */; };
-		C91E4D332A0A8CAE00E5F983 /* InterviewScriptTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91E4D322A0A8CAE00E5F983 /* InterviewScriptTestView.swift */; };
-		C91E4D392A0A979F00E5F983 /* EditInterviewScriptTestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91E4D382A0A979F00E5F983 /* EditInterviewScriptTestView.swift */; };
 		C91E4D3B2A0B746300E5F983 /* InterviewScriptModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C91E4D3A2A0B746300E5F983 /* InterviewScriptModel.swift */; };
 		C9478BB92A0EA0100041604F /* CheckScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9478BB82A0EA0100041604F /* CheckScriptView.swift */; };
 		C957BB9F2A027D05006649A8 /* InterviewRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C957BB9E2A027D05006649A8 /* InterviewRecordingView.swift */; };
@@ -59,12 +53,8 @@
 /* Begin PBXFileReference section */
 		601CCC4C2A08D53F005B02C7 /* Date+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+.swift"; sourceTree = "<group>"; };
 		6072D0E42A053E93005583FC /* Interview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interview.swift; sourceTree = "<group>"; };
-		6072D0E62A0542E6005583FC /* InterviewRecordingEndTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewRecordingEndTestView.swift; sourceTree = "<group>"; };
 		6072D0F32A05E513005583FC /* InterviewDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewDetail.swift; sourceTree = "<group>"; };
-		608D9D6B2A013AF0001E8E3C /* InterviewRecordingTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewRecordingTestView.swift; sourceTree = "<group>"; };
 		608D9D6F2A014BEE001E8E3C /* VoiceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceViewModel.swift; sourceTree = "<group>"; };
-		608D9D7C2A01F673001E8E3C /* InterviewDetailTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewDetailTestView.swift; sourceTree = "<group>"; };
-		608D9D7E2A022F5E001E8E3C /* MainTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTestView.swift; sourceTree = "<group>"; };
 		608D9D802A026014001E8E3C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		60D01A312A120EDC00CE3E0A /* UserDefaults+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+.swift"; sourceTree = "<group>"; };
 		60D579AF2A0E17C60006D884 /* PermissionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
@@ -98,8 +88,6 @@
 		C9089BF12A0E7EA500AE57DC /* EditScriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditScriptView.swift; sourceTree = "<group>"; };
 		C918E6DF2A09CC720074BAF0 /* AddScriptModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddScriptModalView.swift; sourceTree = "<group>"; };
 		C91E4D302A0A545800E5F983 /* InterviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewViewModel.swift; sourceTree = "<group>"; };
-		C91E4D322A0A8CAE00E5F983 /* InterviewScriptTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewScriptTestView.swift; sourceTree = "<group>"; };
-		C91E4D382A0A979F00E5F983 /* EditInterviewScriptTestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditInterviewScriptTestView.swift; sourceTree = "<group>"; };
 		C91E4D3A2A0B746300E5F983 /* InterviewScriptModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewScriptModel.swift; sourceTree = "<group>"; };
 		C9478BB82A0EA0100041604F /* CheckScriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckScriptView.swift; sourceTree = "<group>"; };
 		C957BB9E2A027D05006649A8 /* InterviewRecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterviewRecordingView.swift; sourceTree = "<group>"; };
@@ -119,19 +107,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		601CCC4A2A08CE49005B02C7 /* TestViews */ = {
-			isa = PBXGroup;
-			children = (
-				608D9D6B2A013AF0001E8E3C /* InterviewRecordingTestView.swift */,
-				608D9D7C2A01F673001E8E3C /* InterviewDetailTestView.swift */,
-				6072D0E62A0542E6005583FC /* InterviewRecordingEndTestView.swift */,
-				608D9D7E2A022F5E001E8E3C /* MainTestView.swift */,
-				C91E4D322A0A8CAE00E5F983 /* InterviewScriptTestView.swift */,
-				C91E4D382A0A979F00E5F983 /* EditInterviewScriptTestView.swift */,
-			);
-			path = TestViews;
-			sourceTree = "<group>";
-		};
 		7E6E395B2A03A15C0073CDD0 /* InterviewModals */ = {
 			isa = PBXGroup;
 			children = (
@@ -197,7 +172,6 @@
 		7EDEB0CA2A011B5000176D72 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				601CCC4A2A08CE49005B02C7 /* TestViews */,
 				7EDEB0CF2A011DBC00176D72 /* InterviewViews */,
 				7EDEB0CE2A011DB700176D72 /* RecordViews */,
 				7EDEB0BE2A011B4B00176D72 /* ContentView.swift */,
@@ -346,16 +320,13 @@
 				C9F1C3232A10BABD002B9C9C /* SettingView.swift in Sources */,
 				7EDEB0BF2A011B4B00176D72 /* ContentView.swift in Sources */,
 				7E7796AF2A14A8E00037610E /* InterviewListView.swift in Sources */,
-				608D9D7F2A022F5E001E8E3C /* MainTestView.swift in Sources */,
 				C918E6E02A09CC720074BAF0 /* AddScriptModalView.swift in Sources */,
-				608D9D6C2A013AF0001E8E3C /* InterviewRecordingTestView.swift in Sources */,
 				7E3286122A125888005843C7 /* Array+AppStorage.swift in Sources */,
 				7EC9A2982A0A398A004D14A1 /* BlurBackground.swift in Sources */,
 				7EDEB0D12A011DD100176D72 /* MainRecordView.swift in Sources */,
 				7EDEB0D32A011DE800176D72 /* AddRecordScriptModalView.swift in Sources */,
 				60F0BC122A0E859600B6B539 /* InterviewRecordingScriptView.swift in Sources */,
 				7EDEB0DB2A011E2A00176D72 /* RecordViewModel.swift in Sources */,
-				6072D0E72A0542E6005583FC /* InterviewRecordingEndTestView.swift in Sources */,
 				C9478BB92A0EA0100041604F /* CheckScriptView.swift in Sources */,
 				7EDEB0BD2A011B4B00176D72 /* PressorApp.swift in Sources */,
 				7EDEB0D92A011E1500176D72 /* Record.swift in Sources */,
@@ -370,18 +341,15 @@
 				7E392C792A0E092A00130338 /* InterviewBubbleManager.swift in Sources */,
 				7EDEB0DB2A011E2A00176D72 /* RecordViewModel.swift in Sources */,
 				7E6E395D2A03A16C0073CDD0 /* InterviewDetailEditModalView.swift in Sources */,
-				C91E4D392A0A979F00E5F983 /* EditInterviewScriptTestView.swift in Sources */,
 				7EF625AD2A1533B200D16214 /* ToggleStyle.swift in Sources */,
 				7EDEB0BD2A011B4B00176D72 /* PressorApp.swift in Sources */,
 				7EDEB0D92A011E1500176D72 /* Record.swift in Sources */,
-				C91E4D332A0A8CAE00E5F983 /* InterviewScriptTestView.swift in Sources */,
 				7E6E395F2A03A28D0073CDD0 /* InterviewDetailChatEditModalView.swift in Sources */,
 				7EC865EC2A050A2C0041B31A /* Color+.swift in Sources */,
 				7E3B3E5A2A0A0D6700DCA93A /* InterviewDetailView.swift in Sources */,
 				7EDEB0D72A011E0E00176D72 /* RecordBubble.swift in Sources */,
 				C957BB9F2A027D05006649A8 /* InterviewRecordingView.swift in Sources */,
 				608D9D702A014BEE001E8E3C /* VoiceViewModel.swift in Sources */,
-				608D9D7D2A01F673001E8E3C /* InterviewDetailTestView.swift in Sources */,
 				C91E4D312A0A545800E5F983 /* InterviewViewModel.swift in Sources */,
 				60D579B02A0E17C60006D884 /* PermissionManager.swift in Sources */,
 				60D01A322A120EDC00CE3E0A /* UserDefaults+.swift in Sources */,
@@ -520,7 +488,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Pressor/Preview Content\"";
-				DEVELOPMENT_TEAM = 3NP4Z3WZ94;
+				DEVELOPMENT_TEAM = 67M6ZS7KS6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Pressor/Info.plist;
